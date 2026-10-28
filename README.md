@@ -4,17 +4,23 @@ A tiny browser in one file: transparent rail, live animated background, an AI ch
 
 ## Links
 
-- CDN (jsDelivr): https://cdn.jsdelivr.net/gh/blunts294/saleen@main/index.xhtml
+- Pinned CDN (never changes): https://cdn.jsdelivr.net/gh/blunts294/saleen@1/index.xhtml
+- Latest CDN: https://cdn.jsdelivr.net/gh/blunts294/saleen@main/index.xhtml
 - Website (GitHub Pages): https://blunts294.github.io/saleen/
 - Source: index.html
 
 ## Files
 
 - `index.html` - the app, for normal hosting and local use.
-- `index.xhtml` - identical app as XML-valid XHTML. jsDelivr serves `.html` as plain text, but serves `.xhtml` as `application/xhtml+xml`, so this is the file that actually runs from the CDN.
+- `index.xhtml` - the same app as XML-valid XHTML. jsDelivr serves `.html` as plain text, but serves `.xhtml` as `application/xhtml+xml`, so this is the file that runs from the CDN.
+- `.nojekyll` - stops GitHub Pages from running the HTML through Jekyll.
 
 ## Updating
 
-jsDelivr caches `@main` for 12 hours at the edge and up to 7 days in a browser. For instant updates, tag a release and use the tag:
+jsDelivr caches `@main` for 12 hours at the edge and up to 7 days in a browser. For an instant, immutable link, tag a release and drop the leading `v` in the URL:
 
-`https://cdn.jsdelivr.net/gh/blunts294/saleen@v2/index.xhtml`
+`https://cdn.jsdelivr.net/gh/blunts294/saleen@2/index.xhtml`
+
+Purge a stale file with:
+
+`https://purge.jsdelivr.net/gh/blunts294/saleen@main/index.xhtml`
