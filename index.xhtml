@@ -1152,13 +1152,40 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
   /* ---------------- reader (text view for sites that refuse framing) ---------------- */
 
+  /* Hosts that send X-Frame-Options / frame-ancestors. Verified against live headers.
+     Search engines that allow framing (bing.com, yahoo.com, wikipedia.org) are
+     deliberately absent so their results still render in the page frame. */
   var READER_BLOCK = [
+    /* search, social, mail */
     'google.com', 'youtube.com', 'x.com', 'twitter.com', 'reddit.com', 'github.com',
-    'instagram.com', 'facebook.com', 'tiktok.com', 'stackoverflow.com', 'medium.com',
-    'nytimes.com', 'twitch.tv', 'news.ycombinator.com', 'developer.mozilla.org',
-    'linkedin.com', 'netflix.com', 'spotify.com', 'discord.com', 'pinterest.com',
-    'whatsapp.com', 'quora.com', 'substack.com', 'washingtonpost.com', 'theguardian.com',
-    'imdb.com', 'msn.com', 'yahoo.com'
+    'instagram.com', 'facebook.com', 'tiktok.com', 'threads.net', 'threads.com',
+    'tumblr.com', 'pinterest.com', 'linkedin.com', 'whatsapp.com', 'discord.com',
+    'quora.com', 'substack.com', 'news.ycombinator.com',
+    /* tools and accounts */
+    'stackoverflow.com', 'medium.com', 'developer.mozilla.org', 'notion.com', 'notion.so',
+    'figma.com', 'canva.com', 'asana.com', 'slack.com', 'dropbox.com', 'salesforce.com',
+    'stripe.com', 'paypal.com', 'coinbase.com', 'coursera.org', 'udemy.com',
+    'quizlet.com', 'duolingo.com', 'goodreads.com', 'apple.com', 'office.com',
+    'm365.cloud.microsoft', 'outlook.live.com',
+    /* news */
+    'nytimes.com', 'washingtonpost.com', 'theguardian.com', 'bbc.com', 'bbc.co.uk',
+    'cnn.com', 'nbcnews.com', 'cnbc.com', 'apnews.com', 'reuters.com', 'bloomberg.com',
+    'ft.com', 'economist.com', 'forbes.com', 'axios.com', 'politico.com', 'vox.com',
+    'buzzfeed.com', 'vice.com', 'latimes.com', 'usatoday.com', 'theverge.com',
+    'arstechnica.com', 'engadget.com', 'gizmodo.com', 'techcrunch.com', 'wired.com',
+    'newyorker.com', 'theatlantic.com',
+    /* streaming and games */
+    'netflix.com', 'hulu.com', 'spotify.com', 'twitch.tv', 'ea.com', 'epicgames.com',
+    'playstation.com', 'xbox.com', 'roblox.com', 'riotgames.com', 'blizzard.com',
+    'minecraft.net', 'chess.com', 'steamcommunity.com', 'steampowered.com',
+    'ubisoft.com',
+    /* shopping, travel, money */
+    'airbnb.com', 'alibaba.com', 'aliexpress.com', 'temu.com', 'shein.com', 'wish.com',
+    'target.com', 'walmart.com', 'newegg.com', 'microcenter.com', 'lowes.com',
+    'ikea.com', 'expedia.com', 'united.com', 'usps.com', 'ups.com', 'fedex.com',
+    'chase.com', 'bankofamerica.com', 'capitalone.com', 'wellsfargo.com',
+    /* sports */
+    'nba.com', 'mlb.com', 'goal.com', 'rottentomatoes.com'
   ];
   var readerChoice = {};
   var readerCache = {};
@@ -1412,14 +1439,18 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     fetchReader(url)
       .then(function (parsed) {
         readerCache[url] = parsed;
-        if (token !== readerReq) return;
+        if (token !== readerReq || !stillReading(t, url)) return;
         paintReader(t, parsed);
       })
       .catch(function (err) {
-        if (token !== readerReq) return;
+        if (token !== readerReq || !stillReading(t, url)) return;
         readerCache[url] = null;
         paintReaderError(t, err);
       });
+  }
+
+  function stillReading(t, url) {
+    return mode === 'browser' && activeTab() === t && t.url === url && wantsReader(t);
   }
 
   function fetchWithTimeout(target, ms) {
@@ -1437,8 +1468,35 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     );
   }
 
+  function htmlToText(html) {
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    Array.prototype.forEach.call(doc.querySelectorAll('script,style,noscript,svg,iframe,template'), function (n) {
+      n.parentNode.removeChild(n);
+    });
+    var out = [];
+    Array.prototype.forEach.call(doc.querySelectorAll('h1,h2,h3,h4,p,li,blockquote,pre'), function (el) {
+      if (el.querySelector('h1,h2,h3,h4,p,li,blockquote,pre')) return;
+      var txt = (el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (!txt) return;
+      var tag = el.tagName.toLowerCase();
+      if (/^h[1-4]$/.test(tag)) out.push(new Array(Number(tag.charAt(1)) + 1).join('#') + ' ' + txt);
+      else if (tag === 'li') out.push('- ' + txt);
+      else if (tag === 'blockquote') out.push('> ' + txt);
+      else out.push(txt);
+    });
+    if (!out.length && doc.body) {
+      var plain = (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+      if (plain) out.push(plain);
+    }
+    var body = out.join('\n\n');
+    if (!body.trim()) throw new Error('no text found');
+    return { title: (doc.title || '').trim(), body: body };
+  }
+
+  /* r.jina.ai: fastest and cleanest (markdown). Returns 403 for a few "anonymous access"
+     domains, so a bare host is retried with www. below. */
   function fromJina(url) {
-    return fetchWithTimeout('https://r.jina.ai/' + url, 20000).then(function (res) {
+    return fetchWithTimeout('https://r.jina.ai/' + url, 12000).then(function (res) {
       if (!res.ok) throw new Error('reader returned HTTP ' + res.status);
       return res.text();
     }).then(function (text) {
@@ -1454,40 +1512,75 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     });
   }
 
-  function fromProxy(url) {
-    return fetchWithTimeout('https://api.allorigins.win/get?url=' + encodeURIComponent(url), 20000)
+  function withWww(url) {
+    try {
+      var u = new URL(url);
+      if (u.hostname.split('.').length === 2) {
+        u.hostname = 'www.' + u.hostname;
+        return u.href;
+      }
+    } catch (e) {}
+    return '';
+  }
+
+  function fromAllOrigins(url) {
+    return fetchWithTimeout('https://api.allorigins.win/get?url=' + encodeURIComponent(url), 12000)
       .then(function (res) {
         if (!res.ok) throw new Error('proxy returned HTTP ' + res.status);
         return res.json();
       })
       .then(function (data) {
         if (!data || !data.contents) throw new Error('empty proxy response');
-        var doc = new DOMParser().parseFromString(data.contents, 'text/html');
-        Array.prototype.forEach.call(doc.querySelectorAll('script,style,noscript,svg,iframe'), function (n) {
-          n.parentNode.removeChild(n);
-        });
-        var out = [];
-        Array.prototype.forEach.call(doc.querySelectorAll('h1,h2,h3,h4,p,li,blockquote,pre'), function (el) {
-          var txt = (el.textContent || '').replace(/\s+/g, ' ').trim();
-          if (!txt) return;
-          var tag = el.tagName.toLowerCase();
-          if (/^h[1-4]$/.test(tag)) out.push(new Array(Number(tag.charAt(1)) + 1).join('#') + ' ' + txt);
-          else if (tag === 'li') out.push('- ' + txt);
-          else if (tag === 'blockquote') out.push('> ' + txt);
-          else out.push(txt);
-        });
-        if (!out.length && doc.body) {
-          var plain = (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
-          if (plain) out.push(plain);
-        }
-        var body = out.join('\n\n');
-        if (!body.trim()) throw new Error('no text found');
-        return { title: (doc.title || '').trim(), body: body };
+        return htmlToText(data.contents);
       });
   }
 
+  function fromCodetabs(url) {
+    return fetchWithTimeout('https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent(url), 12000)
+      .then(function (res) {
+        if (!res.ok) throw new Error('proxy returned HTTP ' + res.status);
+        return res.text();
+      })
+      .then(function (html) { return htmlToText(html); });
+  }
+
+  /* Last resort: Microlink renders the page server-side and returns the body HTML. */
+  function fromMicrolink(url) {
+    var api = 'https://api.microlink.io/?url=' + encodeURIComponent(url) +
+      '&meta=false&data.content.selector=body&data.content.type=html';
+    return fetchWithTimeout(api, 15000)
+      .then(function (res) {
+        if (!res.ok) throw new Error('renderer returned HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        var html = data && data.data && data.data.content;
+        if (!html) throw new Error('empty renderer response');
+        return htmlToText(html);
+      });
+  }
+
+  function firstOf(factories) {
+    return new Promise(function (resolve, reject) {
+      var pending = factories.length;
+      var lastErr = null;
+      if (!pending) { reject(new Error('nothing to try')); return; }
+      factories.forEach(function (make) {
+        Promise.resolve().then(make).then(resolve, function (err) {
+          lastErr = err;
+          pending -= 1;
+          if (!pending) reject(lastErr || new Error('all readers failed'));
+        });
+      });
+    });
+  }
+
   function fetchReader(url) {
-    return fromJina(url).catch(function () { return fromProxy(url); });
+    var alt = withWww(url);
+    return fromJina(url)
+      .catch(function () { return alt ? fromJina(alt) : Promise.reject(new Error('no www variant')); })
+      .catch(function () { return firstOf([function () { return fromAllOrigins(url); }, function () { return fromCodetabs(url); }]); })
+      .catch(function () { return fromMicrolink(url); });
   }
 
   function renderView() {
@@ -1518,14 +1611,23 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         els.readerBtn.setAttribute('aria-pressed', reader ? 'true' : 'false');
         els.readerBtn.title = reader ? 'Show the original page instead' : 'Show a text version that always loads';
         els.note.textContent = reader
-          ? 'Reader view · text via r.jina.ai'
+          ? (autoReader(t.url) ? 'This site blocks embedding · showing the text version' : 'Reader view · text version')
           : 'In-app view · if it stays blank, ' + hostOf(t.url) + ' blocks embedding.';
         els.openExternal.href = t.url;
         els.omni.value = t.url;
-        if (reader) loadReader(t);
+        if (reader) {
+          loadReader(t);
+        } else {
+          readerReq += 1;
+          els.readerDoc.textContent = '';
+          els.readerDoc.dataset.url = '';
+        }
       } else {
         els.omni.value = '';
         els.openExternal.removeAttribute('href');
+        readerReq += 1;
+        els.readerDoc.textContent = '';
+        els.readerDoc.dataset.url = '';
         els.webReader.hidden = true;
         els.frame.hidden = false;
         els.readerBtn.textContent = 'Reader';
