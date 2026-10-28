@@ -1199,32 +1199,30 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
   function inlineNodes(text, baseUrl, doc) {
     var out = [];
+    var src = String(text)
+      .replace(/\[!\[[^\]]*\]\([^)]*\)\]\([^)]*\)/g, '')
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, '');
     var i = 0;
-    var re = /(!?)\[([^\]]*)\]\(([^)\s]+)[^)]*\)|\*\*([^*]+)\*\*|`([^`]+)`/g;
+    var re = /\[([^\][]*)\]\(([^()\s]+)[^)]*\)|\*\*([^*]+)\*\*|`([^`]+)`/g;
     var m;
-    while ((m = re.exec(text))) {
-      if (m.index > i) out.push(doc.createTextNode(text.slice(i, m.index)));
-      if (m[3] !== undefined) {
-        var href = absoluteUrl(m[3], baseUrl);
-        if (m[1] === '!') {
-          out.push(doc.createTextNode(m[2] || 'image'));
-        } else if (href) {
-          out.push(linkNode(m[2] || href, href, doc));
-        } else {
-          out.push(doc.createTextNode(m[2] || m[3]));
-        }
-      } else if (m[4] !== undefined) {
+    while ((m = re.exec(src))) {
+      if (m.index > i) out.push(doc.createTextNode(src.slice(i, m.index)));
+      if (m[2] !== undefined) {
+        var href = absoluteUrl(m[2], baseUrl);
+        if (href) out.push(linkNode(m[1] || href, href, doc));
+        else out.push(doc.createTextNode(m[1] || m[2]));
+      } else if (m[3] !== undefined) {
         var strong = doc.createElement('strong');
-        strong.textContent = m[4];
+        inlineNodes(m[3], baseUrl, doc).forEach(function (n) { strong.appendChild(n); });
         out.push(strong);
-      } else if (m[5] !== undefined) {
+      } else if (m[4] !== undefined) {
         var code = doc.createElement('code');
-        code.textContent = m[5];
+        code.textContent = m[4];
         out.push(code);
       }
       i = re.lastIndex;
     }
-    if (i < text.length) out.push(doc.createTextNode(text.slice(i)));
+    if (i < src.length) out.push(doc.createTextNode(src.slice(i)));
     return out;
   }
 
@@ -1238,7 +1236,10 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     function flushPara() {
       if (!para.length) return;
       var p = doc.createElement('p');
-      inlineNodes(para.join(' '), baseUrl, doc).forEach(function (n) { p.appendChild(n); });
+      para.forEach(function (line, idx) {
+        if (idx) p.appendChild(doc.createElement('br'));
+        inlineNodes(line, baseUrl, doc).forEach(function (n) { p.appendChild(n); });
+      });
       root.appendChild(p);
       para = [];
     }
@@ -1401,33 +1402,85 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     status.textContent = 'Loading a text version…';
     els.readerDoc.appendChild(status);
 
-    var ctrl = window.AbortController ? new AbortController() : null;
-    var timer = ctrl ? window.setTimeout(function () { ctrl.abort(); }, 30000) : null;
-
-    fetch('https://r.jina.ai/' + url, ctrl ? { signal: ctrl.signal } : undefined)
-      .then(function (res) {
-        if (!res.ok) throw new Error('reader returned HTTP ' + res.status);
-        return res.text();
-      })
-      .then(function (text) {
-        if (timer) window.clearTimeout(timer);
-        var title = '';
-        var body = text;
-        var titleMatch = text.match(/^Title:\s*(.+)$/m);
-        if (titleMatch) title = titleMatch[1].trim();
-        var cut = text.indexOf('Markdown Content:');
-        if (cut >= 0) body = text.slice(cut + 'Markdown Content:'.length);
-        var parsed = { title: title, body: body.replace(/^\s*\n/, '') };
+    fetchReader(url)
+      .then(function (parsed) {
         readerCache[url] = parsed;
         if (token !== readerReq) return;
         paintReader(t, parsed);
       })
       .catch(function (err) {
-        if (timer) window.clearTimeout(timer);
         if (token !== readerReq) return;
         readerCache[url] = null;
         paintReaderError(t, err);
       });
+  }
+
+  function fetchWithTimeout(target, ms) {
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = ctrl ? window.setTimeout(function () { ctrl.abort(); }, ms) : null;
+    return fetch(target, ctrl ? { signal: ctrl.signal } : undefined).then(
+      function (res) {
+        if (timer) window.clearTimeout(timer);
+        return res;
+      },
+      function (err) {
+        if (timer) window.clearTimeout(timer);
+        throw err;
+      }
+    );
+  }
+
+  function fromJina(url) {
+    return fetchWithTimeout('https://r.jina.ai/' + url, 20000).then(function (res) {
+      if (!res.ok) throw new Error('reader returned HTTP ' + res.status);
+      return res.text();
+    }).then(function (text) {
+      var title = '';
+      var body = text;
+      var titleMatch = text.match(/^Title:\s*(.+)$/m);
+      if (titleMatch) title = titleMatch[1].trim();
+      var cut = text.indexOf('Markdown Content:');
+      if (cut >= 0) body = text.slice(cut + 'Markdown Content:'.length);
+      body = body.replace(/^\s*\n/, '');
+      if (!body.trim()) throw new Error('empty reader response');
+      return { title: title, body: body };
+    });
+  }
+
+  function fromProxy(url) {
+    return fetchWithTimeout('https://api.allorigins.win/get?url=' + encodeURIComponent(url), 20000)
+      .then(function (res) {
+        if (!res.ok) throw new Error('proxy returned HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data || !data.contents) throw new Error('empty proxy response');
+        var doc = new DOMParser().parseFromString(data.contents, 'text/html');
+        Array.prototype.forEach.call(doc.querySelectorAll('script,style,noscript,svg,iframe'), function (n) {
+          n.parentNode.removeChild(n);
+        });
+        var out = [];
+        Array.prototype.forEach.call(doc.querySelectorAll('h1,h2,h3,h4,p,li,blockquote,pre'), function (el) {
+          var txt = (el.textContent || '').replace(/\s+/g, ' ').trim();
+          if (!txt) return;
+          var tag = el.tagName.toLowerCase();
+          if (/^h[1-4]$/.test(tag)) out.push(new Array(Number(tag.charAt(1)) + 1).join('#') + ' ' + txt);
+          else if (tag === 'li') out.push('- ' + txt);
+          else if (tag === 'blockquote') out.push('> ' + txt);
+          else out.push(txt);
+        });
+        if (!out.length && doc.body) {
+          var plain = (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+          if (plain) out.push(plain);
+        }
+        var body = out.join('\n\n');
+        if (!body.trim()) throw new Error('no text found');
+        return { title: (doc.title || '').trim(), body: body };
+      });
+  }
+
+  function fetchReader(url) {
+    return fromJina(url).catch(function () { return fromProxy(url); });
   }
 
   function renderView() {
