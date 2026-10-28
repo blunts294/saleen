@@ -351,6 +351,46 @@ body[data-wall="stars"] #stars{opacity:1}
 #openExternal:hover{background:color-mix(in srgb,var(--accent) 18%,transparent)}
 #webFrame{flex:1 1 auto;width:100%;border:0;background:#fff}
 
+/* ---------- reader ---------- */
+.strip-btn{
+  flex:0 0 auto;
+  padding:4px 10px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:7px;
+  background:transparent;color:var(--ink);
+  font-size:11.5px;font-family:inherit;
+  cursor:pointer;
+}
+.strip-btn:hover{background:rgba(255,255,255,.07)}
+.strip-btn[aria-pressed="true"]{
+  border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  background:color-mix(in srgb,var(--accent) 18%,transparent);
+  color:#fff;
+}
+#webReader{flex:1 1 auto;min-height:0;overflow-y:auto;background:rgba(8,11,19,.55)}
+#readerDoc{
+  max-width:760px;margin:0 auto;
+  padding:26px 26px 64px;
+  color:var(--ink);font-size:14px;line-height:1.7;
+}
+#readerDoc h1,#readerDoc h2,#readerDoc h3,#readerDoc h4{line-height:1.25;margin:1.5em 0 .5em;font-weight:650}
+#readerDoc h1{font-size:24px;margin-top:.2em}
+#readerDoc h2{font-size:19px}
+#readerDoc h3{font-size:16px}
+#readerDoc p{margin:0 0 .95em}
+#readerDoc ul{margin:0 0 .95em;padding-left:20px}
+#readerDoc li{margin:.3em 0}
+#readerDoc a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent);cursor:pointer}
+#readerDoc a:hover{border-bottom-color:var(--accent)}
+#readerDoc code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12.5px;background:rgba(255,255,255,.07);padding:1px 5px;border-radius:5px}
+#readerDoc pre{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 14px;overflow:auto}
+#readerDoc pre code{background:transparent;padding:0}
+#readerDoc blockquote{margin:0 0 .95em;padding-left:12px;border-left:2px solid color-mix(in srgb,var(--accent) 45%,transparent);color:var(--muted)}
+#readerDoc img{max-width:100%;border-radius:8px}
+.reader-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 20px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.07);font-size:11.5px;color:var(--muted)}
+.reader-status{color:var(--muted);font-size:13px;line-height:1.6}
+.reader-status .strip-btn{margin-top:12px}
+
 /* ---------- customize ---------- */
 dialog#sheet{
   width:min(520px,calc(100vw - 32px));
@@ -661,10 +701,14 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
       <div id="webWrap" hidden>
         <div id="webBanner">
-          <p>In-app view · if it stays blank, the site blocks embedding.</p>
+          <p id="webNote">In-app view · if it stays blank, the site blocks embedding.</p>
+          <button id="readerBtn" class="strip-btn" type="button" aria-pressed="false">Reader</button>
           <a id="openExternal" href="#" target="_blank" rel="noopener">Open in a new tab</a>
         </div>
         <iframe id="webFrame" title="Web page" referrerpolicy="no-referrer"></iframe>
+        <div id="webReader" hidden>
+          <div id="readerDoc" class="reader-doc" aria-live="polite"></div>
+        </div>
       </div>
 
       <section id="aiView" class="view" hidden>
@@ -788,6 +832,11 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     webWrap: $('#webWrap'),
     frame: $('#webFrame'),
     banner: $('#webBanner p'),
+    note: $('#webNote'),
+    readerBtn: $('#readerBtn'),
+    readerPane: $('#webReader'),
+    webReader: $('#webReader'),
+    readerDoc: $('#readerDoc'),
     openExternal: $('#openExternal'),
     aiView: $('#aiView'),
     sheet: $('#sheet'),
@@ -1094,6 +1143,293 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     catch (e) { return u; }
   }
 
+  /* ---------------- reader (text view for sites that refuse framing) ---------------- */
+
+  var READER_BLOCK = [
+    'google.com', 'youtube.com', 'x.com', 'twitter.com', 'reddit.com', 'github.com',
+    'instagram.com', 'facebook.com', 'tiktok.com', 'stackoverflow.com', 'medium.com',
+    'nytimes.com', 'twitch.tv', 'news.ycombinator.com', 'developer.mozilla.org',
+    'linkedin.com', 'netflix.com', 'spotify.com', 'discord.com', 'pinterest.com',
+    'whatsapp.com', 'quora.com', 'substack.com', 'washingtonpost.com', 'theguardian.com',
+    'imdb.com', 'msn.com', 'yahoo.com'
+  ];
+  var readerChoice = {};
+  var readerCache = {};
+  var readerReq = 0;
+
+  function autoReader(url) {
+    try {
+      var host = new URL(url).hostname.replace(/^www\./, '').toLowerCase();
+      return READER_BLOCK.some(function (d) {
+        return host === d || host.slice(-(d.length + 1)) === '.' + d;
+      });
+    } catch (e) { return false; }
+  }
+
+  function wantsReader(t) {
+    if (Object.prototype.hasOwnProperty.call(readerChoice, t.url)) return readerChoice[t.url];
+    return autoReader(t.url);
+  }
+
+  function setReader(url, on) {
+    readerChoice[url] = on;
+    if (on) delete readerCache[url];
+    renderView();
+  }
+
+  function absoluteUrl(href, base) {
+    try {
+      var u = new URL(href, base);
+      if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
+      return u.href;
+    } catch (e) { return ''; }
+  }
+
+  function linkNode(label, href, doc) {
+    var a = doc.createElement('a');
+    a.textContent = label;
+    a.href = href;
+    a.title = href;
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      navigate(href);
+    });
+    return a;
+  }
+
+  function inlineNodes(text, baseUrl, doc) {
+    var out = [];
+    var i = 0;
+    var re = /(!?)\[([^\]]*)\]\(([^)\s]+)[^)]*\)|\*\*([^*]+)\*\*|`([^`]+)`/g;
+    var m;
+    while ((m = re.exec(text))) {
+      if (m.index > i) out.push(doc.createTextNode(text.slice(i, m.index)));
+      if (m[3] !== undefined) {
+        var href = absoluteUrl(m[3], baseUrl);
+        if (m[1] === '!') {
+          out.push(doc.createTextNode(m[2] || 'image'));
+        } else if (href) {
+          out.push(linkNode(m[2] || href, href, doc));
+        } else {
+          out.push(doc.createTextNode(m[2] || m[3]));
+        }
+      } else if (m[4] !== undefined) {
+        var strong = doc.createElement('strong');
+        strong.textContent = m[4];
+        out.push(strong);
+      } else if (m[5] !== undefined) {
+        var code = doc.createElement('code');
+        code.textContent = m[5];
+        out.push(code);
+      }
+      i = re.lastIndex;
+    }
+    if (i < text.length) out.push(doc.createTextNode(text.slice(i)));
+    return out;
+  }
+
+  function renderMarkdown(root, md, baseUrl) {
+    var doc = document;
+    var lines = String(md).split(/\r?\n/);
+    var para = [];
+    var list = null;
+    var i = 0;
+
+    function flushPara() {
+      if (!para.length) return;
+      var p = doc.createElement('p');
+      inlineNodes(para.join(' '), baseUrl, doc).forEach(function (n) { p.appendChild(n); });
+      root.appendChild(p);
+      para = [];
+    }
+
+    while (i < lines.length) {
+      var line = lines[i];
+
+      if (/^```/.test(line)) {
+        flushPara();
+        list = null;
+        var buf = [];
+        i += 1;
+        while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i += 1; }
+        i += 1;
+        var pre = doc.createElement('pre');
+        var code = doc.createElement('code');
+        code.textContent = buf.join('\n');
+        pre.appendChild(code);
+        root.appendChild(pre);
+        continue;
+      }
+
+      if (!line.trim()) {
+        flushPara();
+        list = null;
+        i += 1;
+        continue;
+      }
+
+      var h = line.match(/^(#{1,4})\s+(.*)$/);
+      if (h) {
+        flushPara();
+        list = null;
+        var el = doc.createElement('h' + h[1].length);
+        inlineNodes(h[2], baseUrl, doc).forEach(function (n) { el.appendChild(n); });
+        root.appendChild(el);
+        i += 1;
+        continue;
+      }
+
+      if (/^\s*([-*_])\s*\1\s*\1\s*$/.test(line)) {
+        flushPara();
+        list = null;
+        i += 1;
+        continue;
+      }
+
+      var li = line.match(/^\s*(?:[-*+]|\d+\.)\s+(.*)$/);
+      if (li) {
+        flushPara();
+        if (!list) {
+          list = doc.createElement('ul');
+          root.appendChild(list);
+        }
+        var item = doc.createElement('li');
+        inlineNodes(li[1], baseUrl, doc).forEach(function (n) { item.appendChild(n); });
+        list.appendChild(item);
+        i += 1;
+        continue;
+      }
+
+      var bq = line.match(/^>\s?(.*)$/);
+      if (bq) {
+        flushPara();
+        list = null;
+        var quote = doc.createElement('blockquote');
+        inlineNodes(bq[1], baseUrl, doc).forEach(function (n) { quote.appendChild(n); });
+        root.appendChild(quote);
+        i += 1;
+        continue;
+      }
+
+      list = null;
+      para.push(line.trim());
+      i += 1;
+    }
+    flushPara();
+  }
+
+  function paintReaderError(t, err) {
+    els.readerDoc.textContent = '';
+    els.readerDoc.dataset.url = t.url;
+    var p = document.createElement('p');
+    p.className = 'reader-status';
+    p.textContent = 'The reader could not load this page' +
+      (err && err.message ? ' (' + err.message + ')' : '') + '.';
+
+    var retry = document.createElement('button');
+    retry.type = 'button';
+    retry.className = 'strip-btn';
+    retry.textContent = 'Try again';
+    retry.addEventListener('click', function () {
+      delete readerCache[t.url];
+      els.readerDoc.dataset.url = '';
+      renderView();
+    });
+
+    var page = document.createElement('button');
+    page.type = 'button';
+    page.className = 'strip-btn';
+    page.textContent = 'Show the page';
+    page.addEventListener('click', function () { setReader(t.url, false); });
+
+    p.appendChild(document.createElement('br'));
+    p.appendChild(retry);
+    p.appendChild(document.createTextNode(' '));
+    p.appendChild(page);
+    els.readerDoc.appendChild(p);
+  }
+
+  function paintReader(t, parsed) {
+    els.readerDoc.textContent = '';
+    els.readerDoc.dataset.url = t.url;
+
+    var meta = document.createElement('div');
+    meta.className = 'reader-meta';
+    var host = document.createElement('span');
+    host.textContent = hostOf(t.url);
+    var dot = document.createElement('span');
+    dot.className = 'dotsep';
+    dot.textContent = '·';
+    var kind = document.createElement('span');
+    kind.textContent = 'text view';
+    meta.appendChild(host);
+    meta.appendChild(dot);
+    meta.appendChild(kind);
+    els.readerDoc.appendChild(meta);
+
+    renderMarkdown(els.readerDoc, parsed.body, t.url);
+
+    if (!els.readerDoc.textContent.trim()) {
+      var empty = document.createElement('p');
+      empty.className = 'reader-status';
+      empty.textContent = 'The reader returned no text for this page.';
+      els.readerDoc.appendChild(empty);
+    }
+
+    var title = (parsed.title || '').trim();
+    if (title && !/^https?:\/\//i.test(title) && title.length <= 90 && title !== t.title) {
+      t.title = title.slice(0, 60);
+      renderTabs();
+      updateTitle();
+    }
+  }
+
+  function loadReader(t) {
+    var url = t.url;
+    if (els.readerDoc.dataset.url === url) return;
+    els.readerDoc.dataset.url = url;
+    var token = ++readerReq;
+
+    if (readerCache[url]) {
+      paintReader(t, readerCache[url]);
+      return;
+    }
+
+    els.readerDoc.textContent = '';
+    var status = document.createElement('p');
+    status.className = 'reader-status';
+    status.textContent = 'Loading a text version…';
+    els.readerDoc.appendChild(status);
+
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = ctrl ? window.setTimeout(function () { ctrl.abort(); }, 30000) : null;
+
+    fetch('https://r.jina.ai/' + url, ctrl ? { signal: ctrl.signal } : undefined)
+      .then(function (res) {
+        if (!res.ok) throw new Error('reader returned HTTP ' + res.status);
+        return res.text();
+      })
+      .then(function (text) {
+        if (timer) window.clearTimeout(timer);
+        var title = '';
+        var body = text;
+        var titleMatch = text.match(/^Title:\s*(.+)$/m);
+        if (titleMatch) title = titleMatch[1].trim();
+        var cut = text.indexOf('Markdown Content:');
+        if (cut >= 0) body = text.slice(cut + 'Markdown Content:'.length);
+        var parsed = { title: title, body: body.replace(/^\s*\n/, '') };
+        readerCache[url] = parsed;
+        if (token !== readerReq) return;
+        paintReader(t, parsed);
+      })
+      .catch(function (err) {
+        if (timer) window.clearTimeout(timer);
+        if (token !== readerReq) return;
+        readerCache[url] = null;
+        paintReaderError(t, err);
+      });
+  }
+
   function renderView() {
     var t = activeTab();
     var browser = mode === 'browser';
@@ -1110,16 +1446,30 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
     if (browser && t) {
       if (t.mode === 'web' && t.url) {
-        if (els.frame.dataset.url !== t.url) {
+        var reader = wantsReader(t);
+        t.reader = reader;
+        els.webReader.hidden = !reader;
+        els.frame.hidden = reader;
+        if (!reader && els.frame.dataset.url !== t.url) {
           els.frame.dataset.url = t.url;
           els.frame.src = t.url;
         }
-        els.banner.textContent = 'In-app view · if it stays blank, ' + hostOf(t.url) + ' blocks embedding.';
+        els.readerBtn.textContent = reader ? 'Page' : 'Reader';
+        els.readerBtn.setAttribute('aria-pressed', reader ? 'true' : 'false');
+        els.readerBtn.title = reader ? 'Show the original page instead' : 'Show a text version that always loads';
+        els.note.textContent = reader
+          ? 'Reader view · text via r.jina.ai'
+          : 'In-app view · if it stays blank, ' + hostOf(t.url) + ' blocks embedding.';
         els.openExternal.href = t.url;
         els.omni.value = t.url;
+        if (reader) loadReader(t);
       } else {
         els.omni.value = '';
         els.openExternal.removeAttribute('href');
+        els.webReader.hidden = true;
+        els.frame.hidden = false;
+        els.readerBtn.textContent = 'Reader';
+        els.readerBtn.setAttribute('aria-pressed', 'false');
       }
       els.back.disabled = t.hi <= 0;
       els.fwd.disabled = t.hi >= t.hist.length - 1;
@@ -1175,6 +1525,8 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   function reload() {
     var t = activeTab();
     if (!t || t.mode !== 'web' || !t.url) return;
+    delete readerCache[t.url];
+    els.readerDoc.dataset.url = '';
     els.frame.dataset.url = '';
     renderView();
   }
@@ -1359,6 +1711,12 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   els.back.addEventListener('click', goBack);
   els.fwd.addEventListener('click', goFwd);
   els.reload.addEventListener('click', reload);
+
+  els.readerBtn.addEventListener('click', function () {
+    var t = activeTab();
+    if (!t || t.mode !== 'web' || !t.url) return;
+    setReader(t.url, !t.reader);
+  });
 
   els.engineChip.addEventListener('click', function () {
     var keys = Object.keys(ENGINES);
