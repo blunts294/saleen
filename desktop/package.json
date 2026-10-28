@@ -1,0 +1,14 @@
+{
+  "name": "saleen-desktop",
+  "version": "1.0.0",
+  "description": "Saleen as a desktop app: renders sites that refuse to be framed",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "*"
+  }
+}
