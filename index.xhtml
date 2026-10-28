@@ -666,7 +666,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
       <div id="webWrap" hidden="hidden">
         <div id="webBanner">
-          <p>If this page stays blank, the site blocks embedding.</p>
+          <p>In-app view · if it stays blank, the site blocks embedding.</p>
           <a id="openExternal" href="#" target="_blank" rel="noopener">Open in a new tab</a>
         </div>
         <iframe id="webFrame" title="Web page" referrerpolicy="no-referrer"></iframe>
@@ -752,12 +752,13 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   'use strict';
 
   var KEY = 'saleen.settings.v2';
-  var DEFAULTS = { name: '', emoji: '🌐', accent: '#8ab4ff', wallpaper: 'stars', engine: 'google' };
+  var DEFAULTS = { name: '', emoji: '🌐', accent: '#8ab4ff', wallpaper: 'stars', engine: 'bing' };
   var EMOJIS = ['🌐', '🦊', '🚀', '🌙', '🍄', '🐙', '🔥', '🌊', '🪐', '🌸', '⚡', '🧊'];
   var ACCENTS = ['#8ab4ff', '#5eead4', '#f0abfc', '#fca5a5', '#fcd34d', '#a3e635', '#c4b5fd', '#fdba74'];
   var ENGINES = {
-    google: { label: 'Google', mark: 'G', url: function (q) { return 'https://www.google.com/search?q=' + encodeURIComponent(q); } },
-    ddg: { label: 'DuckDuckGo', mark: 'D', url: function (q) { return 'https://duckduckgo.com/?q=' + encodeURIComponent(q); } }
+    bing: { label: 'Bing', mark: 'B', embed: true, url: function (q) { return 'https://www.bing.com/search?q=' + encodeURIComponent(q); } },
+    google: { label: 'Google', mark: 'G', embed: false, url: function (q) { return 'https://www.google.com/search?q=' + encodeURIComponent(q); } },
+    ddg: { label: 'DuckDuckGo', mark: 'D', embed: false, url: function (q) { return 'https://duckduckgo.com/?q=' + encodeURIComponent(q); } }
   };
   var WALLS = [
     { id: 'stars', label: '✦ Stars' },
@@ -823,6 +824,17 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         if (typeof saved[k] === 'string') settings[k] = saved[k];
       });
     } catch (e) { /* ignore corrupt storage */ }
+
+    /* One-time move to an in-app engine: Google and DuckDuckGo refuse framing. */
+    try {
+      if (!localStorage.getItem('saleen.embed.v1')) {
+        if (!ENGINES[settings.engine] || !ENGINES[settings.engine].embed) {
+          settings.engine = DEFAULTS.engine;
+          save();
+        }
+        localStorage.setItem('saleen.embed.v1', '1');
+      }
+    } catch (e) {}
   }
 
   function save() {
@@ -862,7 +874,9 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     els.engineChip.setAttribute('aria-label', 'Search engine: ' + ENGINES[settings.engine].label);
     els.greeting.textContent = greetingText();
     els.heroInput.placeholder = 'Search ' + ENGINES[settings.engine].label + ' or type a URL';
-    els.hint.textContent = 'Searches open in ' + ENGINES[settings.engine].label + ' in a real tab';
+    els.hint.textContent = ENGINES[settings.engine].embed
+      ? 'Results open inside Saleen'
+      : ENGINES[settings.engine].label + ' blocks embedding — searches open in a real tab';
     els.emojiPreview.textContent = settings.emoji;
     syncControls();
     renderTabs();
@@ -1107,7 +1121,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
           els.frame.dataset.url = t.url;
           els.frame.src = t.url;
         }
-        els.banner.textContent = 'If this page stays blank, ' + hostOf(t.url) + ' blocks embedding.';
+        els.banner.textContent = 'In-app view · if it stays blank, ' + hostOf(t.url) + ' blocks embedding.';
         els.openExternal.href = t.url;
         els.omni.value = t.url;
       } else {
@@ -1200,18 +1214,15 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   }
 
   function search(q) {
-    var url = ENGINES[settings.engine].url(q);
-    var win = null;
-    try { win = window.open(url, '_blank'); } catch (e) { win = null; }
-    if (win) {
-      try { win.opener = null; } catch (e) {}
-      els.heroInput.value = '';
-      els.omni.value = '';
-      toast('Search opened in a new tab');
+    var eng = ENGINES[settings.engine];
+    var url = eng.url(q);
+    els.heroInput.value = '';
+    els.omni.value = '';
+    if (eng.embed) {
+      navigate(url);
       return;
     }
-    navigate(url);
-    toast('Popups are blocked — use the “Open in a new tab” link');
+    openExternal(url);
   }
 
   function submit(raw) {
@@ -1302,7 +1313,8 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'chip';
-      b.textContent = ENGINES[k].label;
+      b.textContent = ENGINES[k].embed ? ENGINES[k].label : ENGINES[k].label + ' (tab)';
+      b.title = ENGINES[k].embed ? 'Results show inside Saleen' : 'This engine refuses to load inside a page, so it opens a real tab';
       b.dataset.engine = k;
       b.setAttribute('aria-pressed', 'false');
       b.addEventListener('click', function () { setSetting('engine', k); });
@@ -1356,7 +1368,9 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   els.reload.addEventListener('click', reload);
 
   els.engineChip.addEventListener('click', function () {
-    var next = settings.engine === 'google' ? 'ddg' : 'google';
+    var keys = Object.keys(ENGINES);
+    var i = keys.indexOf(settings.engine);
+    var next = keys[(i + 1) % keys.length];
     setSetting('engine', next);
     toast('Search engine: ' + ENGINES[next].label);
   });
