@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>Home</title>
+<title>Saleen — Home</title>
 <style>
 :root{
   --accent:#8ab4ff;
@@ -32,8 +32,9 @@ button,input{font-family:inherit}
 /* ---------- wallpaper ---------- */
 #wall{
   position:fixed;inset:0;z-index:0;overflow:hidden;
-  background:#05070d;
-  transition:background .45s ease;
+  background:
+    radial-gradient(120% 78% at 50% -20%, #0f6b92 0%, #08415f 32%, #041d30 64%, #020a12 100%);
+  transition:background .5s ease;
   --px:0px;--py:0px;
 }
 #wall .blob{
@@ -59,45 +60,120 @@ button,input{font-family:inherit}
   70%{translate:-6% 4%;scale:.93}
   100%{translate:3% 7%;scale:1.07}
 }
-body[data-wall="stars"] #wall{
-  background:radial-gradient(120% 90% at 50% -10%, #0c1224, #05070d 62%);
-}
-body[data-wall="stars"] #wall .blob{opacity:.34}
-body[data-wall="stars"] #wall .b1{background-color:#1d4ed8}
-body[data-wall="stars"] #wall .b2{background-color:#4c1d95}
-body[data-wall="stars"] #wall .b3{background-color:#0e7490}
-
-body[data-wall="aurora"] #wall{
+body[data-wall="ocean"] #wall{
   background:
-    radial-gradient(58% 52% at 16% 10%, rgba(94,234,212,.26), transparent 62%),
-    radial-gradient(52% 48% at 84% 18%, rgba(125,211,252,.22), transparent 64%),
-    radial-gradient(70% 62% at 48% 104%, rgba(167,139,250,.28), transparent 66%),
-    linear-gradient(160deg,#060a16,#0a1025 46%,#070b18);
+    radial-gradient(120% 78% at 50% -20%, #0f6b92 0%, #08415f 32%, #041d30 64%, #020a12 100%);
 }
-body[data-wall="aurora"] #wall .blob{opacity:.46}
-body[data-wall="aurora"] #wall .b1{background-color:#2dd4bf}
-body[data-wall="aurora"] #wall .b2{background-color:#60a5fa}
-body[data-wall="aurora"] #wall .b3{background-color:#a78bfa}
+body[data-wall="ocean"] #wall .blob{opacity:.34}
+body[data-wall="ocean"] #wall .b1{background-color:#22d3ee}
+body[data-wall="ocean"] #wall .b2{background-color:#0ea5e9}
+body[data-wall="ocean"] #wall .b3{background-color:#1d4ed8}
 
-body[data-wall="mesh"] #wall{
+body[data-wall="reef"] #wall{
   background:
-    radial-gradient(44% 40% at 18% 28%, rgba(255,138,128,.22), transparent 62%),
-    radial-gradient(46% 44% at 78% 22%, rgba(138,180,255,.26), transparent 64%),
-    radial-gradient(50% 46% at 62% 88%, rgba(255,206,84,.17), transparent 62%),
-    linear-gradient(180deg,#080a12,#0b0e18);
+    radial-gradient(70% 60% at 12% 8%, rgba(45,212,191,.30), transparent 60%),
+    radial-gradient(60% 56% at 88% 20%, rgba(56,189,248,.26), transparent 62%),
+    radial-gradient(90% 70% at 52% 108%, rgba(251,146,60,.16), transparent 62%),
+    linear-gradient(170deg,#04222b,#062b34 45%,#02141c);
 }
-body[data-wall="mesh"] #wall .blob{opacity:.4}
-body[data-wall="mesh"] #wall .b1{background-color:#fb7185}
-body[data-wall="mesh"] #wall .b2{background-color:#818cf8}
-body[data-wall="mesh"] #wall .b3{background-color:#fbbf24}
+body[data-wall="reef"] #wall .blob{opacity:.42}
+body[data-wall="reef"] #wall .b1{background-color:#2dd4bf}
+body[data-wall="reef"] #wall .b2{background-color:#38bdf8}
+body[data-wall="reef"] #wall .b3{background-color:#fb923c}
+
+body[data-wall="abyss"] #wall{
+  background:
+    radial-gradient(90% 70% at 50% -30%, #0a2b44 0%, #04121e 46%, #010509 100%);
+}
+body[data-wall="abyss"] #wall .blob{opacity:.22}
+body[data-wall="abyss"] #wall .b1{background-color:#0e7490}
+body[data-wall="abyss"] #wall .b2{background-color:#1e3a8a}
+body[data-wall="abyss"] #wall .b3{background-color:#155e75}
 
 body[data-wall="plain"] #wall{
-  background:radial-gradient(120% 90% at 50% 0%, #121a2c, #06080f 62%);
+  background:radial-gradient(120% 90% at 50% 0%, #0d2233, #03080d 62%);
 }
 body[data-wall="plain"] #wall .blob{opacity:0}
 
-#stars{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .45s ease}
-body[data-wall="stars"] #stars{opacity:1}
+#ocean{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .45s ease}
+body[data-wall="ocean"] #ocean,
+body[data-wall="reef"] #ocean,
+body[data-wall="abyss"] #ocean{opacity:1}
+
+/* sun rays, drifting caustics and slow surface waves */
+#wall .rays{
+  position:absolute;left:-20%;right:-20%;top:-18%;height:150%;
+  background:
+    conic-gradient(from 186deg at 50% -6%,
+      transparent 0deg,
+      rgba(170,240,255,.10) 5deg,
+      transparent 10deg,
+      transparent 19deg,
+      rgba(150,230,255,.07) 25deg,
+      transparent 30deg,
+      transparent 43deg,
+      rgba(180,245,255,.09) 50deg,
+      transparent 56deg,
+      transparent 70deg,
+      rgba(140,225,255,.06) 78deg,
+      transparent 84deg);
+  filter:blur(20px);
+  transform-origin:50% 0;
+  animation:raySway 30s ease-in-out infinite alternate;
+  mix-blend-mode:screen;
+  opacity:.9;
+}
+body[data-wall="plain"] #wall .rays{opacity:0}
+@keyframes raySway{
+  from{transform:rotate(-2.5deg) scaleY(1)}
+  to{transform:rotate(2.5deg) scaleY(1.07)}
+}
+
+#wall .caustics{
+  position:absolute;inset:-6%;
+  background:
+    radial-gradient(38% 28% at 22% 16%, rgba(125,211,252,.12), transparent 70%),
+    radial-gradient(42% 32% at 78% 24%, rgba(45,212,191,.10), transparent 70%),
+    radial-gradient(48% 38% at 55% 78%, rgba(14,165,233,.12), transparent 72%);
+  animation:caustics 34s ease-in-out infinite alternate;
+  mix-blend-mode:screen;
+}
+body[data-wall="plain"] #wall .caustics{opacity:.4}
+@keyframes caustics{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(0,-2.5%,0) scale(1.07)}
+}
+
+#wall .wave{
+  position:absolute;left:-12%;width:124%;height:190px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='560' height='190' viewBox='0 0 560 190'%3E%3Cpath d='M0 96c46 0 46-30 92-30s46 30 92 30 46-30 92-30 46 30 92 30 46-30 92-30 46 30 92 30' fill='none' stroke='%238be9ff' stroke-width='2' stroke-linecap='round' opacity='.6'/%3E%3C/svg%3E");
+  background-repeat:repeat-x;
+  background-size:560px 190px;
+  opacity:.16;
+  animation:waveDrift 26s linear infinite;
+}
+#wall .wave.w1{bottom:-6px}
+#wall .wave.w2{bottom:-34px;opacity:.09;animation-duration:38s;animation-direction:reverse}
+@keyframes waveDrift{from{background-position-x:0}to{background-position-x:560px}}
+
+#wall .b4{
+  left:46%;top:26%;
+  width:min(46vw,560px);
+  --k:.6;
+  animation-duration:64s;
+  animation-delay:-31s;
+}
+body[data-wall="ocean"] #wall .b4{background-color:#2dd4bf;opacity:.18}
+body[data-wall="reef"] #wall .b4{background-color:#fbbf24;opacity:.14}
+body[data-wall="abyss"] #wall .b4{background-color:#0891b2;opacity:.14}
+body[data-wall="plain"] #wall .b4{opacity:0}
+
+#wall .grain{
+  position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  opacity:.04;
+  mix-blend-mode:overlay;
+}
 
 /* ---------- shell ---------- */
 #app{position:relative;z-index:2;display:flex;height:100dvh}
@@ -115,21 +191,45 @@ body[data-wall="stars"] #stars{opacity:1}
   backdrop-filter:none;
   text-shadow:0 1px 3px rgba(0,0,0,.55);
 }
-.rail-head{display:flex;align-items:center;gap:10px;padding:2px 4px 10px}
-#railEmoji{
-  width:42px;height:42px;flex:0 0 42px;
-  display:grid;place-items:center;
+.brand{
+  display:flex;align-items:center;gap:11px;
+  padding:4px 6px 2px;
   border:0;border-radius:12px;
-  background:transparent;
-  font-size:25px;line-height:1;
-  cursor:pointer;
-  transition:transform .18s ease,background .18s ease;
+  background:transparent;color:var(--ink);
+  cursor:pointer;text-align:left;
+  transition:background .18s ease,transform .18s ease;
 }
-#railEmoji:hover{background:rgba(255,255,255,.09);transform:translateY(-1px) scale(1.04)}
-#brandName{
-  font-size:13.5px;font-weight:600;letter-spacing:.2px;
-  color:rgba(255,255,255,.84);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+.brand:hover{background:rgba(255,255,255,.06)}
+.brand-mark{
+  width:42px;height:42px;flex:0 0 42px;
+  display:grid;place-items:center;border-radius:14px;
+  background:radial-gradient(120% 120% at 30% 20%, #7defff 0%, #0ea5e9 44%, #0b3f5c 100%);
+  box-shadow:0 12px 26px -10px rgba(14,165,233,.75), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.brand-mark svg{width:26px;height:26px;display:block}
+.brand-mark path{
+  fill:none;stroke:#f2feff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+}
+.brand-name{
+  font-size:15px;font-weight:650;letter-spacing:.4px;
+  color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.45);
+}
+
+.rail-clock{
+  display:flex;flex-direction:column;gap:2px;
+  padding:14px 6px 13px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  margin-bottom:6px;
+}
+#railTime{
+  font-size:30px;font-weight:250;letter-spacing:-1.2px;line-height:1;
+  color:#f4fbff;
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 2px 18px rgba(103,232,249,.28);
+}
+#railDate{
+  font-size:10px;letter-spacing:.4px;text-transform:uppercase;
+  color:rgba(179,205,225,.72);
 }
 
 #tabList{
@@ -218,15 +318,21 @@ body[data-wall="stars"] #stars{opacity:1}
 .chrome-btn{
   width:32px;height:32px;flex:0 0 32px;
   display:grid;place-items:center;
-  border:0;border-radius:9px;
-  background:transparent;
-  color:var(--muted);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:9px;
+  background:rgba(9,20,30,.42);
+  color:rgba(236,246,255,.92);
   font-size:16px;line-height:1;
   cursor:pointer;
-  transition:background .15s ease,color .15s ease;
+  backdrop-filter:blur(10px) saturate(120%);
+  transition:background .15s ease,color .15s ease,border-color .15s ease;
 }
-.chrome-btn:hover:not(:disabled){background:rgba(255,255,255,.09);color:var(--ink)}
-.chrome-btn:disabled{opacity:.28;cursor:default}
+.chrome-btn:hover:not(:disabled){
+  background:rgba(24,52,72,.62);
+  border-color:rgba(255,255,255,.2);
+  color:#fff;
+}
+.chrome-btn:disabled{opacity:.38;cursor:default}
 #omniForm{flex:1 1 auto;min-width:0;display:flex}
 #omni{
   width:100%;height:34px;
@@ -266,11 +372,13 @@ body[data-wall="stars"] #stars{opacity:1}
 #viewport{
   position:relative;
   flex:1 1 auto;min-height:0;
-  border:1px solid rgba(255,255,255,.075);
+  border:1px solid rgba(255,255,255,.09);
   border-radius:var(--radius);
-  background:rgba(8,11,19,.38);
-  box-shadow:0 26px 60px -22px rgba(0,0,0,.6);
-  backdrop-filter:blur(20px) saturate(115%);
+  background:rgba(9,18,27,.30);
+  box-shadow:
+    0 30px 70px -26px rgba(0,0,0,.65),
+    inset 0 1px 0 rgba(255,255,255,.07);
+  backdrop-filter:blur(26px) saturate(125%);
   overflow:hidden;
 }
 
@@ -282,18 +390,38 @@ body[data-wall="stars"] #stars{opacity:1}
   text-align:center;
   overflow:auto;
 }
-#heroEmoji{
-  border:0;background:transparent;
-  font-size:clamp(46px,7vw,74px);line-height:1;
-  cursor:pointer;
-  filter:drop-shadow(0 12px 34px color-mix(in srgb,var(--accent) 45%,transparent));
-  transition:transform .2s ease;
+.hero-brand{display:flex;align-items:center;gap:14px}
+.hero-mark{
+  width:clamp(52px,6vw,64px);aspect-ratio:1;
+  display:grid;place-items:center;border-radius:50%;
+  background:radial-gradient(120% 120% at 30% 18%, #7defff 0%, #0ea5e9 46%, #0b3f5c 100%);
+  box-shadow:0 18px 44px -14px rgba(14,165,233,.8), inset 0 1px 0 rgba(255,255,255,.4);
 }
-#heroEmoji:hover{transform:scale(1.06) rotate(-2deg)}
+.hero-mark svg{width:62%;height:62%;display:block}
+.hero-mark path{
+  fill:none;stroke:#f2feff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+}
+.hero-word{
+  margin:0;font-size:clamp(34px,4.6vw,46px);
+  font-weight:300;letter-spacing:2px;
+  color:#fff;text-shadow:0 10px 30px rgba(0,0,0,.42);
+}
+.hero-time{
+  margin:6px 0 0;font-size:clamp(44px,7vw,66px);
+  font-weight:200;letter-spacing:-2px;line-height:1;
+  font-variant-numeric:tabular-nums;
+  color:#f6fdff;
+  text-shadow:0 10px 40px rgba(103,232,249,.35);
+}
+.hero-date{
+  margin:-4px 0 0;font-size:12px;letter-spacing:1.6px;
+  text-transform:uppercase;color:rgba(180,208,228,.78);
+}
 #greeting{
-  margin:4px 0 0;
-  font-size:clamp(19px,2.4vw,26px);
-  font-weight:600;letter-spacing:-.2px;
+  margin:6px 0 0;
+  font-size:clamp(16px,2vw,20px);
+  font-weight:500;letter-spacing:0;
+  color:rgba(232,244,252,.86);
   text-shadow:0 2px 12px rgba(0,0,0,.45);
 }
 #heroForm{display:flex;gap:8px;width:min(560px,100%);margin-top:6px}
@@ -325,7 +453,6 @@ body[data-wall="stars"] #stars{opacity:1}
 }
 #heroGo:hover{filter:brightness(1.08)}
 #heroGo:active{transform:translateY(1px)}
-#heroHint{font-size:11.5px;color:var(--muted);letter-spacing:.1px}
 
 /* ---------- web view ---------- */
 #webWrap{position:absolute;inset:0;display:flex;flex-direction:column;background:rgba(255,255,255,.02)}
@@ -339,17 +466,46 @@ body[data-wall="stars"] #stars{opacity:1}
   font-size:11.5px;
 }
 #webBanner p{margin:0;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#openExternal{
-  flex:0 0 auto;
-  padding:4px 10px;
-  border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);
-  border-radius:7px;
-  color:var(--ink);
-  font-size:11.5px;
-  text-decoration:none;
-}
-#openExternal:hover{background:color-mix(in srgb,var(--accent) 18%,transparent)}
 #webFrame{flex:1 1 auto;width:100%;border:0;background:#fff}
+
+/* ---------- saleen search results ---------- */
+#searchPane{position:absolute;inset:34px 0 0;overflow-y:auto;background:rgba(10,14,22,.92)}
+.search-list{max-width:780px;margin:0 auto;padding:16px 24px 56px;display:flex;flex-direction:column;gap:4px}
+.search-count{
+  margin:2px 0 10px;font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;
+  color:rgba(147,160,184,.7);
+}
+.search-result{
+  display:flex;flex-direction:column;gap:3px;
+  padding:11px 13px;border-radius:12px;border:1px solid transparent;
+  text-decoration:none;cursor:pointer;color:inherit;
+  transition:background .14s ease,border-color .14s ease,transform .14s ease;
+}
+.search-result:hover{
+  background:rgba(255,255,255,.055);
+  border-color:rgba(255,255,255,.09);
+  transform:translateX(2px);
+}
+.search-url{font-size:11px;color:color-mix(in srgb,var(--accent) 72%,#a9b7cf)}
+.search-title{font-size:15px;line-height:1.35;color:#e9effb}
+.search-snippet{font-size:12.5px;line-height:1.5;color:var(--muted)}
+.search-status{margin:20px 13px 12px;font-size:12.5px;line-height:1.6;color:var(--muted)}
+.search-list .primary-btn{align-self:flex-start;margin:0 13px}
+
+#pageLoading{
+  position:absolute;inset:34px 0 0;z-index:3;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  background:rgba(8,11,19,.86);
+  backdrop-filter:blur(2px);
+  color:var(--muted);font-size:11.5px;letter-spacing:.2px;
+}
+.page-spinner{
+  width:26px;height:26px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.13);
+  border-top-color:var(--accent);
+  animation:pageSpin .8s linear infinite;
+}
+@keyframes pageSpin{to{transform:rotate(360deg)}}
 
 /* ---------- reader ---------- */
 .strip-btn{
@@ -538,8 +694,9 @@ body[data-mode="ai"] #toast{bottom:92px}
 @media (max-width:760px){
   :root{--rail-w:64px}
   #rail{padding:14px 8px;gap:4px}
-  .rail-head{justify-content:center;padding:2px 0 8px}
-  #brandName{display:none}
+  .brand{justify-content:center;padding:2px 0 8px}
+  .brand-name{display:none}
+  .rail-clock{display:none}
   .new-tab,.rail-btn{justify-content:center;padding:9px 0}
   .new-tab .btn-label,.rail-btn .btn-label{display:none}
   .tab-title,.tab-x{display:none}
@@ -591,6 +748,59 @@ body[data-mode="ai"] #toast{bottom:92px}
 .view-sub{margin:4px 0 0;font-size:11.5px;line-height:1.4;color:var(--muted)}
 .head-actions{display:flex;gap:6px;flex:0 0 auto}
 .fineprint{margin:0;font-size:11px;line-height:1.55;color:rgba(147,160,184,.78)}
+
+/* ---------- links ---------- */
+.links-body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:0 24px 48px}
+.link-form{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+.link-form .text-input{flex:1 1 auto}
+.link-form .primary-btn{flex:0 0 auto;height:38px}
+.links-section{margin:26px 0 0}
+.links-h{
+  display:flex;align-items:center;gap:8px;
+  margin:0 0 11px;
+  font-size:10.5px;font-weight:600;letter-spacing:1.1px;text-transform:uppercase;
+  color:rgba(147,160,184,.7);
+}
+.links-count{
+  min-width:18px;padding:1px 6px;border-radius:99px;
+  background:rgba(255,255,255,.07);
+  font-size:10px;letter-spacing:0;color:var(--muted);
+}
+.links-note{
+  font-size:10px;font-weight:400;letter-spacing:0;text-transform:none;
+  color:rgba(147,160,184,.55);
+}
+.links-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.links-empty{grid-column:1/-1;margin:2px 0 0}
+.link-card{
+  display:flex;align-items:center;min-width:0;
+  border:1px solid rgba(255,255,255,.075);
+  border-radius:11px;
+  background:rgba(255,255,255,.035);
+  transition:background .15s ease,border-color .15s ease,transform .15s ease;
+}
+.link-card:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);transform:translateY(-1px)}
+.link-open{
+  display:flex;align-items:center;gap:10px;flex:1 1 auto;min-width:0;
+  padding:9px 11px;
+  border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;
+}
+.link-ico{
+  flex:0 0 auto;width:26px;height:26px;
+  display:grid;place-items:center;border-radius:8px;
+  background:color-mix(in srgb,var(--accent) 16%,transparent);
+  border:1px solid color-mix(in srgb,var(--accent) 24%,transparent);
+  color:#fff;font-size:11.5px;font-weight:600;
+}
+.link-text{display:flex;flex-direction:column;gap:1px;min-width:0}
+.link-name{font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.link-host{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.link-del{
+  flex:0 0 auto;width:26px;height:26px;margin-right:6px;
+  border:0;border-radius:7px;background:transparent;
+  color:var(--muted);font-size:10px;cursor:pointer;
+}
+.link-del:hover{background:rgba(255,99,99,.16);color:#ffb4b4}
 body:not([data-mode="browser"]) #main{padding-top:14px}
 body:not([data-mode="browser"]) .tab[aria-selected="true"]{color:var(--muted)}
 body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
@@ -645,24 +855,52 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 }
 </style>
 </head>
-<body data-wall="stars">
+<body data-wall="ocean">
 <div id="wall" aria-hidden="true">
+  <span class="rays"></span>
+  <span class="caustics"></span>
   <span class="blob b1"></span>
   <span class="blob b2"></span>
   <span class="blob b3"></span>
+  <span class="blob b4"></span>
+  <span class="wave w1"></span>
+  <span class="wave w2"></span>
+  <span class="grain"></span>
 </div>
-<canvas id="stars" aria-hidden="true"></canvas>
+<canvas id="ocean" aria-hidden="true"></canvas>
 
 <div id="app">
   <aside id="rail" aria-label="Saleen">
-    <div class="rail-head">
-      <button id="railEmoji" type="button" title="Customize" aria-label="Customize">🌐</button>
-      <span id="brandName">Saleen</span>
+    <button id="brandBtn" class="brand" type="button" title="Customize Saleen" aria-label="Customize Saleen">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" focusable="false">
+          <path d="M3 18.5c2.6 0 2.6-2.6 5.2-2.6s2.6 2.6 5.2 2.6 2.6-2.6 5.2-2.6 2.6 2.6 5.2 2.6 2.6-2.6 5.2-2.6" />
+          <path d="M3 25c2.6 0 2.6-2.6 5.2-2.6s2.6 2.6 5.2 2.6 2.6-2.6 5.2-2.6 2.6 2.6 5.2 2.6 2.6-2.6 5.2-2.6" />
+        </svg>
+      </span>
+      <span class="brand-name">Saleen</span>
+    </button>
+
+    <div class="rail-clock" aria-label="Current time">
+      <span id="railTime">--:--</span>
+      <span id="railDate">—</span>
     </div>
 
     <nav class="rail-nav" aria-label="Sections">
+      <button id="navHome" class="nav-item" type="button" data-mode="home">
+        <span class="nav-ico" aria-hidden="true">🏠</span><span class="nav-label">Home</span>
+      </button>
       <button id="navAI" class="nav-item" type="button" data-mode="ai">
         <span class="nav-ico" aria-hidden="true">🤖</span><span class="nav-label">AI</span>
+      </button>
+      <button id="navLinks" class="nav-item" type="button" data-mode="links">
+        <span class="nav-ico" aria-hidden="true">🔗</span><span class="nav-label">Links</span>
+      </button>
+      <button id="navGames" class="nav-item" type="button" data-mode="games">
+        <span class="nav-ico" aria-hidden="true">🎮</span><span class="nav-label">Games</span>
+      </button>
+      <button id="navMovies" class="nav-item" type="button" data-mode="movies">
+        <span class="nav-ico" aria-hidden="true">🎬</span><span class="nav-label">Movies</span>
       </button>
     </nav>
 
@@ -683,29 +921,45 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       <button id="fwdBtn" class="chrome-btn" type="button" title="Forward" aria-label="Forward">→</button>
       <button id="reloadBtn" class="chrome-btn" type="button" title="Reload" aria-label="Reload">↻</button>
       <form id="omniForm" autocomplete="off">
-        <input id="omni" type="text" placeholder="Search or enter address" aria-label="Address and search" spellcheck="false">
+        <input id="omni" type="text" placeholder="Search the web or open anything" aria-label="Address and search" spellcheck="false">
       </form>
-      <button id="engineChip" type="button" title="Search engine: Google" aria-label="Search engine: Google">G</button>
     </div>
 
     <div id="viewport">
       <section id="newTabView">
-        <button id="heroEmoji" type="button" title="Customize">🌐</button>
-        <h1 id="greeting">Good evening</h1>
+        <div class="hero-brand">
+          <span class="hero-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" focusable="false">
+              <path d="M3 18.5c2.6 0 2.6-2.6 5.2-2.6s2.6 2.6 5.2 2.6 2.6-2.6 5.2-2.6 2.6 2.6 5.2 2.6 2.6-2.6 5.2-2.6" />
+              <path d="M3 25c2.6 0 2.6-2.6 5.2-2.6s2.6 2.6 5.2 2.6 2.6-2.6 5.2-2.6 2.6 2.6 5.2 2.6 2.6-2.6 5.2-2.6" />
+            </svg>
+          </span>
+          <h1 class="hero-word">Saleen</h1>
+        </div>
+
+        <p class="hero-time" id="heroTime">--:--</p>
+        <p class="hero-date" id="heroDate">—</p>
+        <p id="greeting">Good evening</p>
+
         <form id="heroForm" autocomplete="off">
-          <input id="heroInput" type="text" placeholder="Search Google or type a URL" aria-label="Search or enter address" spellcheck="false">
+          <input id="heroInput" type="text" placeholder="Search the web or open anything" aria-label="Search or enter address" spellcheck="false">
           <button id="heroGo" type="submit">Search</button>
         </form>
-        <p id="heroHint">Searches open in Google in a real tab</p>
       </section>
 
       <div id="webWrap" hidden>
         <div id="webBanner">
-          <p id="webNote">In-app view · if it stays blank, the site blocks embedding.</p>
+          <p id="webNote">Loading…</p>
           <button id="readerBtn" class="strip-btn" type="button" aria-pressed="false">Reader</button>
-          <a id="openExternal" href="#" target="_blank" rel="noopener">Open in a new tab</a>
         </div>
-        <iframe id="webFrame" title="Web page" referrerpolicy="no-referrer"></iframe>
+        <div id="searchPane" hidden>
+          <div id="searchList" class="search-list"></div>
+        </div>
+        <iframe id="webFrame" title="Web page" referrerpolicy="no-referrer" sandbox="allow-scripts allow-forms allow-popups"></iframe>
+        <div id="pageLoading" hidden>
+          <span class="page-spinner" aria-hidden="true"></span>
+          <span id="pageLoadingText">Opening through Saleen…</span>
+        </div>
         <div id="webReader" hidden>
           <div id="readerDoc" class="reader-doc" aria-live="polite"></div>
         </div>
@@ -729,6 +983,49 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         </form>
       </section>
 
+      <section id="linksView" class="view" hidden>
+        <header class="view-head">
+          <div>
+            <h2>Links</h2>
+            <p class="view-sub">Saved links open through Saleen's own browser, so they load even when a site blocks frames.</p>
+          </div>
+          <div class="head-actions">
+            <button id="linksClear" class="ghost-btn" type="button">Clear mine</button>
+          </div>
+        </header>
+
+        <div id="linksBody" class="links-body">
+          <form id="linkForm" class="link-form" autocomplete="off">
+            <input id="linkInput" class="text-input" type="text" placeholder="Paste a link or type a search…" spellcheck="false">
+            <button class="primary-btn" type="submit">Create link</button>
+          </form>
+          <p id="linkHint" class="fineprint">A full URL opens as typed. Anything else becomes a search.</p>
+
+          <section class="links-section">
+            <h3 class="links-h">My links <span id="myLinksCount" class="links-count">0</span></h3>
+            <div id="myLinks" class="links-grid"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="gamesView" class="view" hidden>
+        <header class="view-head">
+          <div>
+            <h2>Games</h2>
+            <p class="view-sub">Live shelf. Anything added here shows up in every open Saleen window instantly.</p>
+          </div>
+        </header>
+        <div id="gamesBody" class="links-body"></div>
+      </section>
+
+      <section id="moviesView" class="view" hidden>
+        <header class="view-head">
+          <div>
+            <h2>Movies</h2>
+          </div>
+        </header>
+      </section>
+
     </div>
   </main>
 </div>
@@ -741,15 +1038,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     </header>
 
     <div class="sheet-body">
-      <section class="field">
-        <label class="label" for="emojiInput">Banner emoji</label>
-        <div class="emoji-row">
-          <div class="emoji-preview" id="emojiPreview" aria-hidden="true">🌐</div>
-          <input id="emojiInput" class="text-input" type="text" maxlength="8" placeholder="🌐" autocomplete="off" spellcheck="false">
-        </div>
-        <div class="chips" id="emojiPresets"></div>
-      </section>
-
       <section class="field">
         <label class="label" for="nameInput">Your name <span class="dim">(optional)</span></label>
         <input id="nameInput" class="text-input" type="text" maxlength="24" placeholder="Ethen" autocomplete="off">
@@ -767,11 +1055,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         <span class="label">Background</span>
         <div class="chips" id="wallPresets"></div>
       </section>
-
-      <section class="field">
-        <span class="label">Search engine</span>
-        <div class="chips" id="enginePresets"></div>
-      </section>
     </div>
 
     <footer class="sheet-foot">
@@ -783,36 +1066,40 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
 <div id="toast" role="status" aria-live="polite"></div>
 
-
 <script>
 (function () {
   'use strict';
 
   var KEY = 'saleen.settings.v2';
-  var DEFAULTS = { name: '', emoji: '🌐', accent: '#8ab4ff', wallpaper: 'stars', engine: 'bing' };
-  var EMOJIS = ['🌐', '🦊', '🚀', '🌙', '🍄', '🐙', '🔥', '🌊', '🪐', '🌸', '⚡', '🧊'];
-  var ACCENTS = ['#8ab4ff', '#5eead4', '#f0abfc', '#fca5a5', '#fcd34d', '#a3e635', '#c4b5fd', '#fdba74'];
-  var ENGINES = {
-    bing: { label: 'Bing', mark: 'B', embed: true, url: function (q) { return 'https://www.bing.com/search?q=' + encodeURIComponent(q); } },
-    google: { label: 'Google', mark: 'G', embed: false, url: function (q) { return 'https://www.google.com/search?q=' + encodeURIComponent(q); } },
-    ddg: { label: 'DuckDuckGo', mark: 'D', embed: false, url: function (q) { return 'https://duckduckgo.com/?q=' + encodeURIComponent(q); } }
-  };
+  var DEFAULTS = { name: '', accent: '#67e8f9', wallpaper: 'ocean' };
+  var ACCENTS = ['#67e8f9', '#5eead4', '#8ab4ff', '#c4b5fd', '#f0abfc', '#fca5a5', '#fcd34d', '#a3e635'];
+
+  /* Saleen renders every page itself through a remote proxy, so the only thing
+     this browser talks to directly is the proxy. No DuckDuckGo, no Bing. */
+  var PROXY_RAW = 'https://api.allorigins.win/raw?url=';
+  var PROXY_ALT = 'https://api.codetabs.com/v1/proxy/?quest=';
+  var PROXY_FAST = 'https://proxy.corsfix.com/?';
+  var JINA = 'https://r.jina.ai/';
+  var SEARCH_URL = 'saleen://search?q=';
   var WALLS = [
-    { id: 'stars', label: '✦ Stars' },
-    { id: 'aurora', label: '🌌 Aurora' },
-    { id: 'mesh', label: '🎨 Mesh' },
+    { id: 'ocean', label: '🌊 Ocean' },
+    { id: 'reef', label: '🐠 Reef' },
+    { id: 'abyss', label: '🌑 Abyss' },
     { id: 'plain', label: '◻ Plain' }
   ];
-  var MODE_TITLES = { browser: 'Home', ai: 'AI' };
+  var MODE_TITLES = { home: 'Home', browser: 'Home', ai: 'AI', links: 'Links', games: 'Games', movies: 'Movies' };
   var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var DESKTOP = /[?&]desktop=1/.test(window.location.search);
   var $ = function (sel) { return document.querySelector(sel); };
 
   var settings = Object.assign({}, DEFAULTS);
   var mode = 'browser';
 
   var els = {
-    stars: $('#stars'),
-    railEmoji: $('#railEmoji'),
+    scene: $('#ocean'),
+    brandBtn: $('#brandBtn'),
+    railTime: $('#railTime'),
+    railDate: $('#railDate'),
     tabList: $('#tabList'),
     newTabBtn: $('#newTabBtn'),
     customizeBtn: $('#customizeBtn'),
@@ -821,33 +1108,41 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     reload: $('#reloadBtn'),
     omni: $('#omni'),
     omniForm: $('#omniForm'),
-    engineChip: $('#engineChip'),
     chrome: $('#chrome'),
     newTabView: $('#newTabView'),
-    heroEmoji: $('#heroEmoji'),
+    heroTime: $('#heroTime'),
+    heroDate: $('#heroDate'),
     greeting: $('#greeting'),
     heroForm: $('#heroForm'),
     heroInput: $('#heroInput'),
-    hint: $('#heroHint'),
     webWrap: $('#webWrap'),
     frame: $('#webFrame'),
     banner: $('#webBanner p'),
     note: $('#webNote'),
+    searchPane: $('#searchPane'),
+    searchList: $('#searchList'),
+    pageLoading: $('#pageLoading'),
+    pageLoadingText: $('#pageLoadingText'),
     readerBtn: $('#readerBtn'),
     readerPane: $('#webReader'),
     webReader: $('#webReader'),
     readerDoc: $('#readerDoc'),
-    openExternal: $('#openExternal'),
     aiView: $('#aiView'),
+    linksView: $('#linksView'),
+    gamesView: $('#gamesView'),
+    moviesView: $('#moviesView'),
+    linksBody: $('#linksBody'),
+    linkForm: $('#linkForm'),
+    linkInput: $('#linkInput'),
+    myLinks: $('#myLinks'),
+    myLinksCount: $('#myLinksCount'),
+    linksClear: $('#linksClear'),
+    gamesBody: $('#gamesBody'),
     sheet: $('#sheet'),
-    emojiInput: $('#emojiInput'),
-    emojiPreview: $('#emojiPreview'),
-    emojiPresets: $('#emojiPresets'),
     nameInput: $('#nameInput'),
     accentInput: $('#accentInput'),
     accentPresets: $('#accentPresets'),
     wallPresets: $('#wallPresets'),
-    enginePresets: $('#enginePresets'),
     resetBtn: $('#resetBtn'),
     toast: $('#toast')
   };
@@ -866,17 +1161,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         if (typeof saved[k] === 'string') settings[k] = saved[k];
       });
     } catch (e) { /* ignore corrupt storage */ }
-
-    /* One-time move to an in-app engine: Google and DuckDuckGo refuse framing. */
-    try {
-      if (!localStorage.getItem('saleen.embed.v1')) {
-        if (!ENGINES[settings.engine] || !ENGINES[settings.engine].embed) {
-          settings.engine = DEFAULTS.engine;
-          save();
-        }
-        localStorage.setItem('saleen.embed.v1', '1');
-      }
-    } catch (e) {}
   }
 
   function save() {
@@ -884,46 +1168,54 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   }
 
   function sanitize() {
-    if (!ENGINES[settings.engine]) settings.engine = DEFAULTS.engine;
+    var legacy = { stars: 'ocean', aurora: 'reef', mesh: 'reef' };
+    if (legacy[settings.wallpaper]) settings.wallpaper = legacy[settings.wallpaper];
     if (!WALLS.some(function (w) { return w.id === settings.wallpaper; })) settings.wallpaper = DEFAULTS.wallpaper;
     if (!/^#[0-9a-f]{6}$/i.test(settings.accent)) settings.accent = DEFAULTS.accent;
-    if (!settings.emoji || settings.emoji.length > 8) settings.emoji = DEFAULTS.emoji;
     if (settings.name.length > 24) settings.name = settings.name.slice(0, 24);
   }
 
   function greetingText() {
     var h = new Date().getHours();
-    var g = h < 5 ? 'Good night' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+    var g = h < 5 ? 'Still up' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
     return settings.name ? g + ', ' + settings.name : g;
   }
 
+  function two(n) {
+    return n < 10 ? '0' + n : String(n);
+  }
+
+  /* ---------------- home shortcuts ---------------- */
+
+  function updateClock() {
+    var now = new Date();
+    var time = two(now.getHours()) + ':' + two(now.getMinutes());
+    var date = now.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+    if (els.railTime) els.railTime.textContent = time;
+    if (els.railDate) els.railDate.textContent = date;
+    if (els.heroTime) els.heroTime.textContent = time;
+    if (els.heroDate) els.heroDate.textContent = date;
+    if (els.greeting) els.greeting.textContent = greetingText();
+  }
+
   function updateTitle() {
-    var name = MODE_TITLES[mode];
+    var name = MODE_TITLES[mode] || 'Home';
     if (mode === 'browser') {
       var t = activeTab();
-      name = t ? t.title : 'Home';
+      name = (t && t.url) ? t.title : 'Home';
     }
-    document.title = 'Saleen — ' + name;
+    document.title = 'Saleen \u2014 ' + name;
   }
 
   function apply() {
     document.documentElement.style.setProperty('--accent', settings.accent);
     document.body.dataset.wall = settings.wallpaper;
-    els.railEmoji.textContent = settings.emoji;
-    els.heroEmoji.textContent = settings.emoji;
-    els.engineChip.textContent = ENGINES[settings.engine].mark;
-    els.engineChip.title = 'Search engine: ' + ENGINES[settings.engine].label;
-    els.engineChip.setAttribute('aria-label', 'Search engine: ' + ENGINES[settings.engine].label);
     els.greeting.textContent = greetingText();
-    els.heroInput.placeholder = 'Search ' + ENGINES[settings.engine].label + ' or type a URL';
-    els.hint.textContent = ENGINES[settings.engine].embed
-      ? 'Results open inside Saleen'
-      : ENGINES[settings.engine].label + ' blocks embedding — searches open in a real tab';
-    els.emojiPreview.textContent = settings.emoji;
+    els.heroInput.placeholder = 'Search the web or open anything';
     syncControls();
     renderTabs();
     updateTitle();
-    startStars();
+    startScene();
   }
 
   function setSetting(key, value) {
@@ -932,65 +1224,113 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     apply();
   }
 
-  /* ---------------- stars ---------------- */
+  /* ---------------- ocean scene ---------------- */
 
-  var sctx = els.stars.getContext('2d');
-  var stars = [];
+  var sctx = els.scene.getContext('2d');
+  var bubbles = [];
+  var motes = [];
   var W = 0;
   var H = 0;
-  var starRunning = false;
+  var sceneRunning = false;
 
-  function sizeStars() {
+  function sizeScene() {
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = window.innerWidth;
     H = window.innerHeight;
-    els.stars.width = Math.max(1, Math.floor(W * dpr));
-    els.stars.height = Math.max(1, Math.floor(H * dpr));
+    els.scene.width = Math.max(1, Math.floor(W * dpr));
+    els.scene.height = Math.max(1, Math.floor(H * dpr));
     sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var n = Math.max(70, Math.min(280, Math.round(W * H / 11000)));
-    stars = [];
-    for (var i = 0; i < n; i++) {
-      stars.push({
+
+    var bubbleCount = Math.max(18, Math.min(72, Math.round(W * H / 30000)));
+    bubbles = [];
+    for (var i = 0; i < bubbleCount; i++) {
+      bubbles.push({
         x: Math.random() * W,
         y: Math.random() * H,
-        r: Math.random() * 1.2 + 0.25,
+        r: 0.9 + Math.random() * Math.random() * 7,
+        s: 8 + Math.random() * 22,
+        wob: Math.random() * Math.PI * 2,
+        wobA: 0.4 + Math.random() * 1.4,
+        wobS: 0.006 + Math.random() * 0.014,
+        a: 0.10 + Math.random() * 0.28
+      });
+    }
+
+    var moteCount = Math.max(50, Math.min(180, Math.round(W * H / 12000)));
+    motes = [];
+    for (var k = 0; k < moteCount; k++) {
+      motes.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: 0.3 + Math.random() * 1.1,
+        v: 0.06 + Math.random() * 0.22,
         p: Math.random() * Math.PI * 2,
-        s: Math.random() * 0.9 + 0.3,
-        v: Math.random() * 0.05 + 0.008
+        s: 0.4 + Math.random()
       });
     }
   }
 
-  function paintStars() {
+  function paintScene() {
     sctx.clearRect(0, 0, W, H);
-    for (var i = 0; i < stars.length; i++) {
-      var s = stars[i];
-      s.p += 0.012 * s.s;
-      s.y -= s.v;
-      if (s.y < -2) { s.y = H + 2; s.x = Math.random() * W; }
-      sctx.globalAlpha = 0.26 + 0.62 * (0.5 + 0.5 * Math.sin(s.p));
+
+    /* plankton: tiny lights that twinkle while drifting up */
+    for (var m = 0; m < motes.length; m++) {
+      var mo = motes[m];
+      mo.p += 0.01 * mo.s;
+      mo.y -= mo.v;
+      mo.x += Math.sin(mo.p * 0.7) * 0.12;
+      if (mo.y < -4) { mo.y = H + 4; mo.x = Math.random() * W; }
+      sctx.globalAlpha = 0.15 + 0.55 * (0.5 + 0.5 * Math.sin(mo.p));
       sctx.beginPath();
-      sctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      sctx.fillStyle = s.r > 1.05 ? '#dfe9ff' : '#ffffff';
+      sctx.arc(mo.x, mo.y, mo.r, 0, Math.PI * 2);
+      sctx.fillStyle = '#bdf3ff';
       sctx.fill();
     }
+
+    /* bubbles: rings with a highlight, rising and swaying */
+    for (var i = 0; i < bubbles.length; i++) {
+      var b = bubbles[i];
+      b.wob += b.wobS;
+      b.y -= b.s * 0.016;
+      b.x += Math.sin(b.wob) * b.wobA * 0.06;
+      if (b.y < -20) {
+        b.y = H + 20 + Math.random() * 60;
+        b.x = Math.random() * W;
+      }
+
+      sctx.globalAlpha = b.a;
+      sctx.beginPath();
+      sctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      sctx.strokeStyle = 'rgba(198,246,255,0.85)';
+      sctx.lineWidth = 1;
+      sctx.stroke();
+
+      if (b.r > 2) {
+        sctx.globalAlpha = b.a * 0.9;
+        sctx.beginPath();
+        sctx.arc(b.x - b.r * 0.34, b.y - b.r * 0.34, Math.max(0.6, b.r * 0.2), 0, Math.PI * 2);
+        sctx.fillStyle = '#ffffff';
+        sctx.fill();
+      }
+    }
+
     sctx.globalAlpha = 1;
   }
 
-  function stopStars() {
-    starRunning = false;
+  function stopScene() {
+    sceneRunning = false;
     sctx.clearRect(0, 0, W, H);
   }
 
-  function startStars() {
-    if (settings.wallpaper !== 'stars') { stopStars(); return; }
-    if (!stars.length) sizeStars();
-    if (starRunning) return;
-    starRunning = true;
-    if (REDUCED) { paintStars(); starRunning = false; return; }
+  function startScene() {
+    if (settings.wallpaper === 'plain') { stopScene(); return; }
+    if (!bubbles.length) sizeScene();
+    if (sceneRunning) return;
+    sceneRunning = true;
+    if (REDUCED) { paintScene(); sceneRunning = false; return; }
     var tick = function () {
-      if (!starRunning) return;
-      paintStars();
+      if (!sceneRunning) return;
+      paintScene();
       window.requestAnimationFrame(tick);
     };
     window.requestAnimationFrame(tick);
@@ -1050,7 +1390,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   }
 
   function createTab() {
-    var t = { id: 't' + (++seq), title: 'New tab', url: '', mode: 'new', hist: [], hi: -1 };
+    var t = { id: 't' + (++seq), title: 'Home', url: '', mode: 'new', hist: [], hi: -1 };
     tabs.push(t);
     activeId = t.id;
     renderTabs();
@@ -1106,8 +1446,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       if (t.mode === 'web' && t.url) {
         ico.textContent = (hostOf(t.url)[0] || '?').toUpperCase();
       } else {
-        ico.textContent = settings.emoji;
-        ico.classList.add('emoji');
+        ico.textContent = '~';
       }
 
       var title = document.createElement('span');
@@ -1143,54 +1482,16 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     catch (e) { return u; }
   }
 
-  /* ---------------- reader (text view for sites that refuse framing) ---------------- */
+  /* ---------------- reader (plain text fallback) ---------------- */
 
-  /* Hosts that send X-Frame-Options / frame-ancestors. Verified against live headers.
-     Search engines that allow framing (bing.com, yahoo.com, wikipedia.org) are
-     deliberately absent so their results still render in the page frame. */
-  var READER_BLOCK = [
-    /* search, social, mail */
-    'google.com', 'youtube.com', 'x.com', 'twitter.com', 'reddit.com', 'github.com',
-    'instagram.com', 'facebook.com', 'tiktok.com', 'threads.net', 'threads.com',
-    'tumblr.com', 'pinterest.com', 'linkedin.com', 'whatsapp.com', 'discord.com',
-    'quora.com', 'substack.com', 'news.ycombinator.com',
-    /* tools and accounts */
-    'stackoverflow.com', 'medium.com', 'developer.mozilla.org', 'notion.com', 'notion.so',
-    'figma.com', 'canva.com', 'asana.com', 'slack.com', 'dropbox.com', 'salesforce.com',
-    'stripe.com', 'paypal.com', 'coinbase.com', 'coursera.org', 'udemy.com',
-    'quizlet.com', 'duolingo.com', 'goodreads.com', 'apple.com', 'office.com',
-    'm365.cloud.microsoft', 'outlook.live.com',
-    /* news */
-    'nytimes.com', 'washingtonpost.com', 'theguardian.com', 'bbc.com', 'bbc.co.uk',
-    'cnn.com', 'nbcnews.com', 'cnbc.com', 'apnews.com', 'reuters.com', 'bloomberg.com',
-    'ft.com', 'economist.com', 'forbes.com', 'axios.com', 'politico.com', 'vox.com',
-    'buzzfeed.com', 'vice.com', 'latimes.com', 'usatoday.com', 'theverge.com',
-    'arstechnica.com', 'engadget.com', 'gizmodo.com', 'techcrunch.com', 'wired.com',
-    'newyorker.com', 'theatlantic.com',
-    /* streaming and games */
-    'netflix.com', 'hulu.com', 'spotify.com', 'twitch.tv', 'ea.com', 'epicgames.com',
-    'playstation.com', 'xbox.com', 'roblox.com', 'riotgames.com', 'blizzard.com',
-    'minecraft.net', 'chess.com', 'steamcommunity.com', 'steampowered.com',
-    'ubisoft.com',
-    /* shopping, travel, money */
-    'airbnb.com', 'alibaba.com', 'aliexpress.com', 'temu.com', 'shein.com', 'wish.com',
-    'target.com', 'walmart.com', 'newegg.com', 'microcenter.com', 'lowes.com',
-    'ikea.com', 'expedia.com', 'united.com', 'usps.com', 'ups.com', 'fedex.com',
-    'chase.com', 'bankofamerica.com', 'capitalone.com', 'wellsfargo.com',
-    /* sports */
-    'nba.com', 'mlb.com', 'goal.com', 'rottentomatoes.com'
-  ];
   var readerChoice = {};
   var readerCache = {};
   var readerReq = 0;
 
   function autoReader(url) {
-    try {
-      var host = new URL(url).hostname.replace(/^www\./, '').toLowerCase();
-      return READER_BLOCK.some(function (d) {
-        return host === d || host.slice(-(d.length + 1)) === '.' + d;
-      });
-    } catch (e) { return false; }
+    /* The proxy renders pages now, so text mode is only ever a manual choice
+       (or the automatic fallback when a page cannot be rendered at all). */
+    return false;
   }
 
   function wantsReader(t) {
@@ -1446,10 +1747,12 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     return mode === 'browser' && activeTab() === t && t.url === url && wantsReader(t);
   }
 
-  function fetchWithTimeout(target, ms) {
+  function fetchWithTimeout(target, ms, options) {
     var ctrl = window.AbortController ? new AbortController() : null;
     var timer = ctrl ? window.setTimeout(function () { ctrl.abort(); }, ms) : null;
-    return fetch(target, ctrl ? { signal: ctrl.signal } : undefined).then(
+    var opts = Object.assign({}, options || {});
+    if (ctrl) opts.signal = ctrl.signal;
+    return fetch(target, opts).then(
       function (res) {
         if (timer) window.clearTimeout(timer);
         return res;
@@ -1576,53 +1879,577 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       .catch(function () { return fromMicrolink(url); });
   }
 
+  /* ---------------- Saleen browser ---------------- */
+
+  /* Pages are fetched by a proxy and redrawn by Saleen itself, so a school
+     filter that blocks a domain never sees a request to that domain. */
+  var pageCache = {};
+  var pageReq = 0;
+  var searchCache = {};
+  var searchReq = 0;
+
+  function proxyUrl(target) {
+    return PROXY_RAW + encodeURIComponent(target);
+  }
+
+  /* The fastest proxy writes the target URL straight into the query string.
+     Encoding it makes the service answer 400, so it gets its own builder. */
+  function fastUrl(target) {
+    return PROXY_FAST + target;
+  }
+
+  /* Search engines wrap result links in redirectors. Saleen follows the real
+     target so a click does not land on a redirect page that needs scripts. */
+  function unwrapLink(href, base) {
+    try {
+      var u = new URL(href, base);
+      var host = u.hostname.replace(/^www\./, '').toLowerCase();
+      if (host === 'google.com' && /^\/url\/?$/i.test(u.pathname)) {
+        var q = u.searchParams.get('q') || u.searchParams.get('url');
+        if (q && /^https?:\/\//i.test(q)) return q;
+      }
+      if (host === 'startpage.com' && /^\/sp\/do\//i.test(u.pathname)) return u.href;
+      return u.href;
+    } catch (e) { return ''; }
+  }
+
+  function isSearchUrl(u) {
+    return String(u).indexOf(SEARCH_URL) === 0;
+  }
+
+  function queryOf(u) {
+    try { return new URL(u).searchParams.get('q') || ''; } catch (e) { return ''; }
+  }
+
+  function redirectTarget(href) {
+    var h = String(href || '');
+    try {
+      var u = new URL(h, 'https://search.brave.com/');
+      var encoded = u.searchParams.get('click_url');
+      if (encoded && /^https?:\/\//i.test(encoded)) return encoded;
+      return u.href;
+    } catch (e) { return ''; }
+  }
+
+  function parseBrave(html) {
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    var out = [];
+    var seen = {};
+
+    Array.prototype.forEach.call(doc.querySelectorAll('.snippet'), function (node) {
+      var a = node.querySelector('a[href]');
+      if (!a) return;
+      var href = redirectTarget(a.getAttribute('href'));
+      if (!/^https?:\/\//i.test(href)) return;
+
+      var host = hostOf(href);
+      if (/(^|\.)brave\.com$/i.test(host) || /(^|\.)brave\.com$/i.test(hostOf(a.getAttribute('href')))) return;
+      if (/sponsored/i.test(node.textContent || '')) return;
+
+      var titleEl = node.querySelector('.title') || node.querySelector('[class*="title"]');
+      var title = (titleEl ? titleEl.textContent : '').replace(/\s+/g, ' ').trim();
+      if (!title) title = (a.textContent || '').replace(/\s+/g, ' ').trim();
+      if (!title || title.length < 4) return;
+
+      var descEl = node.querySelector('.snippet-description, [class*="description"], .snippet-content');
+      var snippet = (descEl ? descEl.textContent : '').replace(/\s+/g, ' ').trim();
+      if (!snippet && node.innerText) {
+        var lines = node.innerText.split(/\r?\n/).map(function (l) { return l.trim(); });
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i];
+          if (!line || line === title) continue;
+          if (/^https?:\/\//i.test(line)) continue;
+          if (line.length > 30) { snippet = line; break; }
+        }
+      }
+      if (snippet.length > 280) snippet = snippet.slice(0, 278) + '…';
+      if (seen[href]) return;
+      seen[href] = true;
+
+      out.push({ title: title.slice(0, 120), url: href, snippet: snippet.replace(/\s+/g, ' ').trim() });
+    });
+
+    return out.slice(0, 20);
+  }
+
+  function searchEndpoint(q) {
+    return 'https://search.brave.com/search?q=' + encodeURIComponent(q) + '&source=web';
+  }
+
+  function fetchSearch(q) {
+    if (searchCache[q]) return Promise.resolve(searchCache[q]);
+    var target = searchEndpoint(q);
+
+    /* Two transports, whichever answers with real results first wins. */
+    var viaReader = function () {
+      return fetchWithTimeout(JINA + target, 28000, { headers: { 'x-return-format': 'html' } })
+        .then(function (res) {
+          if (!res.ok) throw new Error('reader HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    var viaFast = function () {
+      return fetchWithTimeout(fastUrl(target), 20000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('proxy HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    var viaProxy = function () {
+      return fetchWithTimeout(proxyUrl(target), 28000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('proxy HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    var viaCodetabs = function () {
+      return fetchWithTimeout(PROXY_ALT + encodeURIComponent(target), 26000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('proxy HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    /* Public proxies are flaky, so every transport gets one retry. */
+    var retry = function (fn) {
+      return function () {
+        return fn().catch(function () {
+          return new Promise(function (resolve) { window.setTimeout(resolve, 900); }).then(fn);
+        });
+      };
+    };
+
+    return firstOf([retry(viaFast), retry(viaReader), retry(viaProxy), retry(viaCodetabs)]).then(function (results) {
+      searchCache[q] = results;
+      return results;
+    });
+  }
+
+  function paintResults(t, results) {
+    els.searchList.textContent = '';
+    els.searchList.dataset.q = t.query;
+
+    var head = document.createElement('p');
+    head.className = 'search-count';
+    head.textContent = results.length + ' results for “' + t.query + '” · Saleen Search';
+    els.searchList.appendChild(head);
+
+    results.forEach(function (r) {
+      var a = document.createElement('a');
+      a.className = 'search-result';
+      a.href = r.url;
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        navigate(r.url);
+      });
+
+      var title = document.createElement('span');
+      title.className = 'search-title';
+      title.textContent = r.title;
+
+      var host = document.createElement('span');
+      host.className = 'search-url';
+      host.textContent = hostOf(r.url);
+
+      var snip = document.createElement('span');
+      snip.className = 'search-snippet';
+      snip.textContent = r.snippet;
+
+      a.appendChild(host);
+      a.appendChild(title);
+      if (r.snippet) a.appendChild(snip);
+      els.searchList.appendChild(a);
+    });
+  }
+
+  function renderSearch(t) {
+    var q = t.query;
+    els.searchPane.hidden = false;
+    els.frame.hidden = true;
+    els.webReader.hidden = true;
+    els.readerBtn.hidden = true;
+    els.note.textContent = 'Saleen Search';
+    els.pageLoadingText.textContent = 'Searching the web…';
+
+    if (els.searchList.dataset.q === q && els.searchList.children.length) {
+      els.pageLoading.hidden = true;
+      return;
+    }
+
+    els.searchList.textContent = '';
+    els.searchList.dataset.q = '';
+    els.pageLoading.hidden = false;
+
+    var token = ++searchReq;
+    fetchSearch(q).then(function (results) {
+      if (token !== searchReq || activeTab() !== t || t.url !== SEARCH_URL + encodeURIComponent(q)) return;
+      els.pageLoading.hidden = true;
+      paintResults(t, results);
+    }).catch(function () {
+      if (token !== searchReq || activeTab() !== t) return;
+      els.pageLoading.hidden = true;
+      els.searchList.textContent = '';
+
+      var p = document.createElement('p');
+      p.className = 'search-status';
+      p.textContent = 'The search proxy did not answer. Saleen can still read a page if you type a link.';
+
+      var again = document.createElement('button');
+      again.type = 'button';
+      again.className = 'primary-btn';
+      again.textContent = 'Try again';
+      again.addEventListener('click', function () {
+        delete searchCache[q];
+        els.searchList.dataset.q = '';
+        renderSearch(t);
+      });
+
+      els.searchList.appendChild(p);
+      els.searchList.appendChild(again);
+    });
+  }
+
+  function rewriteCss(css, base) {
+    return String(css).replace(/url\((['"]?)([^)'"]+)\1\)/gi, function (m, q, u) {
+      if (/^(data:|#|about:)/i.test(u)) return m;
+      var abs = absoluteUrl(u, base);
+      if (!abs) return m;
+      return 'url(' + proxyUrl(abs) + ')';
+    });
+  }
+
+  var cssCache = {};
+
+  /* Page stylesheets are fetched through the same proxy and inlined, because a
+     linked sheet inside a proxied document can silently fail and leave a site
+     looking blank. Text is cheap; a broken layout is not. */
+  function fetchCss(url) {
+    if (cssCache[url] !== undefined) return Promise.resolve(cssCache[url]);
+
+    var pull = function (builder) {
+      return fetchWithTimeout(builder(url), 16000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('css HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (css) {
+          var text = String(css || '');
+          if (!text || text.length < 16 || text.length > 900000 || text.charAt(0) === '<') {
+            throw new Error('not css');
+          }
+          return text;
+        });
+    };
+
+    return pull(fastUrl)
+      .catch(function () { return pull(proxyUrl); })
+      .catch(function () { return pull(function (u) { return PROXY_ALT + encodeURIComponent(u); }); })
+      .then(function (text) {
+        cssCache[url] = text;
+        return text;
+      })
+      .catch(function () {
+        cssCache[url] = '';
+        return '';
+      });
+  }
+
+  var BASE_CSS = [
+    '*,*::before,*::after{box-sizing:border-box}',
+    'html{background:#fff;-webkit-text-size-adjust:100%}',
+    'body{margin:0;background:#fff;color:#15171c;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}',
+    'img,svg,video,canvas{max-width:100%;height:auto}',
+    'a{color:#1a56db}',
+    'pre{overflow:auto}',
+    'table{border-collapse:collapse;max-width:100%}',
+    '::selection{background:#cddfff;color:#000}'
+  ].join('');
+
+  /* When a site's own skin cannot be fetched, the page would otherwise show a
+     huge unstyled masthead of menus. In that case the chrome is hidden and the
+     article column is given a clean, readable layout instead. */
+  var FALLBACK_CSS = [
+    'header,nav,aside,footer,[role="banner"],[role="navigation"],[role="contentinfo"],',
+    '.mw-header,.vector-header-container,.vector-sticky-header,#mw-navigation,',
+    '.mw-jump-link,.mw-aria-live-region,.nav,.navbar,.site-header,.sidebar{display:none!important}',
+    'main,article,#mw-content-text,.content,#content,.post,.entry-content{',
+    'max-width:860px;margin:0 auto;padding:26px 22px;float:none!important;width:auto!important}',
+    'h1,h2,h3{line-height:1.28;margin:1.4em 0 .5em}',
+    'p,li{max-width:74ch}',
+    'figure,table,.infobox,.thumb{float:none!important;margin:18px auto!important;max-width:100%!important}'
+  ].join('');
+
+  function buildPage(html, url) {
+    if (!/<(html|body|div|p|article|main)\b/i.test(html)) return null;
+
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    Array.prototype.forEach.call(
+      doc.querySelectorAll('script,noscript,iframe,object,embed,applet,frame,frameset,base,meta[http-equiv]'),
+      function (n) { if (n.parentNode) n.parentNode.removeChild(n); }
+    );
+
+    var sheets = [];
+    Array.prototype.forEach.call(doc.querySelectorAll('link[href]'), function (l) {
+      var rel = (l.getAttribute('rel') || '').toLowerCase();
+      if (rel.indexOf('stylesheet') < 0 || sheets.length >= 8) {
+        if (l.parentNode) l.parentNode.removeChild(l);
+        return;
+      }
+      var abs = absoluteUrl(l.getAttribute('href'), url);
+      if (!abs) { if (l.parentNode) l.parentNode.removeChild(l); return; }
+      sheets.push({ link: l, url: abs });
+    });
+
+    Array.prototype.forEach.call(doc.querySelectorAll('img'), function (img) {
+      img.removeAttribute('srcset');
+      var src = img.getAttribute('src') || img.getAttribute('data-src') || '';
+      var abs = absoluteUrl(src, url);
+      if (abs) {
+        img.setAttribute('src', proxyUrl(abs));
+        img.setAttribute('loading', 'lazy');
+      } else {
+        img.removeAttribute('src');
+      }
+    });
+
+    Array.prototype.forEach.call(doc.querySelectorAll('[style]'), function (el) {
+      el.setAttribute('style', rewriteCss(el.getAttribute('style') || '', url));
+    });
+    Array.prototype.forEach.call(doc.querySelectorAll('style'), function (el) {
+      el.textContent = rewriteCss(el.textContent || '', url);
+    });
+
+    Array.prototype.forEach.call(doc.querySelectorAll('a[href]'), function (a) {
+      var abs = unwrapLink(a.getAttribute('href'), url);
+      if (abs) a.setAttribute('href', abs);
+      else a.removeAttribute('href');
+    });
+
+    Array.prototype.forEach.call(doc.querySelectorAll('form'), function (f) {
+      var abs = absoluteUrl(f.getAttribute('action') || url, url);
+      if (abs) f.setAttribute('action', abs);
+    });
+
+    var head = doc.head || doc.documentElement;
+    var base = doc.createElement('style');
+    base.setAttribute('data-saleen', 'base');
+    base.textContent = BASE_CSS;
+    head.insertBefore(base, head.firstChild);
+
+    return Promise.all(sheets.map(function (s) { return fetchCss(s.url); })).then(function (texts) {
+      var failed = 0;
+      sheets.forEach(function (s, i) {
+        var css = texts[i];
+        if (!css) {
+          failed += 1;
+          s.link.setAttribute('href', proxyUrl(s.url));
+          return;
+        }
+        var inline = doc.createElement('style');
+        inline.setAttribute('data-saleen', 'sheet');
+        inline.textContent = rewriteCss(css, s.url);
+        if (s.link.parentNode) s.link.parentNode.replaceChild(inline, s.link);
+      });
+
+      if (failed) {
+        var fallback = doc.createElement('style');
+        fallback.setAttribute('data-saleen', 'fallback');
+        fallback.textContent = FALLBACK_CSS;
+        head.appendChild(fallback);
+      }
+
+      var bridge = doc.createElement('script');
+      bridge.textContent = [
+        '(function(){',
+        'function send(u){try{parent.postMessage({saleen:"nav",url:u},"*")}catch(e){}}',
+        'document.addEventListener("click",function(e){',
+        'var a=e.target&&e.target.closest?e.target.closest("a"):null;if(!a)return;',
+        'var h=a.getAttribute("href")||"";if(!/^https?:/i.test(h))return;',
+        'e.preventDefault();send(h);},true);',
+        'document.addEventListener("submit",function(e){',
+        'var f=e.target;if(!f||!f.action)return;e.preventDefault();',
+        'var qs="";try{qs=new URLSearchParams(new FormData(f)).toString()}catch(err){}',
+        'send(f.action.split("?")[0]+(qs?"?"+qs:""));},true);',
+        '})();'
+      ].join('\n');
+      (doc.body || doc.documentElement).appendChild(bridge);
+
+      var title = (doc.title || '').replace(/\s+/g, ' ').trim();
+      var text = (doc.body ? doc.body.textContent : '').replace(/\s+/g, ' ').trim();
+      if (text.length < 40 && !doc.querySelector('img,video,canvas,svg')) return null;
+
+      return { html: '<!doctype html>' + doc.documentElement.outerHTML, title: title, url: url };
+    });
+  }
+
+  function fetchPage(url) {
+    if (pageCache[url]) return Promise.resolve(pageCache[url]);
+
+    var pull = function (builder, ms) {
+      return fetchWithTimeout(builder(url), ms || 20000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('proxy HTTP ' + res.status);
+          return res.text();
+        });
+    };
+
+    var viaReader = function () {
+      return fetchWithTimeout(JINA + url, 24000, { headers: { 'x-return-format': 'html' } })
+        .then(function (res) {
+          if (!res.ok) throw new Error('reader HTTP ' + res.status);
+          return res.text();
+        });
+    };
+
+    return pull(fastUrl)
+      .catch(function () { return pull(proxyUrl); })
+      .catch(function () { return pull(function (u) { return PROXY_ALT + encodeURIComponent(u); }); })
+      .catch(viaReader)
+      .then(function (html) {
+        return buildPage(html, url);
+      })
+      .then(function (built) {
+        if (!built) throw new Error('nothing to render');
+        pageCache[url] = built;
+        return built;
+      });
+  }
+
+  function paintPage(t, built) {
+    els.pageLoading.hidden = true;
+    els.frame.srcdoc = built.html;
+    els.frame.dataset.url = built.url;
+    if (built.title && built.title !== t.title) {
+      t.title = built.title.slice(0, 60);
+      renderTabs();
+      updateTitle();
+    }
+  }
+
+  function loadPage(t) {
+    var url = t.url;
+    els.searchPane.hidden = true;
+    els.frame.hidden = false;
+    els.pageLoading.hidden = false;
+    els.pageLoadingText.textContent = DESKTOP ? 'Opening page…' : 'Opening through Saleen…';
+    els.note.textContent = DESKTOP ? 'Desktop mode · real rendering' : 'Saleen · ' + hostOf(url);
+
+    if (DESKTOP) {
+      if (els.frame.dataset.url !== url) {
+        els.frame.removeAttribute('srcdoc');
+        els.frame.dataset.url = url;
+        els.frame.src = url;
+      }
+      els.pageLoading.hidden = true;
+      return;
+    }
+
+    if (pageCache[url]) { paintPage(t, pageCache[url]); return; }
+    if (els.frame.dataset.url === url && els.frame.srcdoc) { els.pageLoading.hidden = true; return; }
+
+    var token = ++pageReq;
+    els.frame.removeAttribute('src');
+    els.frame.dataset.url = url;
+    els.frame.srcdoc = '';
+
+    fetchPage(url).then(function (built) {
+      if (token !== pageReq || activeTab() !== t || t.url !== url) return;
+      paintPage(t, built);
+    }).catch(function () {
+      if (token !== pageReq || activeTab() !== t || t.url !== url) return;
+      els.pageLoading.hidden = true;
+      readerChoice[url] = true;
+      renderView();
+    });
+  }
+
+  window.addEventListener('message', function (e) {
+    var data = e.data;
+    if (!data || data.saleen !== 'nav' || typeof data.url !== 'string') return;
+    if (e.source !== els.frame.contentWindow) return;
+    if (!/^https?:\/\//i.test(data.url)) return;
+    navigate(data.url);
+  });
+
   function renderView() {
     var t = activeTab();
-    var browser = mode === 'browser';
+    var browser = mode === 'browser' || mode === 'home';
     document.body.dataset.mode = mode;
 
+    var hasWeb = !!(mode === 'browser' && t && t.mode === 'web' && t.url);
+    var isSearch = !!(hasWeb && isSearchUrl(t.url));
+
     els.chrome.hidden = !browser;
-    els.newTabView.hidden = !browser || !!(t && t.mode === 'web' && t.url);
-    els.webWrap.hidden = !(browser && t && t.mode === 'web' && t.url);
+    els.newTabView.hidden = !browser || hasWeb;
+    els.webWrap.hidden = !hasWeb;
     els.aiView.hidden = mode !== 'ai';
+    els.linksView.hidden = mode !== 'links';
+    els.gamesView.hidden = mode !== 'games';
+    els.moviesView.hidden = mode !== 'movies';
 
     navItems.forEach(function (item) {
       item.setAttribute('aria-current', item.dataset.mode === mode ? 'page' : 'false');
     });
 
     if (browser && t) {
-      if (t.mode === 'web' && t.url) {
-        var reader = wantsReader(t);
-        t.reader = reader;
-        els.webReader.hidden = !reader;
-        els.frame.hidden = reader;
-        if (!reader && els.frame.dataset.url !== t.url) {
-          els.frame.dataset.url = t.url;
-          els.frame.src = t.url;
-        }
-        els.readerBtn.textContent = reader ? 'Page' : 'Reader';
-        els.readerBtn.setAttribute('aria-pressed', reader ? 'true' : 'false');
-        els.readerBtn.title = reader ? 'Show the original page instead' : 'Show a text version that always loads';
-        els.note.textContent = reader
-          ? (autoReader(t.url) ? 'This site blocks embedding · showing the text version' : 'Reader view · text version')
-          : 'In-app view · if it stays blank, ' + hostOf(t.url) + ' blocks embedding.';
-        els.openExternal.href = t.url;
-        els.omni.value = t.url;
-        if (reader) {
-          loadReader(t);
+      if (hasWeb) {
+        els.omni.value = isSearch ? queryOf(t.url) : t.url;
+
+        if (isSearch) {
+          renderSearch(t);
         } else {
-          readerReq += 1;
-          els.readerDoc.textContent = '';
-          els.readerDoc.dataset.url = '';
+          var reader = wantsReader(t);
+          t.reader = reader;
+          els.searchPane.hidden = true;
+          els.readerBtn.hidden = false;
+          els.webReader.hidden = !reader;
+          els.frame.hidden = reader;
+          els.readerBtn.textContent = reader ? 'Page' : 'Reader';
+          els.readerBtn.setAttribute('aria-pressed', reader ? 'true' : 'false');
+          els.readerBtn.title = reader ? 'Show the page instead' : 'Show a plain text version';
+
+          if (reader) {
+            els.pageLoading.hidden = true;
+            els.note.textContent = 'Reader · text version';
+            loadReader(t);
+          } else {
+            loadPage(t);
+          }
         }
       } else {
         els.omni.value = '';
-        els.openExternal.removeAttribute('href');
         readerReq += 1;
         els.readerDoc.textContent = '';
         els.readerDoc.dataset.url = '';
         els.webReader.hidden = true;
+        els.searchPane.hidden = true;
+        els.pageLoading.hidden = true;
         els.frame.hidden = false;
+        els.frame.dataset.url = '';
+        els.readerBtn.hidden = false;
         els.readerBtn.textContent = 'Reader';
         els.readerBtn.setAttribute('aria-pressed', 'false');
       }
@@ -1635,11 +2462,20 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   }
 
   function setMode(next) {
-    if (['ai', 'browser'].indexOf(next) < 0) next = 'browser';
+    if (['home', 'ai', 'links', 'games', 'movies', 'browser'].indexOf(next) < 0) next = 'home';
     var changed = next !== mode;
     mode = next;
     renderView();
     if (changed) document.dispatchEvent(new CustomEvent('saleen:mode', { detail: mode }));
+  }
+
+  function setTabUrl(t, url) {
+    t.url = url;
+    t.mode = 'web';
+    t.kind = isSearchUrl(url) ? 'search' : 'page';
+    t.query = t.kind === 'search' ? queryOf(url) : '';
+    t.title = t.kind === 'search' ? 'Search · ' + t.query : hostOf(url);
+    els.frame.dataset.url = '';
   }
 
   function navigate(url) {
@@ -1648,9 +2484,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     t.hist = t.hist.slice(0, t.hi + 1);
     t.hist.push(url);
     t.hi = t.hist.length - 1;
-    t.url = url;
-    t.mode = 'web';
-    t.title = hostOf(url);
+    setTabUrl(t, url);
     renderTabs();
     renderView();
   }
@@ -1659,9 +2493,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     var t = activeTab();
     if (!t || t.hi <= 0) return;
     t.hi -= 1;
-    t.url = t.hist[t.hi];
-    t.mode = 'web';
-    t.title = hostOf(t.url);
+    setTabUrl(t, t.hist[t.hi]);
     renderTabs();
     renderView();
   }
@@ -1670,9 +2502,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     var t = activeTab();
     if (!t || t.hi >= t.hist.length - 1) return;
     t.hi += 1;
-    t.url = t.hist[t.hi];
-    t.mode = 'web';
-    t.title = hostOf(t.url);
+    setTabUrl(t, t.hist[t.hi]);
     renderTabs();
     renderView();
   }
@@ -1681,6 +2511,11 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     var t = activeTab();
     if (!t || t.mode !== 'web' || !t.url) return;
     delete readerCache[t.url];
+    delete pageCache[t.url];
+    if (isSearchUrl(t.url)) {
+      delete searchCache[queryOf(t.url)];
+      els.searchList.dataset.q = '';
+    }
     els.readerDoc.dataset.url = '';
     els.frame.dataset.url = '';
     renderView();
@@ -1701,28 +2536,10 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     return 'https://' + v;
   }
 
-  function openExternal(url) {
-    var win = null;
-    try { win = window.open(url, '_blank'); } catch (e) { win = null; }
-    if (win) {
-      try { win.opener = null; } catch (e) {}
-      toast('Opened in a new tab');
-      return true;
-    }
-    toast('Popups are blocked — allow popups for this page');
-    return false;
-  }
-
   function search(q) {
-    var eng = ENGINES[settings.engine];
-    var url = eng.url(q);
     els.heroInput.value = '';
     els.omni.value = '';
-    if (eng.embed) {
-      navigate(url);
-      return;
-    }
-    openExternal(url);
+    navigate(SEARCH_URL + encodeURIComponent(q));
   }
 
   function submit(raw) {
@@ -1749,42 +2566,14 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         b.setAttribute('aria-pressed', on ? 'true' : 'false');
       });
     };
-    setPressed(els.emojiPresets, 'data-emoji', settings.emoji, false);
     setPressed(els.accentPresets, 'data-accent', settings.accent, true);
     setPressed(els.wallPresets, 'data-wall', settings.wallpaper, false);
-    setPressed(els.enginePresets, 'data-engine', settings.engine, false);
 
-    if (document.activeElement !== els.emojiInput) els.emojiInput.value = settings.emoji;
     if (document.activeElement !== els.nameInput) els.nameInput.value = settings.name;
     if (document.activeElement !== els.accentInput) els.accentInput.value = settings.accent;
   }
 
-  function firstGrapheme(v) {
-    if (window.Intl && Intl.Segmenter) {
-      try {
-        var seg = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
-        var it = seg.segment(v)[Symbol.iterator]();
-        var first = it.next();
-        if (!first.done) return first.value.segment;
-      } catch (e) {}
-    }
-    var chars = Array.from(v);
-    return chars[0] || v;
-  }
-
   function buildPresets() {
-    EMOJIS.forEach(function (e) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'chip emoji';
-      b.textContent = e;
-      b.dataset.emoji = e;
-      b.setAttribute('aria-pressed', 'false');
-      b.setAttribute('aria-label', 'Banner emoji ' + e);
-      b.addEventListener('click', function () { setSetting('emoji', e); });
-      els.emojiPresets.appendChild(b);
-    });
-
     ACCENTS.forEach(function (c) {
       var b = document.createElement('button');
       b.type = 'button';
@@ -1808,18 +2597,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       b.addEventListener('click', function () { setSetting('wallpaper', w.id); });
       els.wallPresets.appendChild(b);
     });
-
-    Object.keys(ENGINES).forEach(function (k) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'chip';
-      b.textContent = ENGINES[k].embed ? ENGINES[k].label : ENGINES[k].label + ' (tab)';
-      b.title = ENGINES[k].embed ? 'Results show inside Saleen' : 'This engine refuses to load inside a page, so it opens a real tab';
-      b.dataset.engine = k;
-      b.setAttribute('aria-pressed', 'false');
-      b.addEventListener('click', function () { setSetting('engine', k); });
-      els.enginePresets.appendChild(b);
-    });
   }
 
   function openSheet() {
@@ -1837,6 +2614,204 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     toastTimer = window.setTimeout(function () { els.toast.classList.remove('show'); }, 2600);
   }
 
+  /* ---------------- links ---------------- */
+
+  var LINKS_KEY = 'saleen.links.v2';
+  var myLinks = [];
+
+  /* The shelf starts empty. Everything a user adds here is fetched by Saleen's
+     own proxy, so the school filter is never asked about these domains. */
+  var SEED_LINKS = [];
+
+  function seedLinks() {
+    return SEED_LINKS.map(function (l) {
+      return { name: l.name, url: l.url, tag: l.tag, added: Date.now() };
+    });
+  }
+
+  function readMyLinks() {
+    try {
+      var raw = localStorage.getItem(LINKS_KEY);
+      if (!raw) {
+        myLinks = seedLinks();
+        writeMyLinks();
+        return;
+      }
+      var saved = JSON.parse(raw);
+      if (Array.isArray(saved)) {
+        myLinks = saved.filter(function (l) {
+          return l && typeof l.url === 'string' &&
+            (/^https?:\/\//i.test(l.url) || l.url.indexOf(SEARCH_URL) === 0);
+        }).slice(0, 80);
+      }
+    } catch (e) { myLinks = seedLinks(); }
+  }
+
+  function writeMyLinks() {
+    try { localStorage.setItem(LINKS_KEY, JSON.stringify(myLinks)); } catch (e) {}
+    broadcast('links');
+  }
+
+  function linkFromInput(raw) {
+    var v = String(raw || '').trim();
+    if (!v) return null;
+    var url;
+    var name;
+    if (/^https?:\/\//i.test(v)) {
+      url = v;
+    } else if (looksLikeUrl(v)) {
+      url = toUrl(v);
+    } else {
+      url = SEARCH_URL + encodeURIComponent(v);
+      name = v;
+    }
+    if (!/^https?:\/\//i.test(url) && url.indexOf(SEARCH_URL) !== 0) return null;
+    return { url: url, name: name || hostOf(url), added: Date.now() };
+  }
+
+  function openLink(link) {
+    setMode('browser');
+    if (link.reader) readerChoice[link.url] = true;
+    navigate(link.url);
+  }
+
+  function makeCard(link, removable) {
+    var card = document.createElement('div');
+    card.className = 'link-card';
+
+    var open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'link-open';
+    open.title = link.url;
+
+    var ico = document.createElement('span');
+    ico.className = 'link-ico';
+    ico.setAttribute('aria-hidden', 'true');
+    var isSearchLink = link.url.indexOf(SEARCH_URL) === 0;
+    ico.textContent = isSearchLink
+      ? '⌕'
+      : (link.name || link.url).replace(/^www\./i, '').charAt(0).toUpperCase();
+
+    var text = document.createElement('span');
+    text.className = 'link-text';
+    var name = document.createElement('span');
+    name.className = 'link-name';
+    name.textContent = link.name || hostOf(link.url);
+    var meta = document.createElement('span');
+    meta.className = 'link-host';
+    var prefix = link.reader ? 'Reader' : (link.tag || '');
+    var where = isSearchLink ? queryOf(link.url) : hostOf(link.url);
+    meta.textContent = prefix ? prefix + ' · ' + where : where;
+    text.appendChild(name);
+    text.appendChild(meta);
+
+    open.appendChild(ico);
+    open.appendChild(text);
+    open.addEventListener('click', function () { openLink(link); });
+    card.appendChild(open);
+
+    if (removable) {
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'link-del';
+      del.textContent = '✕';
+      del.title = 'Remove link';
+      del.setAttribute('aria-label', 'Remove ' + (link.name || link.url));
+      del.addEventListener('click', function () {
+        myLinks = myLinks.filter(function (l) { return l.url !== link.url; });
+        writeMyLinks();
+        renderLinks();
+        toast('Link removed');
+      });
+      card.appendChild(del);
+    }
+
+    return card;
+  }
+
+  function renderLinks() {
+    if (!els.myLinks) return;
+    els.myLinks.textContent = '';
+    els.myLinksCount.textContent = String(myLinks.length);
+
+    if (!myLinks.length) {
+      var empty = document.createElement('p');
+      empty.className = 'fineprint links-empty';
+      empty.textContent = 'Nothing yet. Create a link above and it stays here.';
+      els.myLinks.appendChild(empty);
+    } else {
+      myLinks.forEach(function (link) { els.myLinks.appendChild(makeCard(link, true)); });
+    }
+  }
+
+  /* ---------------- games (live shelf) ---------------- */
+
+  var GAMES_KEY = 'saleen.games.v2';
+  var games = [];
+
+  function readGames() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(GAMES_KEY) || '[]');
+      if (Array.isArray(saved)) {
+        games = saved.filter(function (g) {
+          return g && typeof g.url === 'string' && /^(https?:\/\/|saleen:\/\/)/i.test(g.url);
+        });
+      }
+    } catch (e) { games = []; }
+  }
+
+  function writeGames() {
+    try { localStorage.setItem(GAMES_KEY, JSON.stringify(games)); } catch (e) {}
+    broadcast('games');
+    renderGames();
+  }
+
+  function renderGames() {
+    if (!els.gamesBody) return;
+    els.gamesBody.textContent = '';
+
+    if (!games.length) {
+      var empty = document.createElement('p');
+      empty.className = 'fineprint links-empty';
+      empty.textContent = 'No games yet. Anything added to the shelf appears here live, in every open window.';
+      els.gamesBody.appendChild(empty);
+      return;
+    }
+
+    var grid = document.createElement('div');
+    grid.className = 'links-grid';
+    games.forEach(function (g) { grid.appendChild(makeCard(g, false)); });
+    els.gamesBody.appendChild(grid);
+  }
+
+  /* ---------------- live sync ---------------- */
+
+  var channel = null;
+  try { channel = new BroadcastChannel('saleen-live'); } catch (e) { channel = null; }
+
+  function broadcast(topic) {
+    if (channel) {
+      try { channel.postMessage({ topic: topic, at: Date.now() }); } catch (e) {}
+    }
+    document.dispatchEvent(new CustomEvent('saleen:live', { detail: topic }));
+  }
+
+  function onLive(topic) {
+    if (topic === 'links') { readMyLinks(); renderLinks(); }
+    else if (topic === 'games') { readGames(); renderGames(); }
+  }
+
+  if (channel) channel.addEventListener('message', function (e) {
+    if (e.data && e.data.topic) onLive(e.data.topic);
+  });
+
+  window.addEventListener('storage', function (e) {
+    if (e.key === LINKS_KEY) onLive('links');
+    else if (e.key === GAMES_KEY) onLive('games');
+  });
+
+  document.addEventListener('saleen:live', function (e) { onLive(e.detail); });
+
   /* ---------------- events ---------------- */
 
   els.newTabBtn.addEventListener('click', function () {
@@ -1849,9 +2824,29 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     item.addEventListener('click', function () { setMode(item.dataset.mode); });
   });
 
+  els.linkForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var link = linkFromInput(els.linkInput.value);
+    if (!link) { toast('That link did not look right'); return; }
+    var dup = myLinks.some(function (l) { return l.url === link.url; });
+    if (dup) { toast('You already have that link'); return; }
+    myLinks.unshift(link);
+    writeMyLinks();
+    els.linkInput.value = '';
+    renderLinks();
+    toast('Link created');
+  });
+
+  els.linksClear.addEventListener('click', function () {
+    if (!myLinks.length) { toast('No links to clear'); return; }
+    myLinks = [];
+    writeMyLinks();
+    renderLinks();
+    toast('Your links cleared');
+  });
+
   els.customizeBtn.addEventListener('click', openSheet);
-  els.railEmoji.addEventListener('click', openSheet);
-  els.heroEmoji.addEventListener('click', openSheet);
+  els.brandBtn.addEventListener('click', openSheet);
 
   els.omniForm.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -1871,23 +2866,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     var t = activeTab();
     if (!t || t.mode !== 'web' || !t.url) return;
     setReader(t.url, !t.reader);
-  });
-
-  els.engineChip.addEventListener('click', function () {
-    var keys = Object.keys(ENGINES);
-    var i = keys.indexOf(settings.engine);
-    var next = keys[(i + 1) % keys.length];
-    setSetting('engine', next);
-    toast('Search engine: ' + ENGINES[next].label);
-  });
-
-  els.emojiInput.addEventListener('input', function () {
-    var v = els.emojiInput.value.trim();
-    if (!v) return;
-    settings.emoji = firstGrapheme(v);
-    save();
-    apply();
-    els.emojiInput.value = settings.emoji;
   });
 
   els.nameInput.addEventListener('input', function () {
@@ -1911,39 +2889,42 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     toast('Settings reset');
   });
 
-  els.openExternal.addEventListener('click', function () {
-    toast('Opening in a real tab');
-  });
-
   window.addEventListener('resize', function () {
     if (REDUCED) {
-      sizeStars();
-      if (settings.wallpaper === 'stars') paintStars();
+      sizeScene();
+      if (settings.wallpaper !== 'plain') paintScene();
       return;
     }
-    if (!stars.length) return;
-    sizeStars();
+    if (!bubbles.length) return;
+    sizeScene();
   });
 
   /* ---------------- init ---------------- */
 
-  ['saleen.games.v1', 'saleen.movies.v1'].forEach(function (k) {
-    try { localStorage.removeItem(k); } catch (e) {}
-  });
-
   load();
   sanitize();
-  sizeStars();
+  sizeScene();
   buildPresets();
   apply();
-  createTab();
+  mode = 'home';
+  renderView();
+  readMyLinks();
+  renderLinks();
+  readGames();
+  renderGames();
+  updateClock();
+  window.setInterval(updateClock, 5000);
   els.heroInput.focus();
 
   window.Saleen = {
     toast: toast,
-    openExternal: openExternal,
     setMode: setMode,
-    getSettings: function () { return settings; }
+    search: search,
+    navigate: navigate,
+    getSettings: function () { return settings; },
+    getGames: function () { return games.slice(); },
+    setGames: function (list) { games = Array.isArray(list) ? list : []; writeGames(); },
+    addGame: function (game) { games.unshift(game); writeGames(); }
   };
 })();
 
