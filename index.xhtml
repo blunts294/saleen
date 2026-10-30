@@ -419,9 +419,9 @@ body[data-wall="plain"] #wall .b4{opacity:0}
 .hero-typing{
   position:absolute;left:0;right:0;bottom:26px;
   margin:0;
-  font-size:13px;letter-spacing:.3px;
+  font-size:14px;letter-spacing:.3px;
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  color:rgba(214,236,250,.72);
+  color:rgba(228,244,255,.88);
   text-align:center;
   pointer-events:none;
   min-height:1.4em;
@@ -1187,10 +1187,19 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     '- Ethan is very weird.',
     '- Tucker is very gay.'
   ];
-  var typeIndex = 0;
+  var typeIndex = -1;
   var typePos = 0;
   var typePhase = 'typing';
   var typeTimer = null;
+
+  function pickLine() {
+    if (TYPED_LINES.length < 2) return 0;
+    var next = typeIndex;
+    while (next === typeIndex) {
+      next = Math.floor(Math.random() * TYPED_LINES.length);
+    }
+    return next;
+  }
 
   function typeRender() {
     if (!els.typingText) return;
@@ -1219,7 +1228,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       if (typePos <= 0) {
         typePos = 0;
         typeRender();
-        typeIndex = (typeIndex + 1) % TYPED_LINES.length;
+        typeIndex = pickLine();
         typePhase = 'typing';
         delay = 600;
       }
@@ -1231,7 +1240,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   function startTyping() {
     if (!els.typingText) return;
     window.clearTimeout(typeTimer);
-    typeIndex = 0;
+    typeIndex = pickLine();
     typePos = 0;
     typePhase = 'typing';
     typeRender();
@@ -2784,12 +2793,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     els.myLinks.textContent = '';
     els.myLinksCount.textContent = String(myLinks.length);
 
-    if (!myLinks.length) {
-      var empty = document.createElement('p');
-      empty.className = 'fineprint links-empty';
-      empty.textContent = 'Nothing yet. Create a link above and it stays here.';
-      els.myLinks.appendChild(empty);
-    } else {
+    if (myLinks.length) {
       myLinks.forEach(function (link) { els.myLinks.appendChild(makeCard(link, true)); });
     }
   }
@@ -2821,10 +2825,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     els.gamesBody.textContent = '';
 
     if (!games.length) {
-      var empty = document.createElement('p');
-      empty.className = 'fineprint links-empty';
-      empty.textContent = 'No games yet. Anything added to the shelf appears here live, in every open window.';
-      els.gamesBody.appendChild(empty);
       return;
     }
 
@@ -2960,7 +2960,9 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   updateClock();
   window.setInterval(updateClock, 5000);
   document.addEventListener('visibilitychange', function () {
-    if (!document.hidden) updateClock();
+    if (document.hidden) return;
+    updateClock();
+    if (mode === 'home') startTyping();
   });
   startTyping();
   els.omni.focus();
