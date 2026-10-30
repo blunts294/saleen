@@ -388,74 +388,45 @@ body[data-wall="plain"] #wall .b4{opacity:0}
 #newTabView{
   position:absolute;inset:0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:12px;
-  padding:40px 24px;
+  gap:6px;
+  padding:40px 24px 96px;
   text-align:center;
-  overflow:auto;
-}
-.hero-brand{display:flex;align-items:center;gap:14px}
-.hero-mark{
-  width:clamp(52px,6vw,64px);aspect-ratio:1;
-  display:grid;place-items:center;border-radius:50%;
-  background:radial-gradient(120% 120% at 30% 18%, #7defff 0%, #0ea5e9 46%, #0b3f5c 100%);
-  box-shadow:0 18px 44px -14px rgba(14,165,233,.8), inset 0 1px 0 rgba(255,255,255,.4);
-}
-.hero-mark svg{width:62%;height:62%;display:block}
-.hero-mark path{
-  fill:none;stroke:#f2feff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
-}
-.hero-word{
-  margin:0;font-size:clamp(34px,4.6vw,46px);
-  font-weight:300;letter-spacing:2px;
-  color:#fff;text-shadow:0 10px 30px rgba(0,0,0,.42);
+  overflow:hidden;
 }
 .hero-time{
-  margin:6px 0 0;font-size:clamp(44px,7vw,66px);
-  font-weight:200;letter-spacing:-2px;line-height:1;
+  margin:0;
+  font-size:clamp(64px,12vw,132px);
+  font-weight:200;letter-spacing:-4px;line-height:.95;
   font-variant-numeric:tabular-nums;
   color:#f6fdff;
-  text-shadow:0 10px 40px rgba(103,232,249,.35);
+  text-shadow:0 16px 60px rgba(103,232,249,.35);
 }
-.hero-date{
-  margin:-4px 0 0;font-size:12px;letter-spacing:1.6px;
-  text-transform:uppercase;color:rgba(180,208,228,.78);
-}
-#greeting{
-  margin:6px 0 0;
-  font-size:clamp(16px,2vw,20px);
-  font-weight:500;letter-spacing:0;
-  color:rgba(232,244,252,.86);
+.hero-greeting{
+  margin:8px 0 0;
+  font-size:13px;font-weight:500;letter-spacing:1.4px;
+  text-transform:uppercase;
+  color:rgba(196,222,240,.7);
   text-shadow:0 2px 12px rgba(0,0,0,.45);
 }
-#heroForm{display:flex;gap:8px;width:min(560px,100%);margin-top:6px}
-#heroInput{
-  flex:1 1 auto;min-width:0;
-  height:46px;padding:0 18px;
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:12px;
-  background:rgba(255,255,255,.055);
-  color:var(--ink);
-  font-size:14px;
-  outline:none;
-  transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
+.hero-typing{
+  position:absolute;left:0;right:0;bottom:26px;
+  margin:0;
+  font-size:13px;letter-spacing:.3px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color:rgba(214,236,250,.72);
+  text-align:center;
+  pointer-events:none;
+  min-height:1.4em;
 }
-#heroInput::placeholder{color:rgba(147,160,184,.75)}
-#heroInput:focus{
-  border-color:color-mix(in srgb,var(--accent) 60%,transparent);
-  box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 13%,transparent);
-  background:rgba(255,255,255,.08);
+.typing-caret{
+  display:inline-block;
+  width:2px;height:1em;
+  margin-left:3px;
+  vertical-align:-.15em;
+  background:currentColor;
+  animation:caretBlink 1s steps(1) infinite;
 }
-#heroGo{
-  height:46px;padding:0 20px;
-  border:0;border-radius:12px;
-  background:var(--accent);
-  color:#0a0e17;
-  font-size:13.5px;font-weight:600;
-  cursor:pointer;
-  transition:filter .15s ease,transform .15s ease;
-}
-#heroGo:hover{filter:brightness(1.08)}
-#heroGo:active{transform:translateY(1px)}
+@keyframes caretBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
 
 /* ---------- web view ---------- */
 #webWrap{position:absolute;inset:0;display:flex;flex-direction:column;background:rgba(255,255,255,.02)}
@@ -932,24 +903,12 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
     <div id="viewport">
       <section id="newTabView">
-        <div class="hero-brand">
-          <span class="hero-mark" aria-hidden="true">
-            <svg viewBox="0 0 32 32" focusable="false">
-              <path d="M3 18.5c2.6 0 2.6-2.6 5.2-2.6s2.6 2.6 5.2 2.6 2.6-2.6 5.2-2.6 2.6 2.6 5.2 2.6 2.6-2.6 5.2-2.6" />
-              <path d="M3 25c2.6 0 2.6-2.6 5.2-2.6s2.6 2.6 5.2 2.6 2.6-2.6 5.2-2.6 2.6 2.6 5.2 2.6 2.6-2.6 5.2-2.6" />
-            </svg>
-          </span>
-          <h1 class="hero-word">Saleen</h1>
-        </div>
-
         <p class="hero-time" id="heroTime">--:--</p>
-        <p class="hero-date" id="heroDate">—</p>
-        <p id="greeting">Good evening</p>
+        <p class="hero-greeting" id="heroGreeting">Good evening</p>
 
-        <form id="heroForm" autocomplete="off">
-          <input id="heroInput" type="text" placeholder="Search the web or open anything" aria-label="Search or enter address" spellcheck="false" />
-          <button id="heroGo" type="submit">Search</button>
-        </form>
+        <p id="heroTyping" class="hero-typing" aria-live="polite">
+          <span id="typingText"></span><span class="typing-caret" aria-hidden="true"></span>
+        </p>
       </section>
 
       <div id="webWrap" hidden="hidden">
@@ -1115,10 +1074,9 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     chrome: $('#chrome'),
     newTabView: $('#newTabView'),
     heroTime: $('#heroTime'),
-    heroDate: $('#heroDate'),
-    greeting: $('#greeting'),
-    heroForm: $('#heroForm'),
-    heroInput: $('#heroInput'),
+    heroGreeting: $('#heroGreeting'),
+    typingText: $('#typingText'),
+    heroTyping: $('#heroTyping'),
     webWrap: $('#webWrap'),
     frame: $('#webFrame'),
     banner: $('#webBanner p'),
@@ -1189,8 +1147,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     return n < 10 ? '0' + n : String(n);
   }
 
-  /* ---------------- home shortcuts ---------------- */
-
   function updateClock() {
     var now = new Date();
     var time = two(now.getHours()) + ':' + two(now.getMinutes());
@@ -1198,8 +1154,52 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     if (els.railTime) els.railTime.textContent = time;
     if (els.railDate) els.railDate.textContent = date;
     if (els.heroTime) els.heroTime.textContent = time;
-    if (els.heroDate) els.heroDate.textContent = date;
-    if (els.greeting) els.greeting.textContent = greetingText();
+    if (els.heroGreeting) els.heroGreeting.textContent = greetingText();
+  }
+
+  /* ---------------- typewriter ---------------- */
+
+  var TYPED_LINES = ['made by 762', '64% of yall are femboys btw'];
+  var typeIndex = 0;
+  var typePos = 0;
+  var typeDeleting = false;
+  var typeTimer = null;
+
+  function typeTick() {
+    if (!els.typingText) return;
+    var line = '-' + ' ' + TYPED_LINES[typeIndex];
+    var speed = typeDeleting ? 34 : 72;
+
+    if (!typeDeleting) {
+      typePos += 1;
+      els.typingText.textContent = line.slice(0, typePos);
+      if (typePos >= line.length) {
+        typeDeleting = true;
+        speed = 1900;
+      }
+    } else {
+      typePos -= 1;
+      els.typingText.textContent = line.slice(0, Math.max(0, typePos));
+      if (typePos <= 0) {
+        typeDeleting = false;
+        typeIndex = (typeIndex + 1) % TYPED_LINES.length;
+        speed = 420;
+      }
+    }
+
+    typeTimer = window.setTimeout(typeTick, speed);
+  }
+
+  function startTyping() {
+    if (!els.typingText) return;
+    if (REDUCED) {
+      els.typingText.textContent = '- ' + TYPED_LINES[0];
+      return;
+    }
+    window.clearTimeout(typeTimer);
+    typePos = 0;
+    typeDeleting = false;
+    typeTick();
   }
 
   function updateTitle() {
@@ -1214,8 +1214,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   function apply() {
     document.documentElement.style.setProperty('--accent', settings.accent);
     document.body.dataset.wall = settings.wallpaper;
-    els.greeting.textContent = greetingText();
-    els.heroInput.placeholder = 'Search the web or open anything';
     syncControls();
     renderTabs();
     updateTitle();
@@ -1423,7 +1421,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       activeId = null;
       renderTabs();
       createTab();
-      if (mode === 'browser') els.heroInput.focus();
+      if (mode === 'browser') els.omni.focus();
       return;
     }
     if (wasActive) {
@@ -2541,7 +2539,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   }
 
   function search(q) {
-    els.heroInput.value = '';
     els.omni.value = '';
     navigate(SEARCH_URL + encodeURIComponent(q));
   }
@@ -2552,7 +2549,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     if (looksLikeUrl(v)) {
       var url = toUrl(v);
       if (/^https?:\/\//i.test(url) || /^file:\/\//i.test(url)) {
-        els.heroInput.value = '';
+        els.omni.value = '';
         navigate(url);
         return;
       }
@@ -2826,7 +2823,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   els.newTabBtn.addEventListener('click', function () {
     if (mode !== 'browser') setMode('browser');
     createTab();
-    els.heroInput.focus();
+    els.omni.focus();
   });
 
   navItems.forEach(function (item) {
@@ -2860,11 +2857,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   els.omniForm.addEventListener('submit', function (e) {
     e.preventDefault();
     submit(els.omni.value);
-  });
-
-  els.heroForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    submit(els.heroInput.value);
   });
 
   els.back.addEventListener('click', goBack);
@@ -2923,7 +2915,11 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   renderGames();
   updateClock();
   window.setInterval(updateClock, 5000);
-  els.heroInput.focus();
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) updateClock();
+  });
+  startTyping();
+  els.omni.focus();
 
   window.Saleen = {
     toast: toast,
