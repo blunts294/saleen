@@ -1152,54 +1152,63 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
   /* ---------------- typewriter ---------------- */
 
-  var TYPED_LINES = ['made by 762', '64% of yall are femboys btw'];
+  var TYPED_LINES = ['- made by 762', '- 64% of yall are femboys btw'];
   var typeIndex = 0;
   var typePos = 0;
-  var typeDeleting = false;
+  var typePhase = 'typing';
   var typeTimer = null;
 
-  function typeTick() {
+  function typeRender() {
     if (!els.typingText) return;
-    var line = '-' + ' ' + TYPED_LINES[typeIndex];
-    var speed = typeDeleting ? 34 : 72;
+    els.typingText.textContent = TYPED_LINES[typeIndex].slice(0, typePos);
+  }
 
-    if (!typeDeleting) {
+  function typeStep() {
+    if (!els.typingText) return;
+    var line = TYPED_LINES[typeIndex];
+    var delay = 70;
+
+    if (typePhase === 'typing') {
       typePos += 1;
-      els.typingText.textContent = line.slice(0, typePos);
+      typeRender();
       if (typePos >= line.length) {
-        typeDeleting = true;
-        speed = 1900;
+        typePhase = 'holding';
+        delay = 3000;
       }
+    } else if (typePhase === 'holding') {
+      typePhase = 'deleting';
+      delay = 40;
     } else {
       typePos -= 1;
-      els.typingText.textContent = line.slice(0, Math.max(0, typePos));
+      typeRender();
+      delay = 32;
       if (typePos <= 0) {
-        typeDeleting = false;
+        typePos = 0;
+        typeRender();
         typeIndex = (typeIndex + 1) % TYPED_LINES.length;
-        speed = 420;
+        typePhase = 'typing';
+        delay = 600;
       }
     }
 
-    typeTimer = window.setTimeout(typeTick, speed);
+    typeTimer = window.setTimeout(typeStep, delay);
   }
 
   function startTyping() {
     if (!els.typingText) return;
-    if (REDUCED) {
-      els.typingText.textContent = '- ' + TYPED_LINES[0];
-      return;
-    }
     window.clearTimeout(typeTimer);
+    typeIndex = 0;
     typePos = 0;
-    typeDeleting = false;
-    typeTick();
+    typePhase = 'typing';
+    typeRender();
+    typeTimer = window.setTimeout(typeStep, 500);
   }
 
   function updateTitle() {
     var name = MODE_TITLES[mode] || 'Home';
     if (mode === 'browser') {
       var t = activeTab();
-      name = (t && t.url) ? t.title : 'Home';
+      name = (t && t.url && t.title) ? t.title : 'New tab';
     }
     document.title = 'Saleen \u2014 ' + name;
   }
@@ -1385,7 +1394,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   }
 
   function createTab() {
-    var t = { id: 't' + (++seq), title: 'Home', url: '', mode: 'new', hist: [], hi: -1 };
+    var t = { id: 't' + (++seq), title: '', url: '', mode: 'new', hist: [], hi: -1 };
     tabs.push(t);
     activeId = t.id;
     renderTabs();
@@ -1446,7 +1455,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
       var title = document.createElement('span');
       title.className = 'tab-title';
-      title.textContent = t.title;
+      title.textContent = t.title || 'New tab';
 
       var x = document.createElement('button');
       x.type = 'button';
@@ -2461,6 +2470,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     var changed = next !== mode;
     mode = next;
     renderView();
+    if (next === 'home') startTyping();
     if (changed) document.dispatchEvent(new CustomEvent('saleen:mode', { detail: mode }));
   }
 
@@ -2469,7 +2479,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     t.mode = 'web';
     t.kind = isSearchUrl(url) ? 'search' : 'page';
     t.query = t.kind === 'search' ? queryOf(url) : '';
-    t.title = t.kind === 'search' ? 'Search · ' + t.query : hostOf(url);
+    t.title = t.kind === 'search' ? t.query : hostOf(url);
     els.frame.dataset.url = '';
   }
 
