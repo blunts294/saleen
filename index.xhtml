@@ -992,7 +992,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         <header class="view-head">
           <div>
             <h2>Links</h2>
-            <p class="view-sub">Saved links open through Saleen's own browser, so they load even when a site blocks frames.</p>
           </div>
           <div class="head-actions">
             <button id="linksClear" class="ghost-btn" type="button">Clear mine</button>
@@ -1004,7 +1003,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
             <input id="linkInput" class="text-input" type="text" placeholder="Paste a link or type a search…" spellcheck="false" />
             <button class="primary-btn" type="submit">Create link</button>
           </form>
-          <p id="linkHint" class="fineprint">A full URL opens as typed. Anything else becomes a search.</p>
 
           <section class="links-section">
             <h3 class="links-h">My links <span id="myLinksCount" class="links-count">0</span></h3>
@@ -1017,7 +1015,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         <header class="view-head">
           <div>
             <h2>Games</h2>
-            <p class="view-sub">Live shelf. Anything added here shows up in every open Saleen window instantly.</p>
           </div>
         </header>
         <div id="gamesBody" class="links-body"></div>
@@ -2623,7 +2620,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
   /* ---------------- links ---------------- */
 
-  var LINKS_KEY = 'saleen.links.v2';
+  var LINKS_KEY = 'saleen.links.v3';
   var myLinks = [];
 
   /* The shelf starts empty. Everything a user adds here is fetched by Saleen's
@@ -2638,6 +2635,11 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
   function readMyLinks() {
     try {
+      /* Older builds saved a shelf of starter links under these keys. They are
+         removed once so the Links tab starts genuinely empty. */
+      ['saleen.links.v1', 'saleen.links.v2'].forEach(function (k) {
+        try { localStorage.removeItem(k); } catch (e) {}
+      });
       var raw = localStorage.getItem(LINKS_KEY);
       if (!raw) {
         myLinks = seedLinks();
