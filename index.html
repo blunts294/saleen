@@ -2440,7 +2440,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     var hasWeb = !!(mode === 'browser' && t && t.mode === 'web' && t.url);
     var isSearch = !!(hasWeb && isSearchUrl(t.url));
 
-    els.chrome.hidden = !browser;
+    els.chrome.hidden = mode !== 'browser';
     els.newTabView.hidden = !browser || hasWeb;
     els.webWrap.hidden = !hasWeb;
     els.aiView.hidden = mode !== 'ai';
