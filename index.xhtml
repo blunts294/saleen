@@ -2964,6 +2964,14 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     updateClock();
     if (mode === 'home') startTyping();
   });
+
+  /* Ask before the page is closed or navigated away from, so an accidental
+     close (or something trying to kick you off the page) can be cancelled. */
+  window.addEventListener('beforeunload', function (e) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  });
   startTyping();
   els.omni.focus();
 
