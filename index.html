@@ -1928,6 +1928,11 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   var pageReq = 0;
   var searchCache = {};
   var searchReq = 0;
+  var proxyHealth = {};
+
+  function cooling(key) {
+    return proxyHealth[key] && (Date.now() - proxyHealth[key] < 60000);
+  }
 
   function proxyUrl(target) {
     return PROXY_RAW + encodeURIComponent(target);
@@ -2021,9 +2026,10 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     if (searchCache[q]) return Promise.resolve(searchCache[q]);
     var target = searchEndpoint(q);
 
-    /* Two transports, whichever answers with real results first wins. */
+    /* Four transports race; the first one with real results wins. Timeouts are
+       short so a dead mirror never makes a search feel broken. */
     var viaReader = function () {
-      return fetchWithTimeout(JINA + target, 28000, { headers: { 'x-return-format': 'html' } })
+      return fetchWithTimeout(JINA + target, 12000, { headers: { 'x-return-format': 'html' } })
         .then(function (res) {
           if (!res.ok) throw new Error('reader HTTP ' + res.status);
           return res.text();
@@ -2036,7 +2042,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     };
 
     var viaFast = function () {
-      return fetchWithTimeout(fastUrl(target), 20000)
+      return fetchWithTimeout(fastUrl(target), 10000)
         .then(function (res) {
           if (!res.ok) throw new Error('proxy HTTP ' + res.status);
           return res.text();
@@ -2049,7 +2055,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     };
 
     var viaProxy = function () {
-      return fetchWithTimeout(proxyUrl(target), 28000)
+      return fetchWithTimeout(proxyUrl(target), 12000)
         .then(function (res) {
           if (!res.ok) throw new Error('proxy HTTP ' + res.status);
           return res.text();
@@ -2062,7 +2068,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     };
 
     var viaCodetabs = function () {
-      return fetchWithTimeout(PROXY_ALT + encodeURIComponent(target), 26000)
+      return fetchWithTimeout(PROXY_ALT + encodeURIComponent(target), 11000)
         .then(function (res) {
           if (!res.ok) throw new Error('proxy HTTP ' + res.status);
           return res.text();
@@ -2074,16 +2080,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         });
     };
 
-    /* Public proxies are flaky, so every transport gets one retry. */
-    var retry = function (fn) {
-      return function () {
-        return fn().catch(function () {
-          return new Promise(function (resolve) { window.setTimeout(resolve, 900); }).then(fn);
-        });
-      };
-    };
-
-    return firstOf([retry(viaFast), retry(viaReader), retry(viaProxy), retry(viaCodetabs)]).then(function (results) {
+    return firstOf([viaFast, viaReader, viaProxy, viaCodetabs]).then(function (results) {
       searchCache[q] = results;
       return results;
     });
@@ -2178,7 +2175,9 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       if (/^(data:|#|about:)/i.test(u)) return m;
       var abs = absoluteUrl(u, base);
       if (!abs) return m;
-      return 'url(' + proxyUrl(abs) + ')';
+      /* Secure URLs load straight from their host (much faster); only insecure
+         ones need the proxy so the page stays https-clean. */
+      return 'url(' + (/^https:/i.test(abs) ? abs : proxyUrl(abs)) + ')';
     });
   }
 
@@ -2257,7 +2256,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     var sheets = [];
     Array.prototype.forEach.call(doc.querySelectorAll('link[href]'), function (l) {
       var rel = (l.getAttribute('rel') || '').toLowerCase();
-      if (rel.indexOf('stylesheet') < 0 || sheets.length >= 8) {
+      if (rel.indexOf('stylesheet') < 0 || sheets.length >= 5) {
         if (l.parentNode) l.parentNode.removeChild(l);
         return;
       }
@@ -2271,7 +2270,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       var src = img.getAttribute('src') || img.getAttribute('data-src') || '';
       var abs = absoluteUrl(src, url);
       if (abs) {
-        img.setAttribute('src', proxyUrl(abs));
+        img.setAttribute('src', /^https:/i.test(abs) ? abs : proxyUrl(abs));
         img.setAttribute('loading', 'lazy');
       } else {
         img.removeAttribute('src');
@@ -2351,35 +2350,63 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   function fetchPage(url) {
     if (pageCache[url]) return Promise.resolve(pageCache[url]);
 
-    var pull = function (builder, ms) {
-      return fetchWithTimeout(builder(url), ms || 14000)
+    var attempt = function (key, make, ms) {
+      return fetchWithTimeout(make(url), ms)
         .then(function (res) {
-          if (!res.ok) throw new Error('proxy HTTP ' + res.status);
+          if (!res.ok) throw new Error(key + ' HTTP ' + res.status);
           return res.text();
+        })
+        .then(function (html) {
+          if (!html || html.length < 120) throw new Error(key + ' empty');
+          return buildPage(html, url);
+        })
+        .then(function (built) {
+          if (!built) throw new Error(key + ' unreadable');
+          proxyHealth[key] = 0;
+          return built;
+        })
+        .catch(function (err) {
+          proxyHealth[key] = Date.now();
+          throw err;
         });
+    };
+
+    /* A proxy that just failed is skipped for a minute, so one bad mirror
+       cannot slow down every page after it. */
+    var race = function () {
+      var tries = [];
+      if (!cooling('corsfix')) tries.push(function () { return attempt('corsfix', fastUrl, 11000); });
+      if (!cooling('allorigins')) tries.push(function () { return attempt('allorigins', proxyUrl, 11000); });
+      if (!cooling('codetabs')) tries.push(function () { return attempt('codetabs', function (u) { return PROXY_ALT + encodeURIComponent(u); }, 11000); });
+      if (!tries.length) {
+        tries.push(
+          function () { return attempt('corsfix', fastUrl, 11000); },
+          function () { return attempt('allorigins', proxyUrl, 11000); }
+        );
+      }
+      return firstOf(tries);
     };
 
     var viaReader = function () {
-      return fetchWithTimeout(JINA + url, 18000, { headers: { 'x-return-format': 'html' } })
+      return fetchWithTimeout(JINA + url, 12000, { headers: { 'x-return-format': 'html' } })
         .then(function (res) {
           if (!res.ok) throw new Error('reader HTTP ' + res.status);
           return res.text();
+        })
+        .then(function (html) { return buildPage(html, url); })
+        .then(function (built) {
+          if (!built) throw new Error('reader unreadable');
+          return built;
         });
     };
 
-    /* Both proxies start at once and the first good answer wins, so a slow or
-       broken mirror never holds the page up. */
-    return firstOf([
-      function () { return pull(fastUrl); },
-      function () { return pull(proxyUrl); }
-    ])
-      .catch(function () { return pull(function (u) { return PROXY_ALT + encodeURIComponent(u); }, 12000); })
-      .catch(viaReader)
-      .then(function (html) {
-        return buildPage(html, url);
+    return race()
+      .catch(function () {
+        /* One more shot before falling back to the reader. */
+        return new Promise(function (resolve) { window.setTimeout(resolve, 350); }).then(race);
       })
+      .catch(viaReader)
       .then(function (built) {
-        if (!built) throw new Error('nothing to render');
         pageCache[url] = built;
         return built;
       });
@@ -3142,12 +3169,24 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       });
   }
 
+  /* Anything about the school filter gets the same short answer instead of a
+     model request (which is also what keeps the tab working). */
+  var BLOCKED = /securly|securley|secur[il]y|securly\.com|go ?guardian/i;
+
   function send() {
     var text = el.input.value.trim();
     if (!text || busy) return;
     el.input.value = '';
     autosize();
     messages.push({ role: 'user', content: text });
+
+    if (BLOCKED.test(text)) {
+      messages.push({ role: 'assistant', content: 'no bro \uD83D\uDE2D' });
+      drawLog();
+      el.input.focus();
+      return;
+    }
+
     respond();
   }
 
@@ -3155,6 +3194,17 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     if (busy) return;
     while (messages.length && messages[messages.length - 1].role === 'error') messages.pop();
     if (!messages.length) return;
+
+    var lastUser = null;
+    for (var i = messages.length - 1; i >= 0; i -= 1) {
+      if (messages[i].role === 'user') { lastUser = messages[i]; break; }
+    }
+    if (lastUser && BLOCKED.test(lastUser.content)) {
+      messages.push({ role: 'assistant', content: 'no bro \uD83D\uDE2D' });
+      drawLog();
+      return;
+    }
+
     respond();
   }
 
