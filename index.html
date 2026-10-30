@@ -274,6 +274,14 @@ body[data-wall="plain"] #wall .b4{opacity:0}
   color:rgba(255,255,255,.78);
   font-size:10.5px;font-weight:600;
 }
+.tab-ico.wave{
+  background:linear-gradient(140deg,color-mix(in srgb,var(--accent) 42%,transparent),rgba(255,255,255,.06));
+  color:#eafcff;
+}
+.tab-ico svg{
+  width:12px;height:12px;display:block;
+  fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+}
 .tab-ico.emoji{background:transparent;font-size:15px;font-weight:400}
 .tab-title{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tab-x{
@@ -701,7 +709,21 @@ body[data-mode="ai"] #toast{bottom:92px}
 .nav-item[aria-current="page"]{color:#fff}
 .nav-item[aria-current="page"]::before{height:16px}
 .nav-item:hover{background:rgba(255,255,255,.055);color:var(--ink)}
-.nav-ico{width:18px;flex:0 0 18px;text-align:center;font-size:14px;line-height:1}
+.nav-ico{
+  width:18px;height:18px;flex:0 0 18px;
+  display:grid;place-items:center;
+  color:currentColor;
+  opacity:.85;
+  transition:opacity .15s ease,transform .15s ease;
+}
+.nav-ico svg{
+  width:17px;height:17px;display:block;
+  fill:none;stroke:currentColor;
+  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;
+}
+.nav-item:hover .nav-ico,
+.nav-item[aria-current="page"] .nav-ico{opacity:1}
+.nav-item[aria-current="page"] .nav-ico{transform:translateX(1px)}
 .nav-label{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rail-label{
   padding:12px 10px 6px;
@@ -859,19 +881,19 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
     <nav class="rail-nav" aria-label="Sections">
       <button id="navHome" class="nav-item" type="button" data-mode="home">
-        <span class="nav-ico" aria-hidden="true">🏠</span><span class="nav-label">Home</span>
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></svg></span><span class="nav-label">Home</span>
       </button>
       <button id="navAI" class="nav-item" type="button" data-mode="ai">
-        <span class="nav-ico" aria-hidden="true">🤖</span><span class="nav-label">AI</span>
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.5l1.7 5.1 5.1 1.7-5.1 1.7L12 17.1l-1.7-5.1L5.2 10.3l5.1-1.7z"/><path d="M17.5 15.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg></span><span class="nav-label">AI</span>
       </button>
       <button id="navLinks" class="nav-item" type="button" data-mode="links">
-        <span class="nav-ico" aria-hidden="true">🔗</span><span class="nav-label">Links</span>
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.2 13.8a4.2 4.2 0 0 0 6 0l2.4-2.4a4.2 4.2 0 0 0-6-6l-1.3 1.3"/><path d="M13.8 10.2a4.2 4.2 0 0 0-6 0l-2.4 2.4a4.2 4.2 0 0 0 6 6l1.3-1.3"/></svg></span><span class="nav-label">Links</span>
       </button>
       <button id="navGames" class="nav-item" type="button" data-mode="games">
-        <span class="nav-ico" aria-hidden="true">🎮</span><span class="nav-label">Games</span>
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="7.5" width="18" height="9.5" rx="4.5"/><path d="M8 10.5v3.2M6.4 12.1h3.2"/><circle cx="16" cy="11.4" r=".9"/><circle cx="18.2" cy="13.6" r=".9"/></svg></span><span class="nav-label">Games</span>
       </button>
       <button id="navMovies" class="nav-item" type="button" data-mode="movies">
-        <span class="nav-ico" aria-hidden="true">🎬</span><span class="nav-label">Movies</span>
+        <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M8 5v14M16 5v14M3 9.5h5M3 14.5h5M16 9.5h5M16 14.5h5"/></svg></span><span class="nav-label">Movies</span>
       </button>
     </nav>
 
@@ -1450,7 +1472,8 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       if (t.mode === 'web' && t.url) {
         ico.textContent = (hostOf(t.url)[0] || '?').toUpperCase();
       } else {
-        ico.textContent = '~';
+        ico.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 14c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/><path d="M3 18c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/></svg>';
+        ico.classList.add('wave');
       }
 
       var title = document.createElement('span');
@@ -2154,7 +2177,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     if (cssCache[url] !== undefined) return Promise.resolve(cssCache[url]);
 
     var pull = function (builder) {
-      return fetchWithTimeout(builder(url), 16000)
+      return fetchWithTimeout(builder(url), 9000)
         .then(function (res) {
           if (!res.ok) throw new Error('css HTTP ' + res.status);
           return res.text();
@@ -2168,8 +2191,10 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         });
     };
 
-    return pull(fastUrl)
-      .catch(function () { return pull(proxyUrl); })
+    return firstOf([
+      function () { return pull(fastUrl); },
+      function () { return pull(proxyUrl); }
+    ])
       .catch(function () { return pull(function (u) { return PROXY_ALT + encodeURIComponent(u); }); })
       .then(function (text) {
         cssCache[url] = text;
@@ -2313,7 +2338,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     if (pageCache[url]) return Promise.resolve(pageCache[url]);
 
     var pull = function (builder, ms) {
-      return fetchWithTimeout(builder(url), ms || 20000)
+      return fetchWithTimeout(builder(url), ms || 14000)
         .then(function (res) {
           if (!res.ok) throw new Error('proxy HTTP ' + res.status);
           return res.text();
@@ -2321,16 +2346,20 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     };
 
     var viaReader = function () {
-      return fetchWithTimeout(JINA + url, 24000, { headers: { 'x-return-format': 'html' } })
+      return fetchWithTimeout(JINA + url, 18000, { headers: { 'x-return-format': 'html' } })
         .then(function (res) {
           if (!res.ok) throw new Error('reader HTTP ' + res.status);
           return res.text();
         });
     };
 
-    return pull(fastUrl)
-      .catch(function () { return pull(proxyUrl); })
-      .catch(function () { return pull(function (u) { return PROXY_ALT + encodeURIComponent(u); }); })
+    /* Both proxies start at once and the first good answer wins, so a slow or
+       broken mirror never holds the page up. */
+    return firstOf([
+      function () { return pull(fastUrl); },
+      function () { return pull(proxyUrl); }
+    ])
+      .catch(function () { return pull(function (u) { return PROXY_ALT + encodeURIComponent(u); }, 12000); })
       .catch(viaReader)
       .then(function (html) {
         return buildPage(html, url);
