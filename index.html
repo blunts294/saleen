@@ -2777,12 +2777,42 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
   /* The shelf starts empty. Everything a user adds here is fetched by Saleen's
      own proxy, so the school filter is never asked about these domains. */
-  var SEED_LINKS = [];
+  var SEED_LINKS = [
+    { name: 'Saleen · Fastly', url: 'https://fastly.jsdelivr.net/gh/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · Gcore', url: 'https://gcore.jsdelivr.net/gh/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · Testing CF', url: 'https://testingcf.jsdelivr.net/gh/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · Statically', url: 'https://cdn.statically.io/gh/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · GitHack', url: 'https://raw.githack.com/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · GitHack CDN', url: 'https://rawcdn.githack.com/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · GitHubRaw', url: 'https://githubraw.com/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · GitHubRaw CDN', url: 'https://cdn.githubraw.com/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · StaticDelivr', url: 'https://cdn.staticdelivr.com/gh/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · Raw GitHub', url: 'https://raw.githubusercontent.com/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · esm.sh', url: 'https://esm.sh/gh/blunts294/saleen/index.xhtml?raw', tag: 'mirror' },
+    { name: 'Saleen · esm.sh raw', url: 'https://raw.esm.sh/gh/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · ghproxy', url: 'https://ghproxy.net/https://raw.githubusercontent.com/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · kkgithub', url: 'https://raw.kkgithub.com/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · staticdn', url: 'https://raw.staticdn.net/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · gitmirror', url: 'https://raw.gitmirror.com/blunts294/saleen/index.xhtml', tag: 'mirror' }
+  ];
 
   function seedLinks() {
     return SEED_LINKS.map(function (l) {
       return { name: l.name, url: l.url, tag: l.tag, added: Date.now() };
     });
+  }
+
+  /* Mirrors are always present: any that are missing get added once, in order,
+     while links the user made are left alone. */
+  function withSeedLinks(list) {
+    var have = {};
+    list.forEach(function (l) { have[l.url] = true; });
+    SEED_LINKS.forEach(function (seed) {
+      if (!have[seed.url]) {
+        list.push({ name: seed.name, url: seed.url, tag: seed.tag, added: Date.now() });
+      }
+    });
+    return list;
   }
 
   function readMyLinks() {
@@ -2805,6 +2835,9 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
             (/^https?:\/\//i.test(l.url) || l.url.indexOf(SEARCH_URL) === 0);
         }).slice(0, 80);
       }
+      var before = myLinks.length;
+      myLinks = withSeedLinks(myLinks);
+      if (myLinks.length !== before) writeMyLinks();
     } catch (e) { myLinks = seedLinks(); }
   }
 
