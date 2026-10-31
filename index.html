@@ -2778,10 +2778,10 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   /* The shelf starts empty. Everything a user adds here is fetched by Saleen's
      own proxy, so the school filter is never asked about these domains. */
   var SEED_LINKS = [
-    { name: 'Saleen · Fastly', url: 'https://fastly.jsdelivr.net/gh/blunts294/saleen/index.xhtml', tag: 'mirror' },
-    { name: 'Saleen · Gcore', url: 'https://gcore.jsdelivr.net/gh/blunts294/saleen/index.xhtml', tag: 'mirror' },
-    { name: 'Saleen · Testing CF', url: 'https://testingcf.jsdelivr.net/gh/blunts294/saleen/index.xhtml', tag: 'mirror' },
-    { name: 'Saleen · Statically', url: 'https://cdn.statically.io/gh/blunts294/saleen/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · Fastly', url: 'https://fastly.jsdelivr.net/gh/blunts294/saleen@main/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · Gcore', url: 'https://gcore.jsdelivr.net/gh/blunts294/saleen@main/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · Testing CF', url: 'https://testingcf.jsdelivr.net/gh/blunts294/saleen@main/index.xhtml', tag: 'mirror' },
+    { name: 'Saleen · Statically', url: 'https://cdn.statically.io/gh/blunts294/saleen/main/index.xhtml', tag: 'mirror' },
     { name: 'Saleen · GitHack', url: 'https://raw.githack.com/blunts294/saleen/index.xhtml', tag: 'mirror' },
     { name: 'Saleen · GitHack CDN', url: 'https://rawcdn.githack.com/blunts294/saleen/index.xhtml', tag: 'mirror' },
     { name: 'Saleen · GitHubRaw', url: 'https://githubraw.com/blunts294/saleen/index.xhtml', tag: 'mirror' },
@@ -2815,6 +2815,14 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     return list;
   }
 
+  /* jsDelivr's versionless branch alias can serve a stale copy for a long time;
+     the @main form updates immediately, so old saved entries are upgraded. */
+  function upgradeMirror(url) {
+    var m = /^https:\/\/(cdn|fastly|gcore|testingcf)\.jsdelivr\.net\/gh\/blunts294\/saleen\/(index\.x?html)$/i.exec(url);
+    if (!m) return url;
+    return 'https://' + m[1] + '.jsdelivr.net/gh/blunts294/saleen@main/' + m[2];
+  }
+
   function readMyLinks() {
     try {
       /* Older builds saved a shelf of starter links under these keys. They are
@@ -2830,9 +2838,14 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       }
       var saved = JSON.parse(raw);
       if (Array.isArray(saved)) {
+        var seen = {};
         myLinks = saved.filter(function (l) {
-          return l && typeof l.url === 'string' &&
-            (/^https?:\/\//i.test(l.url) || l.url.indexOf(SEARCH_URL) === 0);
+          if (!l || typeof l.url !== 'string') return false;
+          l.url = upgradeMirror(l.url);
+          if (!(/^https?:\/\//i.test(l.url) || l.url.indexOf(SEARCH_URL) === 0)) return false;
+          if (seen[l.url]) return false;
+          seen[l.url] = true;
+          return true;
         }).slice(0, 80);
       }
       var before = myLinks.length;
