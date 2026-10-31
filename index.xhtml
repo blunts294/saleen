@@ -152,7 +152,7 @@ body[data-wall="plain"] #wall .caustics{opacity:.4}
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='560' height='190' viewBox='0 0 560 190'%3E%3Cpath d='M0 96c46 0 46-30 92-30s46 30 92 30 46-30 92-30 46 30 92 30 46-30 92-30 46 30 92 30' fill='none' stroke='%238be9ff' stroke-width='2' stroke-linecap='round' opacity='.6'/%3E%3C/svg%3E");
   background-repeat:repeat-x;
   background-size:560px 190px;
-  opacity:.16;
+  opacity:.22;
   animation:waveDrift 26s linear infinite;
 }
 #wall .wave.w1{bottom:-6px}
@@ -401,19 +401,41 @@ body[data-wall="plain"] #wall .b4{opacity:0}
   text-align:center;
   overflow:hidden;
 }
+#startView{
+  position:absolute;inset:0;
+  display:grid;place-items:center;
+  padding:40px 24px 96px;
+  overflow:hidden;
+}
+.start-mark{
+  width:clamp(84px,13vw,132px);aspect-ratio:1;
+  display:grid;place-items:center;
+  color:rgba(125,224,255,.55);
+  filter:drop-shadow(0 18px 40px rgba(14,165,233,.35));
+  animation:startFloat 6s ease-in-out infinite;
+}
+.start-mark svg{
+  width:100%;height:100%;display:block;
+  fill:none;stroke:currentColor;
+  stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;
+}
+@keyframes startFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-7px)}
+}
 .hero-time{
   margin:0;
   font-size:clamp(64px,12vw,132px);
   font-weight:200;letter-spacing:-4px;line-height:.95;
   font-variant-numeric:tabular-nums;
-  color:#f6fdff;
-  text-shadow:0 16px 60px rgba(103,232,249,.35);
+  color:#d9eef9;
+  text-shadow:0 16px 60px rgba(103,232,249,.30);
 }
 .hero-greeting{
   margin:8px 0 0;
   font-size:13px;font-weight:500;letter-spacing:1.4px;
   text-transform:uppercase;
-  color:rgba(196,222,240,.7);
+  color:rgba(176,205,226,.85);
   text-shadow:0 2px 12px rgba(0,0,0,.45);
 }
 .hero-typing{
@@ -421,7 +443,7 @@ body[data-wall="plain"] #wall .b4{opacity:0}
   margin:0;
   font-size:14px;letter-spacing:.3px;
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  color:rgba(228,244,255,.88);
+  color:rgba(205,228,242,.92);
   text-align:center;
   pointer-events:none;
   min-height:1.4em;
@@ -689,7 +711,8 @@ body[data-mode="ai"] #toast{bottom:92px}
   #newTabView{padding:28px 16px}
 }
 @media (prefers-reduced-motion:reduce){
-  *{animation:none!important;transition:none!important}
+  /* UI stays still, but the ocean keeps moving. */
+  *:not(#wall):not(#wall *):not(#ocean){animation:none!important;transition:none!important}
 }
 
 /* ---------- rail sections ---------- */
@@ -736,7 +759,14 @@ body[data-mode="ai"] #toast{bottom:92px}
 
 /* ---------- section views ---------- */
 .view{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden}
-.view-head{
+.movie-shell{position:relative;flex:1 1 auto;min-height:0;margin:0 20px 20px;border-radius:14px;overflow:hidden;background:rgba(4,14,22,.45);border:1px solid rgba(255,255,255,.07)}
+.movie-load{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;transition:opacity .5s ease}
+.movie-load.done{opacity:0;pointer-events:none}
+.movie-status{margin:0;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:rgba(176,205,226,.8)}
+.movie-bar{width:min(280px,70%);height:3px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
+.movie-bar span{display:block;height:100%;width:0;border-radius:99px;background:var(--accent);transition:width .25s ease}
+.movie-wrap{position:absolute;inset:0}
+.movie-wrap iframe{width:100%;height:100%;border:0;display:block;background:#04121c}.view-head{
   display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
   padding:20px 24px 12px;flex:0 0 auto;
 }
@@ -927,16 +957,25 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       <section id="newTabView">
         <p class="hero-time" id="heroTime">--:--</p>
         <p class="hero-greeting" id="heroGreeting">Good evening</p>
-
-        <p id="heroTyping" class="hero-typing" aria-live="polite">
-          <span id="typingText"></span><span class="typing-caret" aria-hidden="true"></span>
-        </p>
       </section>
+
+      <section id="startView" hidden="hidden">
+        <div class="start-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M2.5 13.2c2.1 0 2.1-2.1 4.2-2.1s2.1 2.1 4.2 2.1 2.1-2.1 4.2-2.1 2.1 2.1 4.2 2.1 2.1-2.1 2.2-2.1"/>
+            <path d="M2.5 17.6c2.1 0 2.1-2.1 4.2-2.1s2.1 2.1 4.2 2.1 2.1-2.1 4.2-2.1 2.1 2.1 4.2 2.1 2.1-2.1 2.2-2.1"/>
+            <path d="M2.5 8.8c2.1 0 2.1-2.1 4.2-2.1s2.1 2.1 4.2 2.1 2.1-2.1 4.2-2.1 2.1 2.1 4.2 2.1 2.1-2.1 2.2-2.1"/>
+          </svg>
+        </div>
+      </section>
+
+      <p id="heroTyping" class="hero-typing" aria-live="polite">
+        <span id="typingText"></span><span class="typing-caret" aria-hidden="true"></span>
+      </p>
 
       <div id="webWrap" hidden="hidden">
         <div id="webBanner">
           <p id="webNote">Loading…</p>
-          <button id="readerBtn" class="strip-btn" type="button" aria-pressed="false">Reader</button>
         </div>
         <div id="searchPane" hidden="hidden">
           <div id="searchList" class="search-list"></div>
@@ -945,9 +984,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         <div id="pageLoading" hidden="hidden">
           <span class="page-spinner" aria-hidden="true"></span>
           <span id="pageLoadingText">Opening through Saleen…</span>
-        </div>
-        <div id="webReader" hidden="hidden">
-          <div id="readerDoc" class="reader-doc" aria-live="polite"></div>
         </div>
       </div>
 
@@ -1007,6 +1043,13 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
             <h2>Movies</h2>
           </div>
         </header>
+        <div class="movie-shell">
+          <div id="movieLoad" class="movie-load">
+            <p id="movieStatus" class="movie-status">Starting the proxy</p>
+            <div class="movie-bar"><span id="movieFill"></span></div>
+          </div>
+          <div id="movieWrap" class="movie-wrap" hidden="hidden"></div>
+        </div>
       </section>
 
     </div>
@@ -1095,6 +1138,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     omniForm: $('#omniForm'),
     chrome: $('#chrome'),
     newTabView: $('#newTabView'),
+    startView: $('#startView'),
     heroTime: $('#heroTime'),
     heroGreeting: $('#heroGreeting'),
     typingText: $('#typingText'),
@@ -1107,6 +1151,10 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     searchList: $('#searchList'),
     pageLoading: $('#pageLoading'),
     pageLoadingText: $('#pageLoadingText'),
+    movieLoad: $('#movieLoad'),
+    movieStatus: $('#movieStatus'),
+    movieFill: $('#movieFill'),
+    movieWrap: $('#movieWrap'),
     readerBtn: $('#readerBtn'),
     readerPane: $('#webReader'),
     webReader: $('#webReader'),
@@ -1185,7 +1233,9 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     '- Made by 762.',
     '- 64% of yall are femboys, by the way.',
     '- Ethan is very weird.',
-    '- Tucker is very gay.'
+    '- Tucker is very gay.',
+    '- Ethen is goated.',
+    '- Def not a proxy with movies and games \uD83D\uDC40.'
   ];
   var typeIndex = -1;
   var typePos = 0;
@@ -1288,7 +1338,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     els.scene.height = Math.max(1, Math.floor(H * dpr));
     sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    var bubbleCount = Math.max(18, Math.min(72, Math.round(W * H / 30000)));
+    var bubbleCount = Math.max(26, Math.min(96, Math.round(W * H / 22000)));
     bubbles = [];
     for (var i = 0; i < bubbleCount; i++) {
       bubbles.push({
@@ -1299,7 +1349,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         wob: Math.random() * Math.PI * 2,
         wobA: 0.4 + Math.random() * 1.4,
         wobS: 0.006 + Math.random() * 0.014,
-        a: 0.10 + Math.random() * 0.28
+        a: 0.18 + Math.random() * 0.34
       });
     }
 
@@ -1374,7 +1424,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     if (!bubbles.length) sizeScene();
     if (sceneRunning) return;
     sceneRunning = true;
-    if (REDUCED) { paintScene(); sceneRunning = false; return; }
     var tick = function () {
       if (!sceneRunning) return;
       paintScene();
@@ -2134,8 +2183,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     var q = t.query;
     els.searchPane.hidden = false;
     els.frame.hidden = true;
-    els.webReader.hidden = true;
-    els.readerBtn.hidden = true;
     els.note.textContent = 'Saleen Search';
     els.pageLoadingText.textContent = 'Searching the web…';
 
@@ -2430,6 +2477,30 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     }
   }
 
+  function paintPageError(url) {
+    els.pageLoading.hidden = true;
+    els.frame.hidden = false;
+    els.note.textContent = 'Saleen · ' + hostOf(url);
+    els.frame.dataset.url = url;
+    els.frame.srcdoc = [
+      '<!doctype html><html><head><meta charset="utf-8">',
+      '<meta name="viewport" content="width=device-width,initial-scale=1">',
+      '<style>',
+      'html,body{margin:0;height:100%}',
+      'body{display:grid;place-items:center;background:#06151f;color:#dff3ff;',
+      'font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;text-align:center;padding:24px}',
+      'p{margin:0 0 16px;opacity:.85}',
+      'button{padding:10px 20px;border:0;border-radius:10px;background:#38bdf8;color:#04121c;',
+      'font:600 13.5px/1 inherit;cursor:pointer}',
+      '</style></head><body><div>',
+      '<p>That page would not open.</p>',
+      '<button id="again" type="button">Try again</button>',
+      '</div><script>',
+      'document.getElementById("again").onclick=function(){parent.postMessage({saleen:"retry"},"*");};',
+      '<\/script></body></html>'
+    ].join('');
+  }
+
   function loadPage(t) {
     var url = t.url;
     els.searchPane.hidden = true;
@@ -2461,30 +2532,40 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       paintPage(t, built);
     }).catch(function () {
       if (token !== pageReq || activeTab() !== t || t.url !== url) return;
-      els.pageLoading.hidden = true;
-      readerChoice[url] = true;
-      renderView();
+      paintPageError(url);
     });
   }
 
   window.addEventListener('message', function (e) {
     var data = e.data;
-    if (!data || data.saleen !== 'nav' || typeof data.url !== 'string') return;
-    if (e.source !== els.frame.contentWindow) return;
+    if (!data || e.source !== els.frame.contentWindow) return;
+
+    if (data.saleen === 'retry') {
+      var t = activeTab();
+      if (!t || !t.url) return;
+      delete pageCache[t.url];
+      loadPage(t);
+      return;
+    }
+
+    if (data.saleen !== 'nav' || typeof data.url !== 'string') return;
     if (!/^https?:\/\//i.test(data.url)) return;
     navigate(data.url);
   });
 
   function renderView() {
     var t = activeTab();
-    var browser = mode === 'browser' || mode === 'home';
     document.body.dataset.mode = mode;
 
     var hasWeb = !!(mode === 'browser' && t && t.mode === 'web' && t.url);
     var isSearch = !!(hasWeb && isSearchUrl(t.url));
+    var emptyTab = mode === 'browser' && !hasWeb;
+    var clockPage = mode === 'home';
 
     els.chrome.hidden = mode !== 'browser';
-    els.newTabView.hidden = !browser || hasWeb;
+    els.newTabView.hidden = !clockPage;
+    els.startView.hidden = !emptyTab;
+    els.heroTyping.hidden = !(clockPage || emptyTab);
     els.webWrap.hidden = !hasWeb;
     els.aiView.hidden = mode !== 'ai';
     els.linksView.hidden = mode !== 'links';
@@ -2495,44 +2576,23 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       item.setAttribute('aria-current', item.dataset.mode === mode ? 'page' : 'false');
     });
 
-    if (browser && t) {
+    if (mode === 'browser' && t) {
       if (hasWeb) {
         els.omni.value = isSearch ? queryOf(t.url) : t.url;
 
         if (isSearch) {
           renderSearch(t);
         } else {
-          var reader = wantsReader(t);
-          t.reader = reader;
           els.searchPane.hidden = true;
-          els.readerBtn.hidden = false;
-          els.webReader.hidden = !reader;
-          els.frame.hidden = reader;
-          els.readerBtn.textContent = reader ? 'Page' : 'Reader';
-          els.readerBtn.setAttribute('aria-pressed', reader ? 'true' : 'false');
-          els.readerBtn.title = reader ? 'Show the page instead' : 'Show a plain text version';
-
-          if (reader) {
-            els.pageLoading.hidden = true;
-            els.note.textContent = 'Reader · text version';
-            loadReader(t);
-          } else {
-            loadPage(t);
-          }
+          t.reader = false;
+          loadPage(t);
         }
       } else {
         els.omni.value = '';
-        readerReq += 1;
-        els.readerDoc.textContent = '';
-        els.readerDoc.dataset.url = '';
-        els.webReader.hidden = true;
         els.searchPane.hidden = true;
         els.pageLoading.hidden = true;
         els.frame.hidden = false;
         els.frame.dataset.url = '';
-        els.readerBtn.hidden = false;
-        els.readerBtn.textContent = 'Reader';
-        els.readerBtn.setAttribute('aria-pressed', 'false');
       }
       els.back.disabled = t.hi <= 0;
       els.fwd.disabled = t.hi >= t.hist.length - 1;
@@ -2548,6 +2608,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     mode = next;
     renderView();
     if (next === 'home') startTyping();
+    if (next === 'movies') startMovies();
     if (changed) document.dispatchEvent(new CustomEvent('saleen:mode', { detail: mode }));
   }
 
@@ -2598,7 +2659,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       delete searchCache[queryOf(t.url)];
       els.searchList.dataset.q = '';
     }
-    els.readerDoc.dataset.url = '';
     els.frame.dataset.url = '';
     renderView();
   }
@@ -2757,7 +2817,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
   function openLink(link) {
     setMode('browser');
-    if (link.reader) readerChoice[link.url] = true;
     navigate(link.url);
   }
 
@@ -2785,7 +2844,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     name.textContent = link.name || hostOf(link.url);
     var meta = document.createElement('span');
     meta.className = 'link-host';
-    var prefix = link.reader ? 'Reader' : (link.tag || '');
+    var prefix = link.tag || '';
     var where = isSearchLink ? queryOf(link.url) : hostOf(link.url);
     meta.textContent = prefix ? prefix + ' · ' + where : where;
     text.appendChild(name);
@@ -2861,6 +2920,71 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     els.gamesBody.appendChild(grid);
   }
 
+  /* ---------------- movies (Cinejoy through the proxy) ---------------- */
+
+  var MOVIE_URL = 'https://cinejoy.pk';
+  var movieFrame = null;
+  var movieBusy = false;
+  var movieProgress = 0;
+  var movieTarget = 0;
+  var movieTicker = null;
+
+  function movieStep(at, to, text) {
+    movieProgress = Math.max(movieProgress, at);
+    movieTarget = to;
+    if (els.movieFill) els.movieFill.style.width = movieProgress + '%';
+    if (text && els.movieStatus) els.movieStatus.textContent = text;
+  }
+
+  function movieTickerStart() {
+    window.clearInterval(movieTicker);
+    movieTicker = window.setInterval(function () {
+      if (movieProgress >= movieTarget - 1) return;
+      movieProgress += (movieTarget - movieProgress) * 0.06;
+      if (els.movieFill) els.movieFill.style.width = movieProgress + '%';
+    }, 200);
+  }
+
+  function movieDone() {
+    window.clearInterval(movieTicker);
+    movieStep(100, 100, 'Ready');
+    window.setTimeout(function () {
+      if (els.movieLoad) els.movieLoad.classList.add('done');
+      if (els.movieWrap) els.movieWrap.hidden = false;
+    }, 550);
+  }
+
+  function startMovies() {
+    if (movieBusy || movieFrame || !els.movieWrap) return;
+    movieBusy = true;
+    movieTickerStart();
+    movieStep(4, 30, 'Starting the proxy');
+
+    movieFrame = document.createElement('iframe');
+    movieFrame.title = 'Movies';
+    movieFrame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
+    movieFrame.setAttribute('allowfullscreen', '');
+    els.movieWrap.appendChild(movieFrame);
+    els.movieWrap.hidden = false;
+
+    movieStep(30, 90, 'Loading Cinejoy');
+
+    /* The proxy answers cross-origin, so the load event is all we can observe.
+       A timer makes sure the bar never sits there forever. */
+    var settle = function () {
+      if (!movieBusy) return;
+      movieBusy = false;
+      movieDone();
+    };
+
+    movieFrame.addEventListener('load', function () {
+      window.setTimeout(settle, 350);
+    });
+    window.setTimeout(settle, 22000);
+
+    movieFrame.src = proxyUrl(MOVIE_URL + '/');
+  }
+
   /* ---------------- live sync ---------------- */
 
   var channel = null;
@@ -2933,12 +3057,6 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   els.back.addEventListener('click', goBack);
   els.fwd.addEventListener('click', goFwd);
   els.reload.addEventListener('click', reload);
-
-  els.readerBtn.addEventListener('click', function () {
-    var t = activeTab();
-    if (!t || t.mode !== 'web' || !t.url) return;
-    setReader(t.url, !t.reader);
-  });
 
   els.nameInput.addEventListener('input', function () {
     settings.name = els.nameInput.value.slice(0, 24);
