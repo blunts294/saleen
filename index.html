@@ -1100,6 +1100,8 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   var PROXY_RAW = 'https://api.allorigins.win/raw?url=';
   var PROXY_ALT = 'https://api.codetabs.com/v1/proxy/?quest=';
   var PROXY_FAST = 'https://proxy.corsfix.com/?';
+  /* Cloudflare Worker proxy. Raw URL goes straight after the slash. */
+  var PROXY_CF = 'https://cors.eu.org/';
   var JINA = 'https://r.jina.ai/';
   var SEARCH_URL = 'saleen://search?q=';
   var WALLS = [
@@ -1987,6 +1989,10 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     return PROXY_RAW + encodeURIComponent(target);
   }
 
+  function cfUrl(target) {
+    return PROXY_CF + target;
+  }
+
   /* The fastest proxy writes the target URL straight into the query string.
      Encoding it makes the service answer 400, so it gets its own builder. */
   function fastUrl(target) {
@@ -2129,7 +2135,20 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         });
     };
 
-    return firstOf([viaFast, viaReader, viaProxy, viaCodetabs]).then(function (results) {
+    var viaCloudflare = function () {
+      return fetchWithTimeout(cfUrl(target), 11000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('cloudflare HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    return firstOf([viaCloudflare, viaFast, viaReader, viaProxy, viaCodetabs]).then(function (results) {
       searchCache[q] = results;
       return results;
     });
@@ -2253,6 +2272,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
     return firstOf([
       function () { return pull(fastUrl); },
+      function () { return pull(cfUrl); },
       function () { return pull(proxyUrl); }
     ])
       .catch(function () { return pull(function (u) { return PROXY_ALT + encodeURIComponent(u); }); })
@@ -2423,11 +2443,13 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     var race = function () {
       var tries = [];
       if (!cooling('corsfix')) tries.push(function () { return attempt('corsfix', fastUrl, 11000); });
+      if (!cooling('cloudflare')) tries.push(function () { return attempt('cloudflare', cfUrl, 11000); });
       if (!cooling('allorigins')) tries.push(function () { return attempt('allorigins', proxyUrl, 11000); });
       if (!cooling('codetabs')) tries.push(function () { return attempt('codetabs', function (u) { return PROXY_ALT + encodeURIComponent(u); }, 11000); });
       if (!tries.length) {
         tries.push(
           function () { return attempt('corsfix', fastUrl, 11000); },
+          function () { return attempt('cloudflare', cfUrl, 11000); },
           function () { return attempt('allorigins', proxyUrl, 11000); }
         );
       }
@@ -2915,7 +2937,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
 
   /* ---------------- movies (Cinejoy through the proxy) ---------------- */
 
-  var MOVIE_URL = 'https://cinejoy.pk';
+  var MOVIE_URL = 'https://www.2embed.cc/';
   var movieFrame = null;
   var movieBusy = false;
   var movieProgress = 0;
@@ -2960,9 +2982,9 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     els.movieWrap.appendChild(movieFrame);
     els.movieWrap.hidden = false;
 
-    movieStep(30, 90, 'Loading Cinejoy');
+    movieStep(30, 90, 'Loading movies');
 
-    /* The proxy answers cross-origin, so the load event is all we can observe.
+    /* The player is cross-origin, so the load event is all we can observe.
        A timer makes sure the bar never sits there forever. */
     var settle = function () {
       if (!movieBusy) return;
@@ -2975,7 +2997,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     });
     window.setTimeout(settle, 22000);
 
-    movieFrame.src = proxyUrl(MOVIE_URL + '/');
+    movieFrame.src = MOVIE_URL;
   }
 
   /* ---------------- live sync ---------------- */
