@@ -2201,7 +2201,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         });
     };
 
-    return firstOf([viaCloudflare, viaFast, viaReader, viaProxy, viaCodetabs]).then(function (results) {
+    return firstOf([viaCloudflare, viaReader]).then(function (results) {
       searchCache[q] = results;
       return results;
     });
@@ -2296,7 +2296,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       if (!abs) return m;
       /* Secure URLs load straight from their host (much faster); only insecure
          ones need the proxy so the page stays https-clean. */
-      return 'url(' + (/^https:/i.test(abs) ? abs : proxyUrl(abs)) + ')';
+      return 'url(' + (/^https:/i.test(abs) ? abs : cfUrl(abs)) + ')';
     });
   }
 
@@ -2323,12 +2323,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         });
     };
 
-    return firstOf([
-      function () { return pull(fastUrl); },
-      function () { return pull(cfUrl); },
-      function () { return pull(proxyUrl); }
-    ])
-      .catch(function () { return pull(function (u) { return PROXY_ALT + encodeURIComponent(u); }); })
+    return pull(cfUrl)
       .then(function (text) {
         cssCache[url] = text;
         return text;
@@ -2390,7 +2385,7 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
       var src = img.getAttribute('src') || img.getAttribute('data-src') || '';
       var abs = absoluteUrl(src, url);
       if (abs) {
-        img.setAttribute('src', /^https:/i.test(abs) ? abs : proxyUrl(abs));
+        img.setAttribute('src', /^https:/i.test(abs) ? abs : cfUrl(abs));
         img.setAttribute('loading', 'lazy');
       } else {
         img.removeAttribute('src');
@@ -2491,22 +2486,10 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
         });
     };
 
-    /* A proxy that just failed is skipped for a minute, so one bad mirror
-       cannot slow down every page after it. */
+    /* Cloudflare only. The reader stays as the last resort so a rate-limited
+       proxy shows something instead of an error page. */
     var race = function () {
-      var tries = [];
-      if (!cooling('corsfix')) tries.push(function () { return attempt('corsfix', fastUrl, 11000); });
-      if (!cooling('cloudflare')) tries.push(function () { return attempt('cloudflare', cfUrl, 11000); });
-      if (!cooling('allorigins')) tries.push(function () { return attempt('allorigins', proxyUrl, 11000); });
-      if (!cooling('codetabs')) tries.push(function () { return attempt('codetabs', function (u) { return PROXY_ALT + encodeURIComponent(u); }, 11000); });
-      if (!tries.length) {
-        tries.push(
-          function () { return attempt('corsfix', fastUrl, 11000); },
-          function () { return attempt('cloudflare', cfUrl, 11000); },
-          function () { return attempt('allorigins', proxyUrl, 11000); }
-        );
-      }
-      return firstOf(tries);
+      return attempt('cloudflare', cfUrl, 13000);
     };
 
     var viaReader = function () {
@@ -2921,9 +2904,11 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
     return { url: url, name: name || hostOf(url), added: Date.now() };
   }
 
+  /* Links are the one thing that leaves Saleen: each opens in a real browser
+     tab. Everything searched or opened from the address bar stays inside. */
   function openLink(link) {
-    setMode('browser');
-    navigate(link.url);
+    if (!link || !link.url) return;
+    window.open(link.url, '_blank', 'noopener,noreferrer');
   }
 
   function makeCard(link, removable) {
