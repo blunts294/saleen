@@ -9,6 +9,11 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%239df7ff'/%3E%3Cstop offset='.5' stop-color='%2322b8e6'/%3E%3Cstop offset='1' stop-color='%230b5478'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M6.8 24.4c6.1-7.6 12.3-7.6 18.4 0' fill='none' stroke='%23f4feff' stroke-width='2.8' stroke-linecap='round'/%3E%3Cpath d='M16.4 5.4l1.4 3.3 3.3 1.4-3.3 1.4-1.4 3.3-1.4-3.3-3.3-1.4 3.3-1.4z' fill='%23f4feff'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2322b8e6'/%3E%3Cpath d='M6.8 24.4c6.1-7.6 12.3-7.6 18.4 0' fill='none' stroke='%23f4feff' stroke-width='2.8' stroke-linecap='round'/%3E%3C/svg%3E">
 <meta name="theme-color" content="#062436" />
+<link rel="preconnect" href="https://cors.eu.org" crossorigin>
+<link rel="preconnect" href="https://api.cors.lol" crossorigin>
+<link rel="preconnect" href="https://proxy.corsfix.com" crossorigin>
+<link rel="dns-prefetch" href="https://corsproxy.org">
+<link rel="dns-prefetch" href="https://api.allorigins.win">
 <style>
 /*<![CDATA[*/
 
@@ -1321,6 +1326,9 @@ html,body{border:0;outline:0}
   var PROXY_FAST = 'https://proxy.corsfix.com/?';
   /* Cloudflare Worker proxy. Raw URL goes straight after the slash. */
   var PROXY_CF = 'https://cors.eu.org/';
+  /* Two more workers used only when the main one is busy or slow. */
+  var PROXY_LOL = 'https://api.cors.lol/?url=';
+  var PROXY_ORG = 'https://corsproxy.org/?';
   var JINA = 'https://r.jina.ai/';
   var SEARCH_URL = 'saleen://search?q=';
   var WALLS = [
@@ -2211,6 +2219,14 @@ html,body{border:0;outline:0}
     return PROXY_FAST + target;
   }
 
+  function lolUrl(target) {
+    return PROXY_LOL + encodeURIComponent(target);
+  }
+
+  function orgUrl(target) {
+    return PROXY_ORG + encodeURIComponent(target);
+  }
+
   /* Search engines wrap result links in redirectors. Saleen follows the real
      target so a click does not land on a redirect page that needs scripts. */
   function unwrapLink(href, base) {
@@ -2360,7 +2376,33 @@ html,body{border:0;outline:0}
         });
     };
 
-    return firstOf([viaCloudflare, viaFast, viaProxy, viaCodetabs, viaReader]).then(function (results) {
+    var viaLol = function () {
+      return fetchWithTimeout(lolUrl(target), 10000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('corslol HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    var viaOrg = function () {
+      return fetchWithTimeout(orgUrl(target), 12000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('corsorg HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    return firstOf([viaCloudflare, viaLol, viaFast, viaOrg, viaProxy, viaCodetabs, viaReader]).then(function (results) {
       searchCache[q] = results;
       return results;
     });
@@ -2484,6 +2526,7 @@ html,body{border:0;outline:0}
 
     return firstOf([
       function () { return pull(cfUrl); },
+      function () { return pull(lolUrl); },
       function () { return pull(fastUrl); },
       function () { return pull(proxyUrl); }
     ])
@@ -2534,7 +2577,7 @@ html,body{border:0;outline:0}
     var sheets = [];
     Array.prototype.forEach.call(doc.querySelectorAll('link[href]'), function (l) {
       var rel = (l.getAttribute('rel') || '').toLowerCase();
-      if (rel.indexOf('stylesheet') < 0 || sheets.length >= 5) {
+      if (rel.indexOf('stylesheet') < 0 || sheets.length >= 3) {
         if (l.parentNode) l.parentNode.removeChild(l);
         return;
       }
@@ -2655,7 +2698,9 @@ html,body{border:0;outline:0}
     var race = function () {
       var tries = [];
       if (!cooling('cloudflare')) tries.push(function () { return attempt('cloudflare', cfUrl, 9000); });
+      if (!cooling('corslol')) tries.push(function () { return attempt('corslol', lolUrl, 9000); });
       if (!cooling('corsfix')) tries.push(function () { return attempt('corsfix', fastUrl, 9000); });
+      if (!cooling('corsorg')) tries.push(function () { return attempt('corsorg', orgUrl, 11000); });
       if (!cooling('allorigins')) tries.push(function () { return attempt('allorigins', proxyUrl, 11000); });
       if (!cooling('codetabs')) tries.push(function () { return attempt('codetabs', function (u) { return PROXY_ALT + encodeURIComponent(u); }, 11000); });
       if (!tries.length) {
