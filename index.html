@@ -799,7 +799,20 @@ body[data-mode="ai"] #toast{bottom:92px}
 .movie-bar{width:min(280px,70%);height:3px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
 .movie-bar span{display:block;height:100%;width:0;border-radius:99px;background:var(--accent);transition:width .25s ease}
 .movie-wrap{position:absolute;inset:0}
-.movie-wrap iframe{width:100%;height:100%;border:0;display:block;background:#04121c}.view-head{
+.movie-wrap iframe{width:100%;height:100%;border:0;display:block;background:#04121c}
+.game-grid{position:absolute;inset:0;overflow:auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));gap:12px;align-content:start;scrollbar-width:thin;scrollbar-color:rgba(157,247,255,.3) transparent}
+.game-grid::-webkit-scrollbar{width:8px}
+.game-grid::-webkit-scrollbar-thumb{background:rgba(157,247,255,.22);border-radius:99px}
+.game-card{position:relative;display:flex;flex-direction:column;padding:0;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;background:rgba(255,255,255,.03);color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.game-card:hover{transform:translateY(-2px);border-color:rgba(157,247,255,.42);background:rgba(255,255,255,.06)}
+.game-card:focus-visible{outline:2px solid rgba(157,247,255,.6);outline-offset:2px}
+.game-card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:linear-gradient(135deg,#0a2a3d,#12455f)}
+.game-card .game-name{display:block;width:100%;padding:8px 9px;font-size:11.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.game-empty{grid-column:1/-1;margin:18px 0;text-align:center;font-size:12.5px;color:var(--muted)}
+.game-search{width:160px;max-width:42vw;padding:7px 11px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:var(--ink);font:inherit;font-size:12px;outline:none}
+.game-search::placeholder{color:rgba(176,205,226,.55)}
+.game-search:focus{border-color:rgba(157,247,255,.5)}
+.view-head{
   display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
   padding:20px 24px 12px;flex:0 0 auto;
 }
@@ -1277,7 +1290,11 @@ html,body{border:0;outline:0}
       <section id="gamesView" class="view" hidden>
         <header class="view-head">
           <div>
-            <h2>Games</h2>
+            <h2 id="gamesTitle">Games</h2>
+          </div>
+          <div class="head-actions">
+            <input id="gameSearch" class="game-search" type="search" placeholder="Search games" autocomplete="off" spellcheck="false" />
+            <button id="gameBack" class="ghost-btn" type="button" hidden>Back</button>
           </div>
         </header>
         <div class="movie-shell">
@@ -1285,6 +1302,7 @@ html,body{border:0;outline:0}
             <p id="gameStatus" class="movie-status">Loading games</p>
             <div class="movie-bar"><span id="gameFill"></span></div>
           </div>
+          <div id="gameGrid" class="game-grid" hidden></div>
           <div id="gameWrap" class="movie-wrap" hidden></div>
         </div>
       </section>
@@ -1390,10 +1408,14 @@ html,body{border:0;outline:0}
     myLinks: $('#myLinks'),
     myLinksCount: $('#myLinksCount'),
     gamesBody: $('#gamesBody'),
+    gamesTitle: $('#gamesTitle'),
     gameWrap: $('#gameWrap'),
     gameLoad: $('#gameLoad'),
     gameStatus: $('#gameStatus'),
     gameFill: $('#gameFill'),
+    gameGrid: $('#gameGrid'),
+    gameSearch: $('#gameSearch'),
+    gameBack: $('#gameBack'),
     toast: $('#toast')
   };
 
@@ -3234,30 +3256,244 @@ html,body{border:0;outline:0}
     movieFrame.src = src;
   }
 
-  /* GN Math's whole catalogue in one frame: every game, no scraping. */
-  var GAMES_URL = 'https://gn-math.com';
+  /* ---------------- games (GN Math catalogue, without the blocked host) ---------------- */
+
+  /* gn-math.com itself is often filtered and jsDelivr's /gh/gn-math paths are
+     blocked, so the catalogue and the game files are pulled from places that
+     stay reachable: raw GitHub (plus a proxy fallback), the npm mirror, and
+     an image resizer for the covers. */
+  var GAMES_HTML_BASE = 'https://raw.githubusercontent.com/gn-math/html/main/';
+  var GAMES_NPM_BASE = 'https://cdn.jsdelivr.net/npm/gn-math.github.io-main@1.0.5/html-main/';
+  var GAMES_COVER_BASE = 'https://raw.githubusercontent.com/gn-math/covers/main/';
+  var GAMES_CATALOGS = [
+    'https://raw.githubusercontent.com/gn-math/assets/main/zones.json',
+    'https://cdn.jsdelivr.net/npm/gn-math.github.io-main@1.0.5/zones.json'
+  ];
+  var GAMES_CACHE_KEY = 'saleen.games.catalog.v3';
+  var GAMES_CACHE_MS = 6 * 60 * 60 * 1000;
+  var gameCatalog = null;
   var gameFrame = null;
 
-  function startGames() {
-    if (gameFrame || !els.gameWrap) return;
-    if (els.gameFill) els.gameFill.style.width = '14%';
-    if (els.gameStatus) els.gameStatus.textContent = 'Loading games';
+  function gameCover(img, id) {
+    img.addEventListener('error', function () {
+      if (img.getAttribute('data-retry')) { img.hidden = true; return; }
+      img.setAttribute('data-retry', '1');
+      img.src = 'https://wsrv.nl/?url=raw.githubusercontent.com/gn-math/covers/main/' + id + '.png&w=300&h=190&fit=cover';
+    });
+    img.src = GAMES_COVER_BASE + id + '.png';
+  }
 
-    gameFrame = document.createElement('iframe');
-    gameFrame.title = 'Games';
-    gameFrame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
-    gameFrame.setAttribute('allowfullscreen', '');
-    els.gameWrap.appendChild(gameFrame);
+  function readGameCache() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(GAMES_CACHE_KEY) || 'null');
+      if (saved && Array.isArray(saved.list) && saved.list.length && Date.now() - saved.at < GAMES_CACHE_MS) {
+        return saved.list;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function saveGameCache(list) {
+    try { localStorage.setItem(GAMES_CACHE_KEY, JSON.stringify({ at: Date.now(), list: list })); } catch (e) {}
+  }
+
+  /* One source at a time, best first. A race would let the stale npm mirror win
+     and its games point at asset files that do not exist. */
+  function tryEach(factories) {
+    return factories.reduce(function (chain, make) {
+      return chain.catch(function () { return make(); });
+    }, Promise.reject(new Error('no sources')));
+  }
+
+  function stripGameAds(html) {
+    return html
+      .replace(/<script[^>]*(?:googletagmanager|google-analytics|adsbygoogle|pagead2|fundingchoices|doubleclick|adservice)[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<ins[^>]*class=["'][^"']*adsbygoogle[^"']*["'][^>]*>[\s\S]*?<\/ins>/gi, '')
+      .replace(/<iframe[^>]*(?:googlesyndication|doubleclick|adservice)[^>]*>[\s\S]*?<\/iframe>/gi, '');
+  }
+
+  function fetchCatalog(url) {
+    return fetchWithTimeout(url, 16000).then(function (res) {
+      if (!res.ok) throw new Error('catalog HTTP ' + res.status);
+      return res.json();
+    }).then(function (list) {
+      if (!Array.isArray(list)) throw new Error('bad catalogue');
+      var playable = list.filter(function (g) {
+        return g && g.id >= 0 && g.name && typeof g.url === 'string' && /\.html$/.test(g.url);
+      });
+      if (playable.length < 20) throw new Error('catalogue too small');
+      return playable;
+    });
+  }
+
+  function loadGameCatalog() {
+    var cached = readGameCache();
+    if (cached) return Promise.resolve(cached);
+    var tries = [function () { return fetchCatalog(GAMES_CATALOGS[0]); }];
+    tries.push(function () { return fetchCatalog(cfUrl(GAMES_CATALOGS[0])); });
+    tries.push(function () { return fetchCatalog(GAMES_CATALOGS[1]); });
+    return tryEach(tries).then(function (list) {
+      saveGameCache(list);
+      return list;
+    });
+  }
+
+  function gameEmptyNote(show) {
+    var note = $('#gameEmpty');
+    if (!note && show && els.gameGrid) {
+      note = document.createElement('p');
+      note.id = 'gameEmpty';
+      note.className = 'game-empty';
+      note.textContent = 'No games match that search.';
+      els.gameGrid.appendChild(note);
+    }
+    if (note) note.hidden = !show;
+  }
+
+  function renderGameGrid(list) {
+    if (!els.gameGrid) return;
+    els.gameGrid.textContent = '';
+    var frag = document.createDocumentFragment();
+    list.forEach(function (g) {
+      var card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'game-card';
+      card.title = g.name;
+      card.setAttribute('data-name', String(g.name).toLowerCase());
+
+      var img = document.createElement('img');
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      gameCover(img, g.id);
+
+      var label = document.createElement('span');
+      label.className = 'game-name';
+      label.textContent = g.name;
+
+      card.appendChild(img);
+      card.appendChild(label);
+      card.addEventListener('click', function () { openGame(g); });
+      frag.appendChild(card);
+    });
+    els.gameGrid.appendChild(frag);
+    gameEmptyNote(false);
+    els.gameGrid.hidden = false;
+  }
+
+  function openGame(g) {
+    if (!els.gameWrap) return;
+    if (els.gamesTitle) els.gamesTitle.textContent = g.name;
+    if (els.gameBack) els.gameBack.hidden = false;
+    if (els.gameSearch) els.gameSearch.hidden = true;
+    if (els.gameGrid) els.gameGrid.hidden = true;
+    els.gameWrap.textContent = '';
     els.gameWrap.hidden = false;
+    if (els.gameLoad) {
+      els.gameLoad.hidden = false;
+      els.gameLoad.classList.remove('done');
+    }
+    if (els.gameStatus) els.gameStatus.textContent = 'Loading ' + g.name;
+    if (els.gameFill) els.gameFill.style.width = '20%';
 
-    gameFrame.addEventListener('load', function () {
-      if (els.gameFill) els.gameFill.style.width = '100%';
-      window.setTimeout(function () {
-        if (els.gameLoad) els.gameLoad.classList.add('done');
-      }, 300);
+    var file = g.url.split('/').pop();
+    var sources = [
+      GAMES_HTML_BASE + file,
+      cfUrl(GAMES_HTML_BASE + file),
+      GAMES_NPM_BASE + file
+    ];
+
+    var pull = sources.map(function (src) {
+      return function () {
+        return fetchWithTimeout(src, 16000).then(function (res) {
+          if (!res.ok) throw new Error('game HTTP ' + res.status);
+          return res.text();
+        }).then(function (html) {
+          if (!html || html.length < 120 || html.indexOf('<') < 0) throw new Error('not a game page');
+          return stripGameAds(html);
+        });
+      };
     });
 
-    gameFrame.src = GAMES_URL;
+    tryEach(pull).then(function (html) {
+      if (!els.gameWrap || (els.gameGrid && !els.gameGrid.hidden)) return;
+      gameFrame = document.createElement('iframe');
+      gameFrame.title = g.name;
+      gameFrame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture; gamepad';
+      gameFrame.setAttribute('allowfullscreen', '');
+      els.gameWrap.appendChild(gameFrame);
+      if (els.gameFill) els.gameFill.style.width = '85%';
+      gameFrame.addEventListener('load', function () {
+        if (els.gameFill) els.gameFill.style.width = '100%';
+        window.setTimeout(function () {
+          if (els.gameLoad) els.gameLoad.classList.add('done');
+        }, 250);
+      });
+      gameFrame.srcdoc = html;
+    }).catch(function () {
+      if (els.gameFill) els.gameFill.style.width = '100%';
+      if (els.gameStatus) els.gameStatus.textContent = 'That game could not load. Tap Back and try another.';
+      if (els.gameLoad) {
+        els.gameLoad.hidden = false;
+        els.gameLoad.classList.remove('done');
+      }
+    });
+  }
+
+  function closeGame() {
+    if (gameFrame && gameFrame.parentNode) gameFrame.parentNode.removeChild(gameFrame);
+    gameFrame = null;
+    if (els.gameWrap) {
+      els.gameWrap.textContent = '';
+      els.gameWrap.hidden = true;
+    }
+    if (els.gameGrid) els.gameGrid.hidden = false;
+    if (els.gameBack) els.gameBack.hidden = true;
+    if (els.gameSearch) els.gameSearch.hidden = false;
+    if (els.gamesTitle) els.gamesTitle.textContent = 'Games';
+    if (els.gameLoad) els.gameLoad.classList.add('done');
+  }
+
+  function filterGames() {
+    var q = els.gameSearch ? els.gameSearch.value.trim().toLowerCase() : '';
+    var cards = els.gameGrid ? els.gameGrid.querySelectorAll('.game-card') : [];
+    var shown = 0;
+    Array.prototype.forEach.call(cards, function (card) {
+      var hit = !q || (card.getAttribute('data-name') || '').indexOf(q) >= 0;
+      card.hidden = !hit;
+      if (hit) shown += 1;
+    });
+    gameEmptyNote(shown === 0);
+  }
+
+  function startGames() {
+    if (!els.gameGrid || !els.gameWrap) return;
+    if (gameCatalog) return;
+    if (els.gameLoad) {
+      els.gameLoad.hidden = false;
+      els.gameLoad.classList.remove('done');
+    }
+    if (els.gameStatus) els.gameStatus.textContent = 'Loading games';
+    if (els.gameFill) els.gameFill.style.width = '12%';
+
+    loadGameCatalog().then(function (list) {
+      gameCatalog = list;
+      if (els.gameFill) els.gameFill.style.width = '100%';
+      renderGameGrid(list);
+      if (els.gameLoad) els.gameLoad.classList.add('done');
+    }).catch(function () {
+      /* Last resort: the original site, in case only the catalogue fetch failed. */
+      gameCatalog = [];
+      if (els.gameStatus) els.gameStatus.textContent = 'Opening GN Math';
+      if (els.gameFill) els.gameFill.style.width = '100%';
+      gameFrame = document.createElement('iframe');
+      gameFrame.title = 'Games';
+      gameFrame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
+      gameFrame.setAttribute('allowfullscreen', '');
+      els.gameWrap.appendChild(gameFrame);
+      els.gameWrap.hidden = false;
+      gameFrame.src = 'https://gn-math.com';
+    });
   }
 
   /* ---------------- live sync ---------------- */
@@ -3299,6 +3535,9 @@ html,body{border:0;outline:0}
   navItems.forEach(function (item) {
     item.addEventListener('click', function () { setMode(item.dataset.mode); });
   });
+
+  if (els.gameSearch) els.gameSearch.addEventListener('input', filterGames);
+  if (els.gameBack) els.gameBack.addEventListener('click', closeGame);
 
   Array.prototype.forEach.call(document.querySelectorAll('.hero-app'), function (btn) {
     btn.addEventListener('click', function () {
