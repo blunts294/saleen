@@ -920,6 +920,8 @@ body:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
   .nav-item{justify-content:center;padding:9px 0 9px 2px}
   .view-head{padding:16px 16px 10px}
   .ai-log,.ai-compose{padding-left:16px;padding-right:16px}
+  .game-grid{grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:9px;padding:10px}
+  .game-search{width:120px}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -1291,6 +1293,7 @@ html,body{border:0;outline:0}
         <header class="view-head">
           <div>
             <h2 id="gamesTitle">Games</h2>
+            <p id="gamesSub" class="view-sub"></p>
           </div>
           <div class="head-actions">
             <input id="gameSearch" class="game-search" type="search" placeholder="Search games" autocomplete="off" spellcheck="false" />
@@ -1409,6 +1412,7 @@ html,body{border:0;outline:0}
     myLinksCount: $('#myLinksCount'),
     gamesBody: $('#gamesBody'),
     gamesTitle: $('#gamesTitle'),
+    gamesSub: $('#gamesSub'),
     gameWrap: $('#gameWrap'),
     gameLoad: $('#gameLoad'),
     gameStatus: $('#gameStatus'),
@@ -3276,7 +3280,7 @@ html,body{border:0;outline:0}
 
   function gameCover(img, id) {
     img.addEventListener('error', function () {
-      if (img.getAttribute('data-retry')) { img.hidden = true; return; }
+      if (img.getAttribute('data-retry')) { img.removeAttribute('src'); return; }
       img.setAttribute('data-retry', '1');
       img.src = 'https://wsrv.nl/?url=raw.githubusercontent.com/gn-math/covers/main/' + id + '.png&w=300&h=190&fit=cover';
     });
@@ -3338,6 +3342,13 @@ html,body{border:0;outline:0}
     });
   }
 
+  function gameCountLabel(shown) {
+    if (!els.gamesSub) return;
+    var total = gameCatalog ? gameCatalog.length : 0;
+    if (!total) { els.gamesSub.textContent = ''; return; }
+    els.gamesSub.textContent = shown === total ? total + ' games' : shown + ' of ' + total + ' games';
+  }
+
   function gameEmptyNote(show) {
     var note = $('#gameEmpty');
     if (!note && show && els.gameGrid) {
@@ -3378,12 +3389,14 @@ html,body{border:0;outline:0}
     });
     els.gameGrid.appendChild(frag);
     gameEmptyNote(false);
+    gameCountLabel(list.length);
     els.gameGrid.hidden = false;
   }
 
   function openGame(g) {
     if (!els.gameWrap) return;
     if (els.gamesTitle) els.gamesTitle.textContent = g.name;
+    if (els.gamesSub) els.gamesSub.textContent = '';
     if (els.gameBack) els.gameBack.hidden = false;
     if (els.gameSearch) els.gameSearch.hidden = true;
     if (els.gameGrid) els.gameGrid.hidden = true;
@@ -3451,6 +3464,7 @@ html,body{border:0;outline:0}
     if (els.gameBack) els.gameBack.hidden = true;
     if (els.gameSearch) els.gameSearch.hidden = false;
     if (els.gamesTitle) els.gamesTitle.textContent = 'Games';
+    gameCountLabel(gameCatalog ? gameCatalog.length : 0);
     if (els.gameLoad) els.gameLoad.classList.add('done');
   }
 
@@ -3464,6 +3478,7 @@ html,body{border:0;outline:0}
       if (hit) shown += 1;
     });
     gameEmptyNote(shown === 0);
+    gameCountLabel(shown);
   }
 
   function startGames() {
