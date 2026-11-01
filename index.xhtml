@@ -3634,8 +3634,11 @@ html,body{border:0;outline:0}
   sanitize();
   sizeScene();
   apply();
-  mode = 'home';
+  var deepTab = (/[?&]tab=([a-z]+)/i.exec(location.search || '') || [])[1];
+  mode = deepTab && MODE_TITLES[deepTab] ? deepTab : 'home';
   renderView();
+  if (mode === 'games') startGames();
+  if (mode === 'movies' || mode === 'tv' || mode === 'music') startMovies(mode);
   readMyLinks();
   renderLinks();
   readGames();
