@@ -3331,8 +3331,9 @@ html,body{border:0;outline:0}
   /* School filters answer with their own HTML page instead of an error, which
      would otherwise look like a game and get painted into the frame. */
   function looksBlocked(html) {
-    var head = String(html || '').slice(0, 5000).toLowerCase();
-    return /securly|fortiguard|barracuda|lightspeed|goguardian|iboss|umbrella|content blocked|access denied|web filter|blocked by|site blocked|this site is blocked/.test(head);
+    var head = String(html || '').slice(0, 3000).toLowerCase();
+    if (head.indexOf('<html') < 0) return false;
+    return /securly|fortiguard|lightspeed systems|goguardian|iboss|content blocked|access denied|web filter|this site is blocked|site is blocked/.test(head);
   }
 
   function stripGameAds(html) {
@@ -3361,6 +3362,8 @@ html,body{border:0;outline:0}
     if (cached) return Promise.resolve(cached);
     var tries = [function () { return fetchCatalog(GAMES_CATALOGS[0]); }];
     tries.push(function () { return fetchCatalog(cfUrl(GAMES_CATALOGS[0])); });
+    tries.push(function () { return fetchCatalog('https://cdn.statically.io/gh/gn-math/assets/main/zones.json'); });
+    tries.push(function () { return fetchCatalog('https://rawcdn.githack.com/gn-math/assets/main/zones.json'); });
     tries.push(function () { return fetchCatalog(GAMES_CATALOGS[1]); });
     return tryEach(tries).then(function (list) {
       saveGameCache(list);
@@ -3447,6 +3450,8 @@ html,body{border:0;outline:0}
     var sources = [
       GAMES_HTML_BASE + file,
       cfUrl(GAMES_HTML_BASE + file),
+      'https://cdn.statically.io/gh/gn-math/html/main/' + file,
+      'https://rawcdn.githack.com/gn-math/html/main/' + file,
       GAMES_NPM_BASE + file
     ];
 
