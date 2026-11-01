@@ -1280,7 +1280,13 @@ html,body{border:0;outline:0}
             <h2>Games</h2>
           </div>
         </header>
-        <div id="gamesBody" class="links-body"></div>
+        <div class="movie-shell">
+          <div id="gameLoad" class="movie-load">
+            <p id="gameStatus" class="movie-status">Loading games</p>
+            <div class="movie-bar"><span id="gameFill"></span></div>
+          </div>
+          <div id="gameWrap" class="movie-wrap" hidden></div>
+        </div>
       </section>
 
       <section id="moviesView" class="view" hidden>
@@ -1384,6 +1390,10 @@ html,body{border:0;outline:0}
     myLinks: $('#myLinks'),
     myLinksCount: $('#myLinksCount'),
     gamesBody: $('#gamesBody'),
+    gameWrap: $('#gameWrap'),
+    gameLoad: $('#gameLoad'),
+    gameStatus: $('#gameStatus'),
+    gameFill: $('#gameFill'),
     toast: $('#toast')
   };
 
@@ -2871,6 +2881,7 @@ html,body{border:0;outline:0}
     renderView();
     if (next === 'home') startTyping();
     if (next === 'movies' || next === 'tv' || next === 'music') startMovies(next);
+    if (next === 'games') startGames();
     if (changed) document.dispatchEvent(new CustomEvent('saleen:mode', { detail: mode }));
   }
 
@@ -2977,9 +2988,7 @@ html,body{border:0;outline:0}
   /* Every link, always present. Any that go missing are added back once, in
      order, and duplicates are dropped. */
   var KEEP_LINK = 'https://cdn.jsdelivr.net/gh/blunts294/saleen/app.xhtml';
-  var SEED_LINKS = [
-    { name: 'Saleen', url: KEEP_LINK, tag: '' }
-  ];
+  var SEED_LINKS = [];
 
   function seedLinks() {
     return SEED_LINKS.map(function (l) {
@@ -3223,6 +3232,32 @@ html,body{border:0;outline:0}
     window.setTimeout(settle, 22000);
 
     movieFrame.src = src;
+  }
+
+  /* GN Math's whole catalogue in one frame: every game, no scraping. */
+  var GAMES_URL = 'https://gn-math.com';
+  var gameFrame = null;
+
+  function startGames() {
+    if (gameFrame || !els.gameWrap) return;
+    if (els.gameFill) els.gameFill.style.width = '14%';
+    if (els.gameStatus) els.gameStatus.textContent = 'Loading games';
+
+    gameFrame = document.createElement('iframe');
+    gameFrame.title = 'Games';
+    gameFrame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
+    gameFrame.setAttribute('allowfullscreen', '');
+    els.gameWrap.appendChild(gameFrame);
+    els.gameWrap.hidden = false;
+
+    gameFrame.addEventListener('load', function () {
+      if (els.gameFill) els.gameFill.style.width = '100%';
+      window.setTimeout(function () {
+        if (els.gameLoad) els.gameLoad.classList.add('done');
+      }, 300);
+    });
+
+    gameFrame.src = GAMES_URL;
   }
 
   /* ---------------- live sync ---------------- */
