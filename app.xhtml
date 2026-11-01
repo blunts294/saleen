@@ -12,6 +12,14 @@ iframe{position:fixed;inset:0;width:100%;height:100%;border:0;display:block;back
 </style>
 </head>
 <body>
-<iframe src="https://blunts294.github.io/saleen/index.html" title="Saleen" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="allowfullscreen"></iframe>
+<iframe id="saleen" title="Saleen" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="allowfullscreen"></iframe>
+<script type="text/javascript">
+//<![CDATA[
+(function () {
+  var frame = document.getElementById('saleen');
+  if (frame) frame.src = 'https://blunts294.github.io/saleen/index.html?t=' + new Date().getTime();
+})();
+//]]>
+</script>
 </body>
 </html>
