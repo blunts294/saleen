@@ -800,7 +800,7 @@ body[data-mode="ai"] #toast{bottom:92px}
 .movie-bar span{display:block;height:100%;width:0;border-radius:99px;background:var(--accent);transition:width .25s ease}
 .movie-wrap{position:absolute;inset:0}
 .movie-wrap iframe{width:100%;height:100%;border:0;display:block;background:#04121c}
-.game-grid{position:absolute;inset:0;overflow:auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));gap:12px;align-content:start;scrollbar-width:thin;scrollbar-color:rgba(157,247,255,.3) transparent}
+.game-grid{position:absolute;inset:0;overflow:auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));grid-auto-rows:max-content;align-items:start;align-content:start;gap:12px;scrollbar-width:thin;scrollbar-color:rgba(157,247,255,.3) transparent}
 .game-grid::-webkit-scrollbar{width:8px}
 .game-grid::-webkit-scrollbar-thumb{background:rgba(157,247,255,.22);border-radius:99px}
 .game-card{position:relative;display:flex;flex-direction:column;padding:0;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;background:rgba(255,255,255,.03);color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease}
