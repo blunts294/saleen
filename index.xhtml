@@ -803,6 +803,9 @@ body[data-mode="ai"] #toast{bottom:92px}
 .movie-bar span{display:block;height:100%;width:0;border-radius:99px;background:var(--accent);transition:width .25s ease}
 .movie-wrap{position:absolute;inset:0}
 .movie-wrap iframe{width:100%;height:100%;border:0;display:block;background:#04121c}
+.movie-wrap video{width:100%;height:100%;display:block;background:#000;object-fit:contain}
+.movie-tap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;padding:14px 38px;border-radius:999px;border:1px solid rgba(255,255,255,.26);background:rgba(4,18,28,.74);color:#eaf7ff;font:600 13px/1 "Inter",system-ui,sans-serif;letter-spacing:2.4px;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(6px);transition:background .2s ease,border-color .2s ease}
+.movie-tap:hover{background:rgba(9,42,58,.88);border-color:var(--accent)}
 .game-grid{position:absolute;inset:0;overflow:auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));grid-auto-rows:max-content;align-items:start;align-content:start;gap:12px;scrollbar-width:thin;scrollbar-color:rgba(157,247,255,.3) transparent}
 .game-grid::-webkit-scrollbar{width:8px}
 .game-grid::-webkit-scrollbar-thumb{background:rgba(157,247,255,.22);border-radius:99px}
@@ -2325,6 +2328,55 @@ html,body{border:0;outline:0}
     return PROXY_ORG + encodeURIComponent(target);
   }
 
+  /* ---- Wisp transport ----
+     The public CORS relays are rewritten HTML fetchers, not real proxies, and
+     they are the slow part of the browser view. Saleen can instead open a
+     WebSocket to a Wisp server and let libcurl.js do the TLS itself, so pages
+     are fetched end-to-end without a third party in the middle. The relays stay
+     as a fallback for when the socket is blocked. */
+
+  var WISP_WS = 'wss://wisp.mercurywork.shop/';
+  var LIBCURL_JS = 'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/libcurl.js';
+  var LIBCURL_WASM = 'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/libcurl.wasm';
+  var wispBoot = null;
+
+  function bootWisp() {
+    if (wispBoot) return wispBoot;
+    wispBoot = loadScriptOnce(LIBCURL_JS, 'libcurl').then(function () {
+      return libcurl.load_wasm(LIBCURL_WASM);
+    }).then(function () {
+      libcurl.set_websocket(WISP_WS);
+      return libcurl;
+    }).catch(function (err) {
+      wispBoot = null;
+      throw err;
+    });
+    return wispBoot;
+  }
+
+  function wispFetchText(url, accept) {
+    return bootWisp().then(function (lc) {
+      return lc.fetch(url, {
+        headers: {
+          'user-agent': navigator.userAgent,
+          'accept-language': 'en-US,en;q=0.9',
+          accept: accept || 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        }
+      });
+    }).then(function (res) {
+      if (!res.ok) throw new Error('wisp HTTP ' + res.status);
+      return res.text();
+    });
+  }
+
+  function withTimeout(promise, ms) {
+    return new Promise(function (resolve, reject) {
+      var timer = window.setTimeout(function () { reject(new Error('timeout')); }, ms);
+      promise.then(function (v) { window.clearTimeout(timer); resolve(v); },
+        function (e) { window.clearTimeout(timer); reject(e); });
+    });
+  }
+
   /* Search engines wrap result links in redirectors. Saleen follows the real
      target so a click does not land on a redirect page that needs scripts. */
   function unwrapLink(href, base) {
@@ -2823,12 +2875,27 @@ html,body{border:0;outline:0}
         });
     };
 
-    return race()
+    var viaWisp = function () {
+      return withTimeout(wispFetchText(url), 15000)
+        .then(function (html) {
+          if (!html || html.length < 120) throw new Error('wisp empty');
+          return buildPage(html, url);
+        })
+        .then(function (built) {
+          if (!built) throw new Error('wisp unreadable');
+          return built;
+        });
+    };
+
+    return viaWisp()
       .catch(function () {
-        /* One more shot before falling back to the reader. */
-        return new Promise(function (resolve) { window.setTimeout(resolve, 350); }).then(race);
+        return race()
+          .catch(function () {
+            /* One more shot before falling back to the reader. */
+            return new Promise(function (resolve) { window.setTimeout(resolve, 350); }).then(race);
+          })
+          .catch(viaReader);
       })
-      .catch(viaReader)
       .then(function (built) {
         pageCache[url] = built;
         return built;
@@ -2976,6 +3043,9 @@ html,body{border:0;outline:0}
   function setMode(next) {
     if (['home', 'ai', 'links', 'games', 'movies', 'tv', 'music', 'browser'].indexOf(next) < 0) next = 'home';
     var changed = next !== mode;
+    /* Leaving the player stops the stream instead of letting it keep pulling
+       segments behind the other tabs. */
+    if (changed && next !== 'movies' && next !== 'tv' && media.item) closeMedia();
     mode = next;
     renderView();
     if (next === 'home') startTyping();
@@ -3252,12 +3322,17 @@ html,body{border:0;outline:0}
   /* ---------------- movies + tv (catalogue, one English stream) ----------------
      CinemaOS is only used as a keyless TMDB reader now: its own player kept
      cycling through dead sources and language tracks. The posters and titles
-     come from that API, and playback is a single embedded English stream. */
+     come from that API. Playback is not an embed any more: the provider's own
+     HLS playlist is resolved and handed to a plain <video> element, with every
+     non-English audio track and every subtitle track stripped out. */
 
   var MEDIA_API = 'https://cinemaos.in/api/tmdb';
   var MEDIA_IMG = 'https://image.tmdb.org/t/p/w342';
-  var MEDIA_PLAY = 'https://embedmaster.link/movie';
-  var MEDIA_PLAY_TV = 'https://embedmaster.link/tv';
+  var MEDIA_PLAY = 'https://vixsrc.to/movie';
+  var MEDIA_PLAY_TV = 'https://vixsrc.to/tv';
+  var VIX_API_MOVIE = 'https://vixsrc.to/api/movie/';
+  var VIX_API_TV = 'https://vixsrc.to/api/tv/';
+  var HLS_JS = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js';
   var MEDIA_FILTERS = {
     movie: {
       trending: '/trending/movie/day',
@@ -3271,10 +3346,16 @@ html,body{border:0;outline:0}
     }
   };
   var MEDIA_CACHE = {};
+  var MEDIA_MAX_PAGE = 500;
   var media = {
     kind: 'movie',
     filter: 'trending',
+    query: '',
+    mode: 'grid',
     items: [],
+    page: 1,
+    maxPage: 1,
+    loadingMore: false,
     item: null,
     seasons: [],
     season: 1,
@@ -3354,10 +3435,16 @@ html,body{border:0;outline:0}
 
   function mediaChrome(view) {
     var grid = view === 'grid';
+    media.mode = grid ? 'grid' : 'player';
     if (els.mediaGrid) els.mediaGrid.hidden = !grid;
     if (els.mediaFilters) els.mediaFilters.hidden = !grid;
     if (els.mediaSearch) els.mediaSearch.hidden = !grid;
-    if (els.mediaBack) els.mediaBack.hidden = grid;
+    /* Always leave a way out: from a movie it goes back to the list, from the
+       list it goes back Home. */
+    if (els.mediaBack) {
+      els.mediaBack.hidden = false;
+      els.mediaBack.textContent = grid ? 'Home' : 'Back';
+    }
     if (grid) {
       if (els.seasonSel) { els.seasonSel.hidden = true; els.seasonSel.textContent = ''; }
       if (els.episodeSel) { els.episodeSel.hidden = true; els.episodeSel.textContent = ''; }
@@ -3377,9 +3464,9 @@ html,body{border:0;outline:0}
     });
   }
 
-  function renderMediaGrid(list) {
+  function renderMediaGrid(list, append) {
     if (!els.mediaGrid) return;
-    els.mediaGrid.textContent = '';
+    if (!append) els.mediaGrid.textContent = '';
     var frag = document.createDocumentFragment();
     list.forEach(function (item) {
       var card = document.createElement('button');
@@ -3418,7 +3505,47 @@ html,body{border:0;outline:0}
     });
     els.mediaGrid.appendChild(frag);
     els.mediaGrid.hidden = false;
-    mediaCountLabel(list.length);
+    mediaCountLabel(els.mediaGrid.querySelectorAll('.media-card').length);
+  }
+
+  /* ---------------- paging: the whole catalogue, not just page 1 ---------------- */
+
+  function mediaPagePath(page) {
+    var base;
+    if (media.query) {
+      base = '/search/' + (media.kind === 'tv' ? 'tv' : 'movie') +
+        '?query=' + encodeURIComponent(media.query) + '&include_adult=false';
+    } else {
+      base = MEDIA_FILTERS[media.kind][media.filter];
+    }
+    if (page <= 1) return base;
+    return base + (base.indexOf('?') >= 0 ? '&' : '?') + 'page=' + page;
+  }
+
+  function mediaParse(data, page) {
+    var list = ((data && data.results) || []).filter(function (item) {
+      return item && item.id && mediaPoster(item);
+    });
+    var pages = Number(data && data.total_pages) || page;
+    media.maxPage = Math.max(1, Math.min(pages, MEDIA_MAX_PAGE));
+    return list;
+  }
+
+  function mediaRemember() {
+    var key = media.kind + ':' + (media.query ? 'q:' + media.query : media.filter);
+    MEDIA_CACHE[key] = {
+      items: media.items,
+      page: media.page,
+      maxPage: media.maxPage,
+      query: media.query,
+      filter: media.filter
+    };
+  }
+
+  function mediaSettled() {
+    window.clearInterval(movieTicker);
+    movieStep(100, 100, 'Ready');
+    if (els.movieLoad) els.movieLoad.classList.add('done');
   }
 
   function mediaLoad(filter, force) {
@@ -3426,29 +3553,31 @@ html,body{border:0;outline:0}
     var kind = media.kind;
     var key = kind + ':' + filter;
     media.filter = filter;
+    media.query = '';
+    media.page = 1;
+    media.maxPage = 1;
+    media.loadingMore = false;
     mediaChipsMark();
     movieReset(kind === 'tv' ? 'Loading shows' : 'Loading movies');
 
-    if (!force && MEDIA_CACHE[key]) {
-      media.items = MEDIA_CACHE[key];
+    var cached = MEDIA_CACHE[key];
+    if (!force && cached) {
+      media.items = cached.items;
+      media.page = cached.page;
+      media.maxPage = cached.maxPage;
       renderMediaGrid(media.items);
-      window.clearInterval(movieTicker);
-      if (els.movieLoad) els.movieLoad.classList.add('done');
+      mediaSettled();
       return Promise.resolve();
     }
 
     if (els.mediaGrid) els.mediaGrid.hidden = true;
     return mediaFetch(MEDIA_FILTERS[kind][filter]).then(function (data) {
-      var list = ((data && data.results) || []).filter(function (item) {
-        return item && item.id && mediaPoster(item);
-      });
+      var list = mediaParse(data, 1);
       if (!list.length) throw new Error('empty list');
-      MEDIA_CACHE[key] = list;
       media.items = list;
+      mediaRemember();
       renderMediaGrid(list);
-      window.clearInterval(movieTicker);
-      movieStep(100, 100, 'Ready');
-      if (els.movieLoad) els.movieLoad.classList.add('done');
+      mediaSettled();
     }).catch(function () {
       window.clearInterval(movieTicker);
       if (els.movieStatus) els.movieStatus.textContent = 'Could not load the list. Try another tab.';
@@ -3457,6 +3586,37 @@ html,body{border:0;outline:0}
         els.movieLoad.hidden = false;
         els.movieLoad.classList.remove('done');
       }
+    });
+  }
+
+  /* Appends the next page in place. Uses the same path builder as page 1 so
+     search results page too, and de-dupes ids TMDB repeats across pages. */
+  function mediaMore() {
+    if (media.mode !== 'grid' || media.loadingMore) return Promise.resolve();
+    if (media.page >= media.maxPage) return Promise.resolve();
+    media.loadingMore = true;
+    var want = media.page + 1;
+    if (els.mediaSub) els.mediaSub.textContent = 'Loading more…';
+
+    return mediaFetch(mediaPagePath(want)).then(function (data) {
+      if (want !== media.page + 1) return;
+      var list = mediaParse(data, want);
+      var seen = {};
+      media.items.forEach(function (i) { seen[i.id] = 1; });
+      var fresh = list.filter(function (i) { return !seen[i.id]; });
+      media.page = want;
+      if (fresh.length) {
+        media.items = media.items.concat(fresh);
+        renderMediaGrid(fresh, true);
+      } else {
+        mediaCountLabel(els.mediaGrid.querySelectorAll('.media-card').length);
+      }
+      mediaRemember();
+    }).catch(function () {
+      /* keep whatever is on screen; the scroll handler can retry */
+      mediaCountLabel(els.mediaGrid.querySelectorAll('.media-card').length);
+    }).then(function () {
+      media.loadingMore = false;
     });
   }
 
@@ -3528,43 +3688,419 @@ html,body{border:0;outline:0}
     });
   }
 
-  function playMedia(season, episode) {
-    if (!els.movieWrap || !media.item) return;
-    var id = media.item.id;
-    var src = media.kind === 'tv'
-      ? MEDIA_PLAY_TV + '/' + id + '/' + (season || 1) + '/' + (episode || 1)
-      : MEDIA_PLAY + '/' + id;
+  /* ---- resolving the stream (no iframe) ---- */
 
+  function loadScriptOnce(src, marker) {
+    return new Promise(function (resolve, reject) {
+      if (marker && window[marker]) { resolve(window[marker]); return; }
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      s.onload = function () {
+        if (marker && !window[marker]) { reject(new Error('script empty')); return; }
+        resolve(marker ? window[marker] : true);
+      };
+      s.onerror = function () { reject(new Error('script blocked')); };
+      document.head.appendChild(s);
+    });
+  }
+
+  var hlsBoot = null;
+  var hlsPlayer = null;
+  var hlsBlob = null;
+  var playerVideo = null;
+  var VIX_CACHE = {};
+
+  function loadHls() {
+    if (window.Hls) return Promise.resolve(window.Hls);
+    if (!hlsBoot) {
+      hlsBoot = loadScriptOnce(HLS_JS, 'Hls').catch(function (err) {
+        hlsBoot = null;
+        throw err;
+      });
+    }
+    return hlsBoot;
+  }
+
+  /* vixsrc's metadata endpoints are Cloudflare-protected and send no CORS
+     headers, so the small JSON/HTML lookups go through public readers. The
+     playlist itself is CORS-open, so the video segments come straight from
+     the CDN and stream at full speed. */
+  function vixText(url, accept) {
+    var tries = [
+      function (u) { return 'https://corsproxy.org/?' + encodeURIComponent(u); },
+      function (u) { return 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent(u); },
+      function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+      function (u) { return cfUrl(u); },
+      function (u) { return fastUrl(u); }
+    ].map(function (make) {
+      return function () {
+        return fetchWithTimeout(make(url), 12000, { headers: { accept: accept || '*/*' } })
+          .then(function (res) {
+            if (!res.ok) throw new Error('meta ' + res.status);
+            return res.text();
+          });
+      };
+    });
+    return firstOf(tries);
+  }
+
+  function vixPlaylistUrl(kind, id, season, episode) {
+    var key = kind + ':' + id + ':' + season + ':' + episode;
+    if (VIX_CACHE[key]) return VIX_CACHE[key];
+
+    var api = kind === 'tv'
+      ? VIX_API_TV + id + '/' + season + '/' + episode
+      : VIX_API_MOVIE + id;
+
+    var job = vixText(api, 'application/json').then(function (txt) {
+      var data;
+      try { data = JSON.parse(txt); } catch (e) { throw new Error('bad api'); }
+      if (!data || !data.src) throw new Error('no source');
+      return /^https?:/i.test(data.src) ? data.src : 'https://vixsrc.to' + data.src;
+    }).then(function (embed) {
+      return vixText(embed, 'text/html').then(function (html) {
+        var token = (html.match(/'token':\s*'([^']+)'/) || [])[1] || '';
+        var expires = (html.match(/'expires':\s*'([^']+)'/) || [])[1] || '';
+        var playlist = (html.match(/url:\s*'([^']+)'/) || [])[1];
+        if (!playlist) throw new Error('no playlist');
+        return playlist + '?token=' + encodeURIComponent(token) +
+          '&expires=' + encodeURIComponent(expires) + '&h=1&lang=en';
+      });
+    });
+
+    VIX_CACHE[key] = job;
+    job.catch(function () { delete VIX_CACHE[key]; });
+    return job;
+  }
+
+  /* Keeps only the English audio rendition and drops every subtitle track, so
+     the player has nothing to switch to. */
+  function englishOnlyPlaylist(text) {
+    var audio = '';
+    var out = [];
+    String(text || '').split(/\r?\n/).forEach(function (line) {
+      if (/^#EXT-X-MEDIA:TYPE=SUBTITLES/i.test(line)) return;
+      if (/^#EXT-X-MEDIA:TYPE=AUDIO/i.test(line)) {
+        if (!audio && /LANGUAGE="eng"/i.test(line)) audio = line;
+        return;
+      }
+      if (/^#EXT-X-STREAM-INF/i.test(line)) line = line.replace(/,SUBTITLES="[^"]*"/i, '');
+      out.push(line);
+    });
+    if (audio) {
+      var at = 0;
+      while (at < out.length && !/^#EXT-X-STREAM-INF/i.test(out[at])) at += 1;
+      out.splice(at, 0, audio);
+    }
+    return out.join('\n');
+  }
+
+  /* ---- vidrock: a CORS-open metadata endpoint that returns the real HLS
+     playlist, encrypted with a key that ships in its own bundle. Decrypting it
+     in the page means no relay, no iframe and no third party in the path. Its
+     segments are MPEG-TS wrapped in a tiny PNG shell (a filter dodge on their
+     side), so a custom hls.js loader peels the shell off before demuxing. */
+
+  var VIDROCK_API = 'https://vidrock.net/api/';
+  var VIDROCK_KEY = '7f3e9c2a8b5d1f4e6a9c3b7d2e5f8a1c4b6d9e2f5a8c1b4d7e9f2a5c8b1d4e7f';
+  var vidrockKeyJob = null;
+
+  function hexBytes(hex) {
+    var out = new Uint8Array(hex.length / 2);
+    for (var i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
+    return out;
+  }
+
+  function b64urlBytes(text) {
+    var s = String(text || '').replace(/-/g, '+').replace(/_/g, '/');
+    var pad = s.length % 4;
+    if (pad === 2) s += '==';
+    else if (pad === 3) s += '=';
+    else if (pad === 1) throw new Error('bad base64');
+    var bin = atob(s);
+    var out = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+
+  function vidrockKey() {
+    if (!window.crypto || !window.crypto.subtle) return Promise.reject(new Error('no webcrypto'));
+    if (!vidrockKeyJob) {
+      vidrockKeyJob = window.crypto.subtle.importKey(
+        'raw', hexBytes(VIDROCK_KEY), { name: 'AES-GCM' }, false, ['decrypt']
+      ).catch(function (err) {
+        vidrockKeyJob = null;
+        throw err;
+      });
+    }
+    return vidrockKeyJob;
+  }
+
+  function vidrockDecrypt(key, payload) {
+    var raw = b64urlBytes(payload);
+    if (raw.length < 28) return Promise.reject(new Error('short ciphertext'));
+    return window.crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: raw.slice(0, 12) }, key, raw.slice(12)
+    ).then(function (plain) {
+      return new TextDecoder().decode(plain);
+    });
+  }
+
+  /* Only English, HLS sources are considered. Nova is normally the English
+     one; the loop just means a renamed slot still works. */
+  function vidrockStream(kind, id, season, episode) {
+    var path = kind === 'tv'
+      ? 'tv/' + id + '/' + season + '/' + episode
+      : 'movie/' + id;
+    return fetchWithTimeout(VIDROCK_API + path, 9000, { headers: { accept: 'application/json' } })
+      .then(function (res) {
+        if (!res.ok) throw new Error('vidrock ' + res.status);
+        return res.json();
+      })
+      .then(function (map) {
+        var names = Object.keys(map || {}).filter(function (name) {
+          var src = map[name];
+          return src && src.url && /^hls$/i.test(src.type || '') &&
+            /english/i.test(src.language || '');
+        });
+        if (!names.length) throw new Error('no english source');
+        return vidrockKey().then(function (key) {
+          var chain = Promise.reject(new Error('none'));
+          names.forEach(function (name) {
+            chain = chain.catch(function () {
+              return vidrockDecrypt(key, map[name].url).then(function (url) {
+                if (!/^https?:\/\//i.test(url)) throw new Error('bad url');
+                return { url: url, name: name };
+              });
+            });
+          });
+          return chain;
+        });
+      });
+  }
+
+  /* Strips the PNG wrapper: 64 bytes of fake 1x1 PNG in front, sometimes a
+     trailer behind. Returns the TS payload on a 188-byte packet boundary. */
+  function tsPayload(buffer) {
+    var u = new Uint8Array(buffer);
+    if (u[0] !== 0x89 || u[1] !== 0x50) return buffer;
+    var start = -1;
+    for (var i = 0; i < 600 && i + 188 * 8 < u.length; i++) {
+      var ok = true;
+      for (var k = 0; k < 8; k++) {
+        if (u[i + 188 * k] !== 0x47) { ok = false; break; }
+      }
+      if (ok) { start = i; break; }
+    }
+    if (start < 0) return buffer;
+    var keep = Math.floor((u.length - start) / 188) * 188;
+    return u.slice(start, start + keep).buffer;
+  }
+
+  function pngLoader(Hls) {
+    var Base = Hls.DefaultConfig.loader;
+    return class PngLoader extends Base {
+      load(context, config, callbacks) {
+        var done = callbacks.onSuccess;
+        callbacks.onSuccess = function (response, stats, ctx, net) {
+          try {
+            if (response && response.data instanceof ArrayBuffer) {
+              response.data = tsPayload(response.data);
+            }
+          } catch (e) { }
+          done(response, stats, ctx, net);
+        };
+        super.load(context, config, callbacks);
+      }
+    };
+  }
+
+  function stopPlayer() {
+    window.clearTimeout(media.stepTimer);
+    if (hlsPlayer) {
+      try { hlsPlayer.destroy(); } catch (e) { }
+      hlsPlayer = null;
+    }
+    if (hlsBlob) { try { URL.revokeObjectURL(hlsBlob); } catch (e) { } hlsBlob = null; }
+    if (playerVideo && playerVideo.parentNode) playerVideo.parentNode.removeChild(playerVideo);
+    playerVideo = null;
     if (media.frame && media.frame.parentNode) media.frame.parentNode.removeChild(media.frame);
     media.frame = null;
-    els.movieWrap.textContent = '';
-    els.movieWrap.hidden = false;
-    movieReset('Starting the movie');
+  }
 
+  function embedFallback(src, note) {
+    stopPlayer();
+    if (!els.movieWrap) return;
+    if (note) movieStep(100, 100, note);
     var frame = document.createElement('iframe');
-    frame.title = mediaName(media.item);
+    frame.title = media.item ? mediaName(media.item) : 'Player';
     frame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
     frame.setAttribute('allowfullscreen', '');
+    frame.setAttribute('referrerpolicy', 'origin');
     els.movieWrap.appendChild(frame);
     media.frame = frame;
-
-    window.clearTimeout(media.stepTimer);
-    media.stepTimer = window.setTimeout(function () {
-      movieStep(62, 96, 'Tap play when it appears');
-    }, 5500);
-
-    frame.addEventListener('load', function () {
-      window.clearTimeout(media.stepTimer);
-      movieStep(88, 100, 'Tap play');
-      window.setTimeout(movieDone, 380);
-    });
-    window.setTimeout(movieDone, 14000);
     frame.src = src;
+    movieDone();
+  }
+
+  function playMedia(season, episode) {
+    if (!els.movieWrap || !media.item) return;
+    var item = media.item;
+    var kind = media.kind === 'tv' ? 'tv' : 'movie';
+    var s = Math.max(1, season || 1);
+    var e = Math.max(1, episode || 1);
+    var src = kind === 'tv'
+      ? MEDIA_PLAY_TV + '/' + item.id + '/' + s + '/' + e
+      : MEDIA_PLAY + '/' + item.id;
+
+    stopPlayer();
+    els.movieWrap.textContent = '';
+    els.movieWrap.hidden = false;
+    movieReset('Finding the English stream');
+
+    var video = document.createElement('video');
+    video.className = 'movie-video';
+    video.controls = true;
+    video.autoplay = true;
+    video.preload = 'metadata';
+    video.setAttribute('playsinline', '');
+    video.setAttribute('controlslist', 'nodownload');
+    els.movieWrap.appendChild(video);
+    playerVideo = video;
+    media.video = video;
+
+    /* Browsers can refuse unmuted autoplay when the click that opened the card
+       is a few seconds old. Rather than muting the film, show one button. */
+    var tapBtn = document.createElement('button');
+    tapBtn.type = 'button';
+    tapBtn.className = 'movie-tap';
+    tapBtn.textContent = 'Play';
+    tapBtn.hidden = true;
+    els.movieWrap.appendChild(tapBtn);
+    tapBtn.addEventListener('click', function () {
+      tapBtn.hidden = true;
+      video.play().catch(function () { tapBtn.hidden = false; });
+    });
+    video.addEventListener('playing', function () { tapBtn.hidden = true; });
+
+    var settled = false;
+    var giveUp = window.setTimeout(function () {
+      if (settled) return;
+      settled = true;
+      embedFallback(src, 'Tap play');
+    }, 24000);
+
+    loadHls().then(function (Hls) {
+      if (!Hls) throw new Error('no hls');
+
+      function tryStream(url) {
+        return new Promise(function (resolve, reject) {
+          var done = false;
+          var timer = window.setTimeout(function () {
+            if (done) return;
+            done = true;
+            reject(new Error('stream timeout'));
+          }, 20000);
+          if (hlsPlayer) {
+            try { hlsPlayer.destroy(); } catch (err) { }
+            hlsPlayer = null;
+          }
+          var player = new Hls({
+            enableWorker: true,
+            loader: pngLoader(Hls),
+            /* The source ladder tops out at 1080p (~5 Mbps). Start from an
+               optimistic bandwidth estimate so the first frames are already
+               sharp, then let ABR drop fast if the line cannot keep up. */
+            startLevel: -1,
+            testBandwidth: true,
+            abrEwmaDefaultEstimate: 6500000,
+            abrBandWidthFactor: 0.9,
+            abrBandWidthUpFactor: 0.7,
+            maxStarvationDelay: 3,
+            maxLoadingDelay: 6,
+            capLevelOnFPSDrop: true,
+            maxBufferLength: 40,
+            maxMaxBufferLength: 90,
+            backBufferLength: 30
+          });
+          hlsPlayer = player;
+          window.__saleenHls = player;
+          player.on(Hls.Events.MANIFEST_PARSED, function () {
+            if (done) return;
+            done = true;
+            window.clearTimeout(timer);
+            resolve();
+          });
+          player.on(Hls.Events.ERROR, function (evt, data) {
+            if (!data || !data.fatal) return;
+            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+              try { player.startLoad(); return; } catch (err) { }
+            }
+            if (done) return;
+            done = true;
+            window.clearTimeout(timer);
+            reject(new Error('stream error'));
+          });
+          player.loadSource(url);
+          player.attachMedia(video);
+        });
+      }
+
+      /* The master playlist is filtered before hls.js sees it, so only the
+         English audio rendition survives and subtitles disappear entirely. */
+      function filteredPlaylist(url) {
+        return fetchWithTimeout(url, 12000, { headers: { accept: '*/*' } })
+          .then(function (res) {
+            if (!res.ok) throw new Error('playlist ' + res.status);
+            return res.text();
+          })
+          .then(function (text) {
+            var clean = englishOnlyPlaylist(text);
+            if (!/^#EXTM3U/m.test(clean)) throw new Error('bad playlist');
+            if (hlsBlob) { try { URL.revokeObjectURL(hlsBlob); } catch (err) { } }
+            hlsBlob = URL.createObjectURL(new Blob([clean], { type: 'application/vnd.apple.mpegurl' }));
+            return hlsBlob;
+          });
+      }
+
+      if (!settled) movieStep(45, 70, 'Loading the stream');
+
+      var job = vidrockStream(kind, item.id, s, e)
+        .then(function (found) {
+          if (!settled) movieStep(60, 82, 'Loading the stream');
+          return filteredPlaylist(found.url);
+        })
+        .then(tryStream)
+        .catch(function () {
+          return withTimeout(vixPlaylistUrl(kind, item.id, s, e), 8000)
+            .then(function (master) { return filteredPlaylist(master); })
+            .then(tryStream);
+        });
+
+      job.then(function () {
+        window.clearTimeout(giveUp);
+        if (settled) return;
+        settled = true;
+        movieStep(100, 100, 'Playing');
+        movieDone();
+        video.play().catch(function () { tapBtn.hidden = false; });
+      }).catch(function () {
+        window.clearTimeout(giveUp);
+        if (settled) return;
+        settled = true;
+        embedFallback(src, 'Tap play');
+      });
+    }).catch(function () {
+      window.clearTimeout(giveUp);
+      if (settled) return;
+      settled = true;
+      embedFallback(src, 'Tap play');
+    });
   }
 
   function closeMedia() {
-    if (media.frame && media.frame.parentNode) media.frame.parentNode.removeChild(media.frame);
-    media.frame = null;
+    stopPlayer();
     if (els.movieWrap) { els.movieWrap.textContent = ''; els.movieWrap.hidden = true; }
     media.item = null;
     window.clearInterval(movieTicker);
@@ -3576,17 +4112,20 @@ html,body{border:0;outline:0}
 
   function doMediaSearch(q) {
     if (!q) { mediaLoad(media.filter, false); return; }
+    media.query = q;
+    media.page = 1;
+    media.maxPage = 1;
+    media.loadingMore = false;
     if (els.mediaGrid) els.mediaGrid.hidden = true;
     movieReset('Searching');
-    mediaFetch('/search/' + (media.kind === 'tv' ? 'tv' : 'movie') + '?query=' + encodeURIComponent(q) + '&include_adult=false&page=1').then(function (data) {
-      var list = ((data && data.results) || []).filter(function (item) {
-        return item && item.id && mediaPoster(item);
-      });
+    mediaFetch(mediaPagePath(1)).then(function (data) {
+      if (media.query !== q) return;
+      var list = mediaParse(data, 1);
       media.items = list;
+      mediaRemember();
       renderMediaGrid(list);
-      if (!list.length) mediaCountLabel(0);
-      window.clearInterval(movieTicker);
-      if (els.movieLoad) els.movieLoad.classList.add('done');
+      mediaSettled();
+      if (!list.length && els.mediaSub) els.mediaSub.textContent = 'No matches';
     }).catch(function () {
       window.clearInterval(movieTicker);
       if (els.movieStatus) els.movieStatus.textContent = 'Search failed. Try again.';
@@ -3639,6 +4178,10 @@ html,body{border:0;outline:0}
       MEDIA_CACHE = {};
       media.items = [];
       media.filter = 'trending';
+      media.query = '';
+      media.page = 1;
+      media.maxPage = 1;
+      media.loadingMore = false;
       if (els.mediaSearch) {
         els.mediaSearch.value = '';
         els.mediaSearch.placeholder = next === 'tv' ? 'Search shows' : 'Search movies';
@@ -3678,7 +4221,21 @@ html,body{border:0;outline:0}
         mediaSearchTimer = window.setTimeout(function () { doMediaSearch(q); }, 350);
       });
     }
-    if (els.mediaBack) els.mediaBack.addEventListener('click', closeMedia);
+    if (els.mediaBack) els.mediaBack.addEventListener('click', function () {
+      if (media.mode === 'player') closeMedia();
+      else setMode('home');
+    });
+
+    /* Infinite scroll: fetch the next catalogue page before the user hits the
+       bottom, so the grid keeps growing instead of stopping at 20 titles. */
+    if (els.mediaGrid) {
+      els.mediaGrid.addEventListener('scroll', function () {
+        if (media.mode !== 'grid' || media.loadingMore) return;
+        if (media.page >= media.maxPage) return;
+        var box = els.mediaGrid;
+        if (box.scrollTop + box.clientHeight >= box.scrollHeight - 800) mediaMore();
+      }, { passive: true });
+    }
     if (els.seasonSel) {
       els.seasonSel.addEventListener('change', function () {
         selectSeason(Number(els.seasonSel.value) || 1, true);
@@ -4070,7 +4627,10 @@ html,body{border:0;outline:0}
   updateClock();
   window.setInterval(updateClock, 5000);
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden) return;
+    if (document.hidden) {
+      if (playerVideo && !playerVideo.paused) playerVideo.pause();
+      return;
+    }
     updateClock();
     if (mode === 'home') startTyping();
   });
@@ -4084,6 +4644,14 @@ html,body{border:0;outline:0}
   });
   startTyping();
   els.omni.focus();
+
+  /* The play.xhtml wrapper listens for this so it can tell a real boot from a
+     block page and move on to the next mirror instead of sitting on an error. */
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage('saleen:ready', '*');
+    }
+  } catch (e) { }
 
   window.Saleen = {
     toast: toast,
