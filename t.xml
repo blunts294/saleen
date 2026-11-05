@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>xml test</title></head>
+<body>
+<div id="h">static</div>
+<script>document.getElementById('h').textContent='script ran'; document.title='xml-ok';</script>
+</body>
+</html>
