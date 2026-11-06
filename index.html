@@ -7,7 +7,7 @@
 <title>about:blank</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%239df7ff'/%3E%3Cstop offset='.5' stop-color='%2322b8e6'/%3E%3Cstop offset='1' stop-color='%230b5478'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M6.8 24.4c6.1-7.6 12.3-7.6 18.4 0' fill='none' stroke='%23f4feff' stroke-width='2.8' stroke-linecap='round'/%3E%3Cpath d='M16.4 5.4l1.4 3.3 3.3 1.4-3.3 1.4-1.4 3.3-1.4-3.3-3.3-1.4 3.3-1.4z' fill='%23f4feff'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2322b8e6'/%3E%3Cpath d='M6.8 24.4c6.1-7.6 12.3-7.6 18.4 0' fill='none' stroke='%23f4feff' stroke-width='2.8' stroke-linecap='round'/%3E%3C/svg%3E">
-<meta name="theme-color" content="#062436">
+<meta name="theme-color" content="#2b0b4d">
 <link rel="preconnect" href="https://cors.eu.org" crossorigin>
 <link rel="preconnect" href="https://api.cors.lol" crossorigin>
 <link rel="preconnect" href="https://proxy.corsfix.com" crossorigin>
@@ -15,7 +15,7 @@
 <link rel="dns-prefetch" href="https://api.allorigins.win">
 <style>
 :root{
-  --accent:#8ab4ff;
+  --accent:#a78bfa;
   --ink:#eef2fa;
   --muted:#93a0b8;
   --rail-w:236px;
@@ -27,7 +27,7 @@ html,body{height:100%}
 body{
   margin:0;
   overflow:hidden;
-  background:#05070d;
+  background:#07030f;
   color:var(--ink);
   font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   -webkit-font-smoothing:antialiased;
@@ -41,7 +41,7 @@ button,input{font-family:inherit}
 #wall{
   position:fixed;inset:0;z-index:0;overflow:hidden;
   background:
-    radial-gradient(120% 78% at 50% -20%, #0f6b92 0%, #08415f 32%, #041d30 64%, #020a12 100%);
+    radial-gradient(120% 78% at 50% -20%, #7c3aed 0%, #4c1d95 32%, #240a44 64%, #07030f 100%);
   transition:background .5s ease;
   --px:0px;--py:0px;
 }
@@ -70,36 +70,36 @@ button,input{font-family:inherit}
 }
 body[data-wall="ocean"] #wall{
   background:
-    radial-gradient(120% 78% at 50% -20%, #0f6b92 0%, #08415f 32%, #041d30 64%, #020a12 100%);
+    radial-gradient(120% 78% at 50% -20%, #7c3aed 0%, #4c1d95 32%, #240a44 64%, #07030f 100%);
 }
 body[data-wall="ocean"] #wall .blob{opacity:.34}
-body[data-wall="ocean"] #wall .b1{background-color:#22d3ee}
-body[data-wall="ocean"] #wall .b2{background-color:#0ea5e9}
-body[data-wall="ocean"] #wall .b3{background-color:#1d4ed8}
+body[data-wall="ocean"] #wall .b1{background-color:#a855f7}
+body[data-wall="ocean"] #wall .b2{background-color:#8b5cf6}
+body[data-wall="ocean"] #wall .b3{background-color:#6d28d9}
 
 body[data-wall="reef"] #wall{
   background:
-    radial-gradient(70% 60% at 12% 8%, rgba(45,212,191,.30), transparent 60%),
-    radial-gradient(60% 56% at 88% 20%, rgba(56,189,248,.26), transparent 62%),
-    radial-gradient(90% 70% at 52% 108%, rgba(251,146,60,.16), transparent 62%),
-    linear-gradient(170deg,#04222b,#062b34 45%,#02141c);
+    radial-gradient(70% 60% at 12% 8%, rgba(192,132,252,.30), transparent 60%),
+    radial-gradient(60% 56% at 88% 20%, rgba(139,92,246,.28), transparent 62%),
+    radial-gradient(90% 70% at 52% 108%, rgba(236,72,153,.18), transparent 62%),
+    linear-gradient(170deg,#1b0733,#2a0b4d 45%,#0a0318);
 }
 body[data-wall="reef"] #wall .blob{opacity:.42}
-body[data-wall="reef"] #wall .b1{background-color:#2dd4bf}
-body[data-wall="reef"] #wall .b2{background-color:#38bdf8}
-body[data-wall="reef"] #wall .b3{background-color:#fb923c}
+body[data-wall="reef"] #wall .b1{background-color:#c084fc}
+body[data-wall="reef"] #wall .b2{background-color:#8b5cf6}
+body[data-wall="reef"] #wall .b3{background-color:#ec4899}
 
 body[data-wall="abyss"] #wall{
   background:
-    radial-gradient(90% 70% at 50% -30%, #0a2b44 0%, #04121e 46%, #010509 100%);
+    radial-gradient(90% 70% at 50% -30%, #3b1a63 0%, #1a0a30 46%, #05020b 100%);
 }
 body[data-wall="abyss"] #wall .blob{opacity:.22}
-body[data-wall="abyss"] #wall .b1{background-color:#0e7490}
-body[data-wall="abyss"] #wall .b2{background-color:#1e3a8a}
-body[data-wall="abyss"] #wall .b3{background-color:#155e75}
+body[data-wall="abyss"] #wall .b1{background-color:#7e22ce}
+body[data-wall="abyss"] #wall .b2{background-color:#4c1d95}
+body[data-wall="abyss"] #wall .b3{background-color:#8b5cf6}
 
 body[data-wall="plain"] #wall{
-  background:radial-gradient(120% 90% at 50% 0%, #0d2233, #03080d 62%);
+  background:radial-gradient(120% 90% at 50% 0%, #241040, #08030f 62%);
 }
 body[data-wall="plain"] #wall .blob{opacity:0}
 
@@ -800,7 +800,14 @@ body[data-mode="ai"] #toast{bottom:92px}
 .movie-bar span{display:block;height:100%;width:0;border-radius:99px;background:var(--accent);transition:width .25s ease}
 .movie-wrap{position:absolute;inset:0}
 .movie-wrap iframe{width:100%;height:100%;border:0;display:block;background:#04121c}
+.dd-frame{width:100%;height:100%;border:0;display:block;background:#0a0a0f}
 .movie-wrap video{width:100%;height:100%;display:block;background:#000;object-fit:contain}
+.movie-note{
+  position:absolute;left:12px;bottom:12px;z-index:5;display:flex;align-items:center;gap:8px;
+  padding:7px 9px 7px 12px;border-radius:11px;font-size:11.5px;color:var(--muted);
+  background:rgba(4,14,22,.82);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);
+}
+.movie-note .ghost-btn{padding:5px 9px;font-size:11px}
 .movie-tap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;padding:14px 38px;border-radius:999px;border:1px solid rgba(255,255,255,.26);background:rgba(4,18,28,.74);color:#eaf7ff;font:600 13px/1 "Inter",system-ui,sans-serif;letter-spacing:2.4px;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(6px);transition:background .2s ease,border-color .2s ease}
 .movie-tap:hover{background:rgba(9,42,58,.88);border-color:var(--accent)}
 .game-grid{position:absolute;inset:0;overflow:auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));grid-auto-rows:max-content;align-items:start;align-content:start;gap:12px;scrollbar-width:thin;scrollbar-color:rgba(157,247,255,.3) transparent}
@@ -826,6 +833,8 @@ body[data-mode="ai"] #toast{bottom:92px}
   cursor:pointer;white-space:nowrap;transition:color .15s ease,background .15s ease,border-color .15s ease;
 }
 .media-chip:hover{color:var(--ink);border-color:rgba(255,255,255,.26)}
+.media-providers{gap:4px;max-width:min(100%,360px);flex-wrap:wrap;justify-content:flex-end}
+.media-providers .media-chip{padding:6px 9px;font-size:11px}
 .media-chip[aria-pressed="true"]{
   color:#06202f;font-weight:600;border-color:transparent;
   background:color-mix(in srgb,var(--accent) 88%,#ffffff 12%);
@@ -1370,6 +1379,17 @@ html,body{border:0;outline:0}
               <button class="media-chip" type="button" data-filter="popular" aria-pressed="false">Popular</button>
               <button class="media-chip" type="button" data-filter="top" aria-pressed="false">Top rated</button>
             </div>
+            <div id="providerFilters" class="media-filters media-providers" aria-label="Streaming provider">
+              <button class="media-chip" type="button" data-provider="" aria-pressed="true">All</button>
+              <button class="media-chip" type="button" data-provider="8" aria-pressed="false">Netflix</button>
+              <button class="media-chip" type="button" data-provider="9|119" aria-pressed="false">Prime</button>
+              <button class="media-chip" type="button" data-provider="337" aria-pressed="false">Disney+</button>
+              <button class="media-chip" type="button" data-provider="1899" aria-pressed="false">Max</button>
+              <button class="media-chip" type="button" data-provider="15" aria-pressed="false">Hulu</button>
+              <button class="media-chip" type="button" data-provider="350" aria-pressed="false">Apple TV+</button>
+              <button class="media-chip" type="button" data-provider="531" aria-pressed="false">Paramount+</button>
+              <button class="media-chip" type="button" data-provider="386" aria-pressed="false">Peacock</button>
+            </div>
             <input id="mediaSearch" class="game-search" type="search" placeholder="Search movies" autocomplete="off" spellcheck="false" />
             <select id="seasonSel" class="media-select" aria-label="Season" hidden></select>
             <select id="episodeSel" class="media-select" aria-label="Episode" hidden></select>
@@ -1397,8 +1417,8 @@ html,body{border:0;outline:0}
   'use strict';
 
   var KEY = 'saleen.settings.v2';
-  var DEFAULTS = { name: '', accent: '#67e8f9', wallpaper: 'ocean' };
-  var ACCENTS = ['#67e8f9', '#5eead4', '#8ab4ff', '#c4b5fd', '#f0abfc', '#fca5a5', '#fcd34d', '#a3e635'];
+  var DEFAULTS = { name: '', accent: '#a78bfa', wallpaper: 'ocean' };
+  var ACCENTS = ['#a78bfa', '#c4b5fd', '#8b5cf6', '#d8b4fe', '#f0abfc', '#e879f9', '#fca5a5', '#a3e635'];
 
   /* Saleen renders every page itself through a remote proxy, so the only thing
      this browser talks to directly is the proxy. No DuckDuckGo, no Bing. */
@@ -1413,15 +1433,37 @@ html,body{border:0;outline:0}
   var JINA = 'https://r.jina.ai/';
   var SEARCH_URL = 'saleen://search?q=';
   var WALLS = [
-    { id: 'ocean', label: '🌊 Ocean' },
-    { id: 'reef', label: '🐠 Reef' },
-    { id: 'abyss', label: '🌑 Abyss' },
+    { id: 'ocean', label: '🟣 Purple' },
+    { id: 'reef', label: '🌸 Violet' },
+    { id: 'abyss', label: '🌌 Deep' },
     { id: 'plain', label: '◻ Plain' }
   ];
   var MODE_TITLES = { home: 'Home', browser: 'Home', ai: 'AI', links: 'Links', games: 'Games', movies: 'Movies', tv: 'TV', music: 'Music' };
   var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var DESKTOP = /[?&]desktop=1/.test(window.location.search);
   var $ = function (sel) { return document.querySelector(sel); };
+  /* The same app also ships as a standalone SVG (for esm.sh, which refuses to
+     run scripts in .html). An SVG document has no <body>, so everything that
+     used to poke at document.body goes through here. */
+  function rootNode() {
+    return document.body || document.getElementById('saleen-root') || document.documentElement;
+  }
+
+  /* In an SVG document document.createElement() builds SVG-namespace elements.
+     Those get no HTML layout at all, so every card, poster and cover assembled
+     at runtime collapsed into loose text. Point element creation back at the
+     XHTML namespace the app is drawn in. */
+  var XHTML_NS = 'http://www.w3.org/1999/xhtml';
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+  if (document.documentElement.namespaceURI === SVG_NS) {
+    var nativeCreate = document.createElement.bind(document);
+    document.createElement = function (tag) {
+      if (/^(svg|g|defs|path|circle|ellipse|rect|line|polyline|polygon|text|tspan|use|clipPath|mask|linearGradient|radialGradient|stop)$/i.test(String(tag))) {
+        return nativeCreate(tag);
+      }
+      return document.createElementNS(XHTML_NS, tag);
+    };
+  }
 
   var settings = Object.assign({}, DEFAULTS);
   var mode = 'browser';
@@ -1471,7 +1513,9 @@ html,body{border:0;outline:0}
     mediaSub: $('#mediaSub'),
     mediaGrid: $('#mediaGrid'),
     mediaFilters: $('#mediaFilters'),
-    mediaChips: Array.prototype.slice.call(document.querySelectorAll('.media-chip')),
+    providerFilters: $('#providerFilters'),
+    mediaChips: Array.prototype.slice.call(document.querySelectorAll('#mediaFilters .media-chip')),
+    providerChips: Array.prototype.slice.call(document.querySelectorAll('#providerFilters .media-chip')),
     mediaSearch: $('#mediaSearch'),
     mediaBack: $('#mediaBack'),
     seasonSel: $('#seasonSel'),
@@ -1549,7 +1593,7 @@ html,body{border:0;outline:0}
 
   var TYPED_LINES = [
     '- Made by 762.',
-    '- Def not a proxy with movies and games \uD83D\uDC40.'
+    '- saleen still in progress, might be blocked but wtv \uD83D\uDC94'
   ];
   var typeIndex = -1;
   var typePos = 0;
@@ -1618,7 +1662,7 @@ html,body{border:0;outline:0}
 
   function apply() {
     document.documentElement.style.setProperty('--accent', settings.accent);
-    document.body.dataset.wall = settings.wallpaper;
+    rootNode().dataset.wall = settings.wallpaper;
     renderTabs();
     updateTitle();
     startScene();
@@ -2685,8 +2729,8 @@ html,body{border:0;outline:0}
 
   var BASE_CSS = [
     '*,*::before,*::after{box-sizing:border-box}',
-    'html{background:#fff;-webkit-text-size-adjust:100%}',
-    'body{margin:0;background:#fff;color:#15171c;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}',
+    'html{background:#fff;-webkit-text-size-adjust:100%;overflow-x:hidden}',
+    'body{margin:0;background:#fff;color:#15171c;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow-x:hidden}',
     'img,svg,video,canvas{max-width:100%;height:auto}',
     'a{color:#1a56db}',
     'pre{overflow:auto}',
@@ -2765,6 +2809,18 @@ html,body{border:0;outline:0}
     base.textContent = BASE_CSS;
     head.insertBefore(base, head.firstChild);
 
+    /* Without a script runtime the site's own fixed-width chrome is all that is
+       left. Give it a normal device viewport and then, after paint, scale the
+       document down if it is still wider than the frame (the "zoomed in"
+       look glitchy sites have in a small window). */
+    var viewport = doc.querySelector('meta[name="viewport"]');
+    if (!viewport) {
+      viewport = doc.createElement('meta');
+      viewport.setAttribute('name', 'viewport');
+      head.insertBefore(viewport, head.firstChild);
+    }
+    viewport.setAttribute('content', 'width=device-width,initial-scale=1');
+
     return Promise.all(sheets.map(function (s) { return fetchCss(s.url); })).then(function (texts) {
       var failed = 0;
       sheets.forEach(function (s, i) {
@@ -2799,6 +2855,16 @@ html,body{border:0;outline:0}
         'var f=e.target;if(!f||!f.action)return;e.preventDefault();',
         'var qs="";try{qs=new URLSearchParams(new FormData(f)).toString()}catch(err){}',
         'send(f.action.split("?")[0]+(qs?"?"+qs:""));},true);',
+        'var over=false;',
+        'function fit(){',
+        'var d=document.documentElement;if(!d)return;',
+        'var w=d.clientWidth||window.innerWidth;if(!w)return;',
+        'var sw=d.scrollWidth||0;if(over){d.style.zoom="";over=false;sw=d.scrollWidth||0}',
+        'if(sw>w+12&&w>240){var z=Math.max(.4,Math.min(1,w/sw));if(z<.995){d.style.zoom=String(z);over=true}}',
+        '}',
+        'window.addEventListener("resize",function(){setTimeout(fit,180)});',
+        'window.addEventListener("load",function(){setTimeout(fit,120)});',
+        'setTimeout(fit,500);setTimeout(fit,1800);setTimeout(fit,4000);',
         '})();'
       ].join('\n');
       (doc.body || doc.documentElement).appendChild(bridge);
@@ -2984,7 +3050,7 @@ html,body{border:0;outline:0}
 
   function renderView() {
     var t = activeTab();
-    document.body.dataset.mode = mode;
+    rootNode().dataset.mode = mode;
 
     var hasWeb = !!(mode === 'browser' && t && t.mode === 'web' && t.url);
     var isSearch = !!(hasWeb && isSearchUrl(t.url));
@@ -3149,7 +3215,7 @@ html,body{border:0;outline:0}
 
   /* Every link, always present. Any that go missing are added back once, in
      order, and duplicates are dropped. */
-  var KEEP_LINK = 'https://cdn.jsdelivr.net/gh/blunts294/saleen/app.xhtml';
+  var KEEP_LINK = 'https://cdn.jsdelivr.net/gh/blunts294/saleen/saleen.svg';
   var SEED_LINKS = [];
 
   function seedLinks() {
@@ -3321,8 +3387,8 @@ html,body{border:0;outline:0}
 
   var MEDIA_API = 'https://cinemaos.in/api/tmdb';
   var MEDIA_IMG = 'https://image.tmdb.org/t/p/w342';
-  var MEDIA_PLAY = 'https://vixsrc.to/movie';
-  var MEDIA_PLAY_TV = 'https://vixsrc.to/tv';
+  var MEDIA_PLAY = 'https://vidlink.pro/movie';
+  var MEDIA_PLAY_TV = 'https://vidlink.pro/tv';
   var VIX_API_MOVIE = 'https://vixsrc.to/api/movie/';
   var VIX_API_TV = 'https://vixsrc.to/api/tv/';
   var HLS_JS = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js';
@@ -3339,10 +3405,12 @@ html,body{border:0;outline:0}
     }
   };
   var MEDIA_CACHE = {};
-  var MEDIA_MAX_PAGE = 500;
+  var MEDIA_MAX_PAGE = 10;
+  var MEDIA_REGION = 'US';
   var media = {
     kind: 'movie',
     filter: 'trending',
+    provider: '',
     query: '',
     mode: 'grid',
     items: [],
@@ -3422,7 +3490,11 @@ html,body{border:0;outline:0}
       var f = chip.getAttribute('data-filter');
       var ok = !!(MEDIA_FILTERS[media.kind] && MEDIA_FILTERS[media.kind][f]);
       chip.hidden = !ok;
-      chip.setAttribute('aria-pressed', ok && f === media.filter ? 'true' : 'false');
+      chip.setAttribute('aria-pressed', ok && f === media.filter && !media.provider ? 'true' : 'false');
+    });
+    els.providerChips.forEach(function (chip) {
+      var p = chip.getAttribute('data-provider') || '';
+      chip.setAttribute('aria-pressed', p === media.provider ? 'true' : 'false');
     });
   }
 
@@ -3431,6 +3503,7 @@ html,body{border:0;outline:0}
     media.mode = grid ? 'grid' : 'player';
     if (els.mediaGrid) els.mediaGrid.hidden = !grid;
     if (els.mediaFilters) els.mediaFilters.hidden = !grid;
+    if (els.providerFilters) els.providerFilters.hidden = !grid;
     if (els.mediaSearch) els.mediaSearch.hidden = !grid;
     /* Always leave a way out: from a movie it goes back to the list, from the
        list it goes back Home. */
@@ -3508,6 +3581,11 @@ html,body{border:0;outline:0}
     if (media.query) {
       base = '/search/' + (media.kind === 'tv' ? 'tv' : 'movie') +
         '?query=' + encodeURIComponent(media.query) + '&include_adult=false';
+    } else if (media.provider) {
+      base = '/discover/' + (media.kind === 'tv' ? 'tv' : 'movie') +
+        '?with_watch_providers=' + encodeURIComponent(media.provider) +
+        '&watch_region=' + MEDIA_REGION +
+        '&sort_by=popularity.desc&vote_count.gte=100&include_adult=false';
     } else {
       base = MEDIA_FILTERS[media.kind][media.filter];
     }
@@ -3515,9 +3593,22 @@ html,body{border:0;outline:0}
     return base + (base.indexOf('?') >= 0 ? '&' : '?') + 'page=' + page;
   }
 
+  /* The catalogue is a popularity feed, but TMDB still slips brand-new or
+     straight-to-video titles with a handful of votes into it. Those are the
+     cards that looked like filler, so they are dropped unless the user asked
+     for them by name. */
+  function mediaTooObscure(item) {
+    var votes = Number(item.vote_count) || 0;
+    var pop = Number(item.popularity) || 0;
+    if (votes >= 60) return false;
+    return pop < 60;
+  }
+
   function mediaParse(data, page) {
     var list = ((data && data.results) || []).filter(function (item) {
-      return item && item.id && mediaPoster(item);
+      if (!item || !item.id || !mediaPoster(item)) return false;
+      if (!media.query && mediaTooObscure(item)) return false;
+      return true;
     });
     var pages = Number(data && data.total_pages) || page;
     media.maxPage = Math.max(1, Math.min(pages, MEDIA_MAX_PAGE));
@@ -3525,13 +3616,14 @@ html,body{border:0;outline:0}
   }
 
   function mediaRemember() {
-    var key = media.kind + ':' + (media.query ? 'q:' + media.query : media.filter);
+    var key = media.kind + ':' + (media.query ? 'q:' + media.query : (media.provider ? 'p:' + media.provider : media.filter));
     MEDIA_CACHE[key] = {
       items: media.items,
       page: media.page,
       maxPage: media.maxPage,
       query: media.query,
-      filter: media.filter
+      filter: media.filter,
+      provider: media.provider
     };
   }
 
@@ -3694,7 +3786,11 @@ html,body{border:0;outline:0}
         resolve(marker ? window[marker] : true);
       };
       s.onerror = function () { reject(new Error('script blocked')); };
-      document.head.appendChild(s);
+      /* This app also runs as an SVG document, where document.head is null.
+         The XHTML wrapper inside the foreignObject hosts scripts fine. */
+      var mount = document.getElementById('saleen-root') ||
+        document.head || document.documentElement;
+      mount.appendChild(s);
     });
   }
 
@@ -3859,16 +3955,19 @@ html,body{border:0;outline:0}
         });
         if (!names.length) throw new Error('no english source');
         return vidrockKey().then(function (key) {
-          var chain = Promise.reject(new Error('none'));
-          names.forEach(function (name) {
-            chain = chain.catch(function () {
-              return vidrockDecrypt(key, map[name].url).then(function (url) {
-                if (!/^https?:\/\//i.test(url)) throw new Error('bad url');
-                return { url: url, name: name };
-              });
-            });
+          /* Every mirror is decrypted up front. Some of them answer 403 to a
+             plain fetch (they want a vidrock referer), so the player walks the
+             whole list instead of trusting the first name. */
+          return Promise.all(names.map(function (name) {
+            return vidrockDecrypt(key, map[name].url).then(function (url) {
+              if (!/^https?:\/\//i.test(url)) return null;
+              return { url: url, name: name };
+            }).catch(function () { return null; });
+          })).then(function (list) {
+            var out = list.filter(Boolean);
+            if (!out.length) throw new Error('no url');
+            return out;
           });
-          return chain;
         });
       });
   }
@@ -3909,6 +4008,87 @@ html,body{border:0;outline:0}
     };
   }
 
+  /* The stream hosts reject a browser request no matter which referer is sent:
+     they fingerprint the presence of an Origin header. libcurl on the other
+     side of the Wisp socket is a plain HTTP client, so playlists and segments
+     can be pulled with the referer the CDN expects. */
+  function wispLoader(Hls) {
+    var Base = Hls.DefaultConfig.loader;
+    return class WispLoader extends Base {
+      constructor(config) {
+        super(config);
+        this.aborted = false;
+        this.timer = null;
+      }
+      load(context, config, callbacks) {
+        var self = this;
+        var url = context.url;
+        var wantsText = context.type === 'manifest' || context.type === 'level' ||
+          context.type === 'audioTrack' || context.type === 'subtitleTrack' ||
+          /\.m3u8(?:[?#]|$)/i.test(url);
+        var stats = self.stats = {
+          trequest: performance.now(), tfirst: 0, tload: 0,
+          loaded: 0, total: 0, bwEstimate: 0, aborted: false
+        };
+
+        self.aborted = false;
+        self.callbacks = callbacks;
+
+        var fail = function (err) {
+          if (self.aborted) return;
+          self.aborted = true;
+          window.clearTimeout(self.timer);
+          callbacks.onError({
+            code: 0,
+            text: String(err && err.message ? err.message : err)
+          }, context, null, stats);
+        };
+
+        self.timer = window.setTimeout(function () { fail(new Error('wisp timeout')); }, 24000);
+
+        bootWisp().then(function (lc) {
+          if (self.aborted) return null;
+          return lc.fetch(url, {
+            headers: {
+              'user-agent': navigator.userAgent,
+              referer: 'https://vidrock.net/',
+              origin: 'https://vidrock.net',
+              accept: '*/*'
+            }
+          });
+        }).then(function (res) {
+          if (!res || self.aborted) return null;
+          if (stats.tfirst === 0) stats.tfirst = performance.now();
+          return (wantsText ? res.text() : res.arrayBuffer()).then(function (body) {
+            if (self.aborted) return;
+            window.clearTimeout(self.timer);
+            var data = body;
+            if (wantsText) {
+              var text = String(body);
+              /* hls.js asks for the master and every variant through here, so
+                 the English-only edit happens before it ever parses them. */
+              if (/^#EXTM3U/.test(text)) text = englishOnlyPlaylist(text);
+              data = text;
+            } else {
+              data = tsPayload(body);
+            }
+            stats.tload = performance.now();
+            stats.loaded = stats.total = data.byteLength || data.length || 0;
+            callbacks.onSuccess({ url: url, data: data }, stats, context, res);
+          });
+        }).catch(fail);
+      }
+      abort() {
+        this.aborted = true;
+        window.clearTimeout(this.timer);
+      }
+      destroy() {
+        this.aborted = true;
+        window.clearTimeout(this.timer);
+      }
+    };
+  }
+
   function stopPlayer() {
     window.clearTimeout(media.stepTimer);
     if (hlsPlayer) {
@@ -3934,6 +4114,7 @@ html,body{border:0;outline:0}
     els.movieWrap.appendChild(frame);
     media.frame = frame;
     frame.src = src;
+
     movieDone();
   }
 
@@ -3982,7 +4163,11 @@ html,body{border:0;outline:0}
       if (settled) return;
       settled = true;
       embedFallback(src, 'Tap play');
-    }, 24000);
+    }, 45000);
+
+    /* Warm the Wisp socket while the stream list is being decrypted, so the
+       first playlist request does not also wait for the wasm runtime. */
+    bootWisp().catch(function () { });
 
     loadHls().then(function (Hls) {
       if (!Hls) throw new Error('no hls');
@@ -3994,14 +4179,14 @@ html,body{border:0;outline:0}
             if (done) return;
             done = true;
             reject(new Error('stream timeout'));
-          }, 20000);
+          }, 30000);
           if (hlsPlayer) {
             try { hlsPlayer.destroy(); } catch (err) { }
             hlsPlayer = null;
           }
           var player = new Hls({
             enableWorker: true,
-            loader: pngLoader(Hls),
+            loader: wispLoader(Hls),
             /* The source ladder tops out at 1080p (~5 Mbps). Start from an
                optimistic bandwidth estimate so the first frames are already
                sharp, then let ABR drop fast if the line cannot keep up. */
@@ -4039,35 +4224,20 @@ html,body{border:0;outline:0}
         });
       }
 
-      /* The master playlist is filtered before hls.js sees it, so only the
-         English audio rendition survives and subtitles disappear entirely. */
-      function filteredPlaylist(url) {
-        return fetchWithTimeout(url, 12000, { headers: { accept: '*/*' } })
-          .then(function (res) {
-            if (!res.ok) throw new Error('playlist ' + res.status);
-            return res.text();
-          })
-          .then(function (text) {
-            var clean = englishOnlyPlaylist(text);
-            if (!/^#EXTM3U/m.test(clean)) throw new Error('bad playlist');
-            if (hlsBlob) { try { URL.revokeObjectURL(hlsBlob); } catch (err) { } }
-            hlsBlob = URL.createObjectURL(new Blob([clean], { type: 'application/vnd.apple.mpegurl' }));
-            return hlsBlob;
-          });
-      }
-
+      /* The master playlist is filtered inside the Wisp loader, so hls.js only
+         ever sees the English audio rendition and no subtitle tracks. */
       if (!settled) movieStep(45, 70, 'Loading the stream');
 
       var job = vidrockStream(kind, item.id, s, e)
-        .then(function (found) {
-          if (!settled) movieStep(60, 82, 'Loading the stream');
-          return filteredPlaylist(found.url);
-        })
-        .then(tryStream)
-        .catch(function () {
-          return withTimeout(vixPlaylistUrl(kind, item.id, s, e), 8000)
-            .then(function (master) { return filteredPlaylist(master); })
-            .then(tryStream);
+        .then(function (sources) {
+          var chain = Promise.reject(new Error('none'));
+          sources.forEach(function (found) {
+            chain = chain.catch(function () {
+              if (!settled) movieStep(60, 82, 'Loading the stream');
+              return tryStream(found.url);
+            });
+          });
+          return chain;
         });
 
       job.then(function () {
@@ -4170,6 +4340,7 @@ html,body{border:0;outline:0}
       MEDIA_CACHE = {};
       media.items = [];
       media.filter = 'trending';
+      media.provider = '';
       media.query = '';
       media.page = 1;
       media.maxPage = 1;
@@ -4203,7 +4374,17 @@ html,body{border:0;outline:0}
         var f = chip.getAttribute('data-filter');
         if (!MEDIA_FILTERS[media.kind] || !MEDIA_FILTERS[media.kind][f]) return;
         if (els.mediaSearch) els.mediaSearch.value = '';
+        media.provider = '';
         mediaLoad(f, false);
+      });
+    });
+    els.providerChips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var p = chip.getAttribute('data-provider') || '';
+        if (els.mediaSearch) els.mediaSearch.value = '';
+        media.provider = p;
+        media.query = '';
+        mediaLoad(p ? 'popular' : media.filter, false);
       });
     });
     if (els.mediaSearch) {
@@ -4255,8 +4436,11 @@ html,body{border:0;outline:0}
     'https://raw.githubusercontent.com/gn-math/assets/main/zones.json',
     'https://cdn.jsdelivr.net/npm/gn-math.github.io-main@1.0.5/zones.json'
   ];
-  var GAMES_CACHE_KEY = 'saleen.games.catalog.v3';
+  var GAMES_CACHE_KEY = 'saleen.games.catalog.v4';
   var GAMES_CACHE_MS = 6 * 60 * 60 * 1000;
+  /* Titles that loaded the frame but never became playable in the sweep. */
+  var GAME_BLOCK_IDS = { 10: 1, 198: 1, 368: 1 };
+  var GAME_BLOCK_NAMES = /^(slope( 2)?|temple run 2|drive mad)$/i;
   var gameCatalog = null;
   var gameFrame = null;
 
@@ -4323,7 +4507,10 @@ html,body{border:0;outline:0}
     }).then(function (list) {
       if (!Array.isArray(list)) throw new Error('bad catalogue');
       var playable = list.filter(function (g) {
-        return g && g.id >= 0 && g.name && typeof g.url === 'string' && /\.html$/.test(g.url);
+        if (!g || !(g.id >= 0) || !g.name || typeof g.url !== 'string' || !/\.html$/.test(g.url)) return false;
+        if (GAME_BLOCK_IDS[g.id]) return false;
+        if (GAME_BLOCK_NAMES.test(String(g.name).trim())) return false;
+        return true;
       });
       if (playable.length < 20) throw new Error('catalogue too small');
       return playable;
@@ -4558,6 +4745,7 @@ html,body{border:0;outline:0}
   navItems.forEach(function (item) {
     item.addEventListener('click', function () { setMode(item.dataset.mode); });
   });
+
 
   if (els.gameSearch) els.gameSearch.addEventListener('input', filterGames);
   if (els.gameBack) els.gameBack.addEventListener('click', closeGame);
@@ -4815,7 +5003,8 @@ html,body{border:0;outline:0}
         if (my !== reqId) return;
         busy = false;
         drawLog();
-        if (document.body.dataset.mode === 'ai') el.input.focus();
+        var root = document.body || document.getElementById('saleen-root');
+        if (root && root.dataset.mode === 'ai') el.input.focus();
       });
   }
 
