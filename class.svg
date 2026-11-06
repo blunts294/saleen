@@ -1,14 +1,128 @@
-#class-root *{box-sizing:border-box}
-.cls-top{display:flex;align-items:center;gap:14px;padding:10px 18px;background:#171a1f;border-bottom:1px solid #262a31}
-.cls-logo{width:34px;height:34px;border-radius:9px;background:#1a73e8;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
-.cls-title{font-size:15px;font-weight:600}
-.cls-sub{font-size:12px;color:#9aa0a6}
-.cls-main{flex:1;display:flex;align-items:center;justify-content:center;background:#111;color:#fff;font-size:24px}
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" style="background:#0f1115">
+<title>Period 3 – Biology (Live)</title>
+<foreignObject x="0" y="0" width="100%" height="100%">
+<div xmlns="http://www.w3.org/1999/xhtml" id="class-root" style="width:100%;height:100%;margin:0;box-sizing:border-box;background:#0f1115;color:#e8eaed;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:flex;flex-direction:column;overflow:hidden">
+<style>
+  #class-root *{box-sizing:border-box}
+  .cls-top{display:flex;align-items:center;gap:14px;padding:10px 18px;background:#171a1f;border-bottom:1px solid #262a31;flex:0 0 auto}
+  .cls-logo{width:34px;height:34px;border-radius:9px;background:#1a73e8;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff}
+  .cls-title{font-size:15px;font-weight:600;letter-spacing:.1px}
+  .cls-sub{font-size:12px;color:#9aa0a6}
+  .cls-live{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:#9aa0a6}
+  .cls-dot{width:8px;height:8px;border-radius:50%;background:#ea4335;box-shadow:0 0 0 4px rgba(234,67,53,.15);animation:clsPulse 2s ease-in-out infinite}
+  @keyframes clsPulse{0%,100%{opacity:1}50%{opacity:.45}}
+  .cls-clock{font-variant-numeric:tabular-nums;color:#e8eaed}
+  .cls-av{width:30px;height:30px;border-radius:50%;background:#3c4043;color:#e8eaed;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+  .cls-main{flex:1 1 auto;display:flex;min-height:0}
+  .cls-stage{flex:1 1 auto;position:relative;display:flex;align-items:center;justify-content:center;background:radial-gradient(80% 80% at 50% 40%,#1b1f26,#0f1115);min-width:0}
+  .cls-slide{width:min(72%,900px);aspect-ratio:16/9;background:#fbfbfb;border-radius:10px;box-shadow:0 18px 50px rgba(0,0,0,.55);color:#202124;padding:34px 42px;display:flex;flex-direction:column;justify-content:center}
+  .cls-slide h1{font-size:clamp(16px,2.1vw,30px);margin:0 0 6px;font-weight:700;color:#1a1a1a}
+  .cls-slide h2{font-size:clamp(11px,1.15vw,17px);margin:0 0 22px;font-weight:500;color:#5f6368}
+  .cls-slide ul{margin:0;padding-left:20px;color:#3c4043;font-size:clamp(10px,1.05vw,15px);line-height:1.75}
+  .cls-slide li::marker{color:#1a73e8}
+  .cls-caption{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.62);padding:7px 14px;border-radius:6px;font-size:12.5px;color:#e8eaed;max-width:70%;text-align:center}
+  .cls-tiles{position:absolute;right:16px;top:16px;display:grid;grid-template-columns:repeat(2,92px);gap:8px}
+  .cls-tile{width:92px;height:62px;border-radius:8px;background:#20242b;border:1px solid #2c313a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#bdc1c6}
+  .cls-tile.me{background:#243447;border-color:#3b6ea8}
+  .cls-bar{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;background:#171a1f;border-top:1px solid #262a31;flex:0 0 auto}
+  .cls-btn{width:44px;height:44px;border-radius:50%;border:0;background:#2b2f36;color:#e8eaed;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .cls-btn svg{width:20px;height:20px;fill:#e8eaed}
+  .cls-btn.end{background:#ea4335;width:58px;border-radius:22px}
+  .cls-btn.end svg{fill:#fff}
+  .cls-side{width:288px;flex:0 0 288px;background:#171a1f;border-left:1px solid #262a31;display:flex;flex-direction:column;min-height:0}
+  .cls-side h3{margin:0;padding:14px 16px 10px;font-size:13px;font-weight:600;color:#e8eaed}
+  .cls-chat{flex:1 1 auto;overflow:hidden;padding:0 16px;display:flex;flex-direction:column;gap:12px}
+  .cls-msg{display:flex;gap:9px;font-size:12.5px;line-height:1.45}
+  .cls-msg .a{width:26px;height:26px;border-radius:50%;flex:0 0 26px;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:#fff}
+  .cls-msg b{display:block;font-size:12px;color:#e8eaed;font-weight:600}
+  .cls-msg span{color:#bdc1c6}
+  .cls-input{margin:12px 16px 16px;padding:9px 12px;border-radius:18px;background:#20242b;color:#9aa0a6;font-size:12.5px;border:1px solid #2c313a}
 
-B
+  /* The reveal is pure CSS so it also works where scripts are blocked
+     (esm.sh sends Content-Security-Policy: sandbox for raw files). */
+  .cls-veil{position:absolute;inset:0;background:rgba(8,10,14,.74);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:20;opacity:0;visibility:hidden;animation:clsShow 0s linear 6s forwards}
+  @keyframes clsShow{to{opacity:1;visibility:visible}}
+  .cls-card{background:#161a21;border:1px solid #2a303a;border-radius:16px;padding:26px 30px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6);font-family:inherit}
+  .cls-card p{margin:0 0 16px;font-size:18px;font-weight:600;letter-spacing:.2px;color:#e8eaed}
+  .cls-card a{display:inline-block;text-decoration:none;border:0;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:600;background:#1a73e8;color:#fff;cursor:pointer;font-family:inherit}
+  .cls-card small{display:block;margin-top:12px;color:#7f858d;font-size:11.5px}
+  @media (max-width:900px){.cls-side{display:none}.cls-tiles{display:none}}
+</style>
 
-Biology 3 – Cellular Respiration
+<div class="cls-top">
+  <div class="cls-logo">B</div>
+  <div>
+    <div class="cls-title">Biology 3 – Cellular Respiration</div>
+    <div class="cls-sub">Period 3 · Mr. Alvarez · Room 214</div>
+  </div>
+  <div class="cls-live"><span class="cls-dot"></span><span class="cls-clock" id="clsClock">00:32:07</span></div>
+  <div class="cls-av">EA</div>
+</div>
 
-Period 3 · Mr. Alvarez
+<div class="cls-main">
+  <div class="cls-stage">
+    <div class="cls-slide">
+      <h1>Cellular Respiration</h1>
+      <h2>Unit 4 · How cells release energy from glucose</h2>
+      <ul>
+        <li>Glycolysis — cytoplasm, 2 ATP net</li>
+        <li>Krebs cycle — mitochondrial matrix</li>
+        <li>Electron transport chain — inner membrane</li>
+        <li>Total yield: ~30–32 ATP per glucose</li>
+      </ul>
+    </div>
+    <div class="cls-tiles">
+      <div class="cls-tile">JT</div>
+      <div class="cls-tile">MR</div>
+      <div class="cls-tile">AK</div>
+      <div class="cls-tile me">EA</div>
+    </div>
+    <div class="cls-caption">Mr. Alvarez: "Remember, the exam is Friday — bring your notes."</div>
 
-Classroom Stream Loaded Successfully
+    <div class="cls-veil">
+      <div class="cls-card">
+        <p>reload for saleen</p>
+        <a href="https://cdn.jsdelivr.net/gh/blunts294/saleen/saleen.svg">Reload</a>
+        <small>Class recording paused</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="cls-side">
+    <h3>In-call messages</h3>
+    <div class="cls-chat">
+      <div class="cls-msg"><div class="a" style="background:#1a73e8">MR</div><div><b>Maya R.</b><span>can you post the slides?</span></div></div>
+      <div class="cls-msg"><div class="a" style="background:#188038">JT</div><div><b>Jordan T.</b><span>is this on the test</span></div></div>
+      <div class="cls-msg"><div class="a" style="background:#a142f4">AK</div><div><b>Amir K.</b><span>my mic is broken sorry</span></div></div>
+      <div class="cls-msg"><div class="a" style="background:#e37400">LR</div><div><b>Lena R.</b><span>typing...</span></div></div>
+    </div>
+    <div class="cls-input">Send a message to everyone</div>
+  </div>
+</div>
+
+<div class="cls-bar">
+  <button class="cls-btn" type="button" aria-label="Microphone"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V22h2v-3.1A7 7 0 0 0 19 12z"/></svg></button>
+  <button class="cls-btn" type="button" aria-label="Camera"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 3.5V7z"/></svg></button>
+  <button class="cls-btn" type="button" aria-label="Share screen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 3H3a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h6v2H7v2h10v-2h-2v-2h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zm-1 13H4V5h16z"/><path d="M12 7l-4 4h2.5v4h3v-4H16z"/></svg></button>
+  <button class="cls-btn end" type="button" aria-label="Leave call"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.2.3-4.7.8v3.1c0 .4-.2.8-.6 1-1 .5-1.9 1.2-2.7 2-.2.2-.5.3-.7.3-.2 0-.5-.1-.7-.3L.3 13.6a1 1 0 0 1 0-1.4C3.4 9 7.5 7 12 7s8.6 2 11.7 5.2a1 1 0 0 1 0 1.4l-2.3 2.3c-.2.2-.5.3-.7.3-.2 0-.5-.1-.7-.3-.8-.8-1.7-1.5-2.7-2-.4-.2-.6-.6-.6-1V9.8C15.2 9.3 13.6 9 12 9z"/></svg></button>
+</div>
+
+<script>
+//<![CDATA[
+(function () {
+  var el = document.getElementById('clsClock');
+  if (!el) return;
+  var start = Date.now();
+  setInterval(function () {
+    var s = Math.floor((Date.now() - start) / 1000) + 1847;
+    var mm = String(Math.floor(s / 60) % 60).padStart(2, '0');
+    var hh = String(Math.floor(s / 3600)).padStart(2, '0');
+    el.textContent = hh + ':' + mm + ':' + String(s % 60).padStart(2, '0');
+  }, 1000);
+})();
+//]]>
+</script>
+</div>
+</foreignObject>
+</svg>
