@@ -1,0 +1,4978 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xhtml="http://www.w3.org/1999/xhtml" width="100%" height="100%" style="background:#07030f">
+<title>about:blank</title>
+<foreignObject x="0" y="0" width="100%" height="100%">
+<div xmlns="http://www.w3.org/1999/xhtml" id="saleen-root" data-wall="ocean">
+<style>
+
+/*<![CDATA[*/
+
+:root{
+  --accent:#a78bfa;
+  --ink:#eef2fa;
+  --muted:#93a0b8;
+  --rail-w:236px;
+  --radius:14px;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html,#saleen-root{height:100%}
+#saleen-root{
+  margin:0;
+  overflow:hidden;
+  background:#07030f;
+  color:var(--ink);
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+::selection{background:color-mix(in srgb,var(--accent) 35%,transparent);color:#fff}
+button,input{font-family:inherit}
+:focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 70%,transparent);outline-offset:2px}
+
+/* ---------- wallpaper ---------- */
+#wall{
+  position:fixed;inset:0;z-index:0;overflow:hidden;
+  background:
+    radial-gradient(120% 78% at 50% -20%, #7c3aed 0%, #4c1d95 32%, #240a44 64%, #07030f 100%);
+  transition:background .5s ease;
+  --px:0px;--py:0px;
+}
+#wall .blob{
+  position:absolute;
+  width:min(74vw,900px);
+  aspect-ratio:1;
+  border-radius:50%;
+  filter:blur(72px);
+  opacity:0;
+  mix-blend-mode:screen;
+  background-color:transparent;
+  transform:translate3d(calc(var(--px) * var(--k,1)),calc(var(--py) * var(--k,1)),0);
+  animation:blobDrift 34s ease-in-out infinite alternate;
+  will-change:transform,translate;
+  transition:opacity .6s ease,background-color .6s ease;
+}
+#wall .b1{left:-16%;top:-20%;--k:1;animation-duration:36s}
+#wall .b2{right:-18%;top:-4%;--k:1.6;animation-duration:44s;animation-delay:-11s}
+#wall .b3{left:14%;bottom:-28%;--k:2.1;animation-duration:52s;animation-delay:-23s}
+@keyframes blobDrift{
+  0%{translate:0 0;scale:1}
+  35%{translate:4% -7%;scale:1.14}
+  70%{translate:-6% 4%;scale:.93}
+  100%{translate:3% 7%;scale:1.07}
+}
+#saleen-root[data-wall="ocean"] #wall{
+  background:
+    radial-gradient(120% 78% at 50% -20%, #7c3aed 0%, #4c1d95 32%, #240a44 64%, #07030f 100%);
+}
+#saleen-root[data-wall="ocean"] #wall .blob{opacity:.34}
+#saleen-root[data-wall="ocean"] #wall .b1{background-color:#a855f7}
+#saleen-root[data-wall="ocean"] #wall .b2{background-color:#8b5cf6}
+#saleen-root[data-wall="ocean"] #wall .b3{background-color:#6d28d9}
+
+#saleen-root[data-wall="reef"] #wall{
+  background:
+    radial-gradient(70% 60% at 12% 8%, rgba(192,132,252,.30), transparent 60%),
+    radial-gradient(60% 56% at 88% 20%, rgba(139,92,246,.28), transparent 62%),
+    radial-gradient(90% 70% at 52% 108%, rgba(236,72,153,.18), transparent 62%),
+    linear-gradient(170deg,#1b0733,#2a0b4d 45%,#0a0318);
+}
+#saleen-root[data-wall="reef"] #wall .blob{opacity:.42}
+#saleen-root[data-wall="reef"] #wall .b1{background-color:#c084fc}
+#saleen-root[data-wall="reef"] #wall .b2{background-color:#8b5cf6}
+#saleen-root[data-wall="reef"] #wall .b3{background-color:#ec4899}
+
+#saleen-root[data-wall="abyss"] #wall{
+  background:
+    radial-gradient(90% 70% at 50% -30%, #3b1a63 0%, #1a0a30 46%, #05020b 100%);
+}
+#saleen-root[data-wall="abyss"] #wall .blob{opacity:.22}
+#saleen-root[data-wall="abyss"] #wall .b1{background-color:#7e22ce}
+#saleen-root[data-wall="abyss"] #wall .b2{background-color:#4c1d95}
+#saleen-root[data-wall="abyss"] #wall .b3{background-color:#8b5cf6}
+
+#saleen-root[data-wall="plain"] #wall{
+  background:radial-gradient(120% 90% at 50% 0%, #241040, #08030f 62%);
+}
+#saleen-root[data-wall="plain"] #wall .blob{opacity:0}
+
+#ocean{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .45s ease}
+#saleen-root[data-wall="ocean"] #ocean,
+#saleen-root[data-wall="reef"] #ocean,
+#saleen-root[data-wall="abyss"] #ocean{opacity:1}
+
+/* sun rays, drifting caustics and slow surface waves */
+#wall .rays{
+  position:absolute;left:-20%;right:-20%;top:-18%;height:150%;
+  background:
+    conic-gradient(from 186deg at 50% -6%,
+      transparent 0deg,
+      rgba(170,240,255,.10) 5deg,
+      transparent 10deg,
+      transparent 19deg,
+      rgba(150,230,255,.07) 25deg,
+      transparent 30deg,
+      transparent 43deg,
+      rgba(180,245,255,.09) 50deg,
+      transparent 56deg,
+      transparent 70deg,
+      rgba(140,225,255,.06) 78deg,
+      transparent 84deg);
+  filter:blur(20px);
+  transform-origin:50% 0;
+  animation:raySway 30s ease-in-out infinite alternate;
+  mix-blend-mode:screen;
+  opacity:.9;
+}
+#saleen-root[data-wall="plain"] #wall .rays{opacity:0}
+@keyframes raySway{
+  from{transform:rotate(-2.5deg) scaleY(1)}
+  to{transform:rotate(2.5deg) scaleY(1.07)}
+}
+
+#wall .caustics{
+  position:absolute;inset:-6%;
+  background:
+    radial-gradient(38% 28% at 22% 16%, rgba(125,211,252,.12), transparent 70%),
+    radial-gradient(42% 32% at 78% 24%, rgba(45,212,191,.10), transparent 70%),
+    radial-gradient(48% 38% at 55% 78%, rgba(14,165,233,.12), transparent 72%);
+  animation:caustics 34s ease-in-out infinite alternate;
+  mix-blend-mode:screen;
+}
+#saleen-root[data-wall="plain"] #wall .caustics{opacity:.4}
+@keyframes caustics{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(0,-2.5%,0) scale(1.07)}
+}
+
+#wall .wave{
+  position:absolute;left:-12%;width:124%;height:190px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='560' height='190' viewBox='0 0 560 190'%3E%3Cpath d='M0 96c46 0 46-30 92-30s46 30 92 30 46-30 92-30 46 30 92 30 46-30 92-30 46 30 92 30' fill='none' stroke='%238be9ff' stroke-width='2' stroke-linecap='round' opacity='.6'/%3E%3C/svg%3E");
+  background-repeat:repeat-x;
+  background-size:560px 190px;
+  opacity:.22;
+  animation:waveDrift 26s linear infinite;
+}
+#wall .wave.w1{bottom:-6px}
+#wall .wave.w2{bottom:-34px;opacity:.09;animation-duration:38s;animation-direction:reverse}
+@keyframes waveDrift{from{background-position-x:0}to{background-position-x:560px}}
+
+#wall .b4{
+  left:46%;top:26%;
+  width:min(46vw,560px);
+  --k:.6;
+  animation-duration:64s;
+  animation-delay:-31s;
+}
+#saleen-root[data-wall="ocean"] #wall .b4{background-color:#2dd4bf;opacity:.18}
+#saleen-root[data-wall="reef"] #wall .b4{background-color:#fbbf24;opacity:.14}
+#saleen-root[data-wall="abyss"] #wall .b4{background-color:#0891b2;opacity:.14}
+#saleen-root[data-wall="plain"] #wall .b4{opacity:0}
+
+#wall .grain{
+  position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  opacity:.04;
+  mix-blend-mode:overlay;
+}
+
+/* ---------- shell ---------- */
+#app{position:relative;z-index:2;display:flex;height:100dvh}
+
+#rail{
+  flex:0 0 var(--rail-w);
+  width:var(--rail-w);
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:16px 10px 14px 14px;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  backdrop-filter:none;
+  text-shadow:0 1px 3px rgba(0,0,0,.55);
+}
+.brand{
+  display:flex;align-items:center;gap:11px;
+  padding:4px 6px 2px;
+  border:0;border-radius:12px;
+  background:transparent;color:var(--ink);
+  cursor:pointer;text-align:left;
+  transition:background .18s ease,transform .18s ease;
+}
+.brand:hover{background:rgba(255,255,255,.06)}
+.brand-mark{
+  width:42px;height:42px;flex:0 0 42px;
+  display:grid;place-items:center;border-radius:14px;
+  background:radial-gradient(120% 120% at 30% 20%, #7defff 0%, #0ea5e9 44%, #0b3f5c 100%);
+  box-shadow:0 12px 26px -10px rgba(14,165,233,.75), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.brand-mark svg{width:26px;height:26px;display:block}
+.brand-mark path{
+  fill:none;stroke:#f2feff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+}
+.brand-name{
+  font-size:15px;font-weight:650;letter-spacing:.4px;
+  color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.45);
+}
+
+.rail-clock{
+  display:flex;flex-direction:column;gap:2px;
+  padding:14px 6px 13px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  margin-bottom:6px;
+}
+#railTime{
+  font-size:30px;font-weight:250;letter-spacing:-1.2px;line-height:1;
+  color:#f4fbff;
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 2px 18px rgba(103,232,249,.28);
+}
+#railDate{
+  font-size:10px;letter-spacing:.4px;text-transform:uppercase;
+  color:rgba(179,205,225,.72);
+}
+
+#tabList{
+  display:flex;flex-direction:column;gap:1px;
+  flex:0 1 auto;min-height:0;
+  overflow-y:auto;overflow-x:hidden;
+  padding:2px 0 4px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,.18) transparent;
+}
+#tabList::-webkit-scrollbar{width:6px}
+#tabList::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:3px}
+
+.tab{
+  position:relative;
+  display:flex;align-items:center;gap:9px;
+  width:100%;
+  padding:8px 8px 8px 11px;
+  border:0;border-radius:9px;
+  background:transparent;
+  color:var(--muted);
+  font-size:13px;text-align:left;
+  cursor:pointer;
+  flex:0 0 auto;
+  transition:background .15s ease,color .15s ease;
+}
+.tab::before{
+  content:"";position:absolute;left:0;top:50%;
+  width:3px;height:0;border-radius:3px;
+  background:var(--accent);
+  transform:translateY(-50%);
+  transition:height .18s ease;
+}
+.tab[aria-selected="true"]{color:#fff}
+.tab[aria-selected="true"]::before{height:16px}
+.tab:hover{background:rgba(255,255,255,.055);color:var(--ink)}
+.tab-ico{
+  width:18px;height:18px;flex:0 0 18px;
+  display:grid;place-items:center;
+  border-radius:5px;
+  background:rgba(255,255,255,.08);
+  color:rgba(255,255,255,.78);
+  font-size:10.5px;font-weight:600;
+}
+.tab-ico.wave{
+  background:linear-gradient(140deg,color-mix(in srgb,var(--accent) 42%,transparent),rgba(255,255,255,.06));
+  color:#eafcff;
+}
+.tab-ico svg{
+  width:12px;height:12px;display:block;
+  fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+}
+.tab-ico.emoji{background:transparent;font-size:15px;font-weight:400}
+.tab-title{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tab-x{
+  width:20px;height:20px;flex:0 0 20px;
+  display:grid;place-items:center;
+  border:0;border-radius:6px;
+  background:transparent;color:inherit;
+  font-size:12px;line-height:1;cursor:pointer;
+  opacity:0;
+  transition:opacity .15s ease,background .15s ease;
+}
+.tab:hover .tab-x,.tab[aria-selected="true"] .tab-x{opacity:.5}
+.tab-x:hover{opacity:1;background:rgba(255,255,255,.16)}
+
+.new-tab{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;
+  border:0;border-radius:9px;
+  background:transparent;
+  color:var(--muted);
+  font-size:13px;text-align:left;
+  cursor:pointer;
+}
+.new-tab:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.new-tab .plus{width:18px;text-align:center;font-size:15px;line-height:1}
+.rail-spacer{flex:1 1 auto;min-height:8px}
+.rail-btn{
+  display:flex;align-items:center;gap:9px;
+  padding:9px 10px;
+  border:0;border-radius:9px;
+  background:transparent;
+  color:var(--muted);
+  font-size:12.5px;text-align:left;
+  cursor:pointer;
+}
+.rail-btn:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+
+#main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;padding:0 14px 14px 2px}
+
+/* ---------- chrome ---------- */
+#chrome{display:flex;align-items:center;gap:5px;height:54px;flex:0 0 54px;padding-right:2px}
+.chrome-btn{
+  width:32px;height:32px;flex:0 0 32px;
+  display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:9px;
+  background:rgba(9,20,30,.42);
+  color:rgba(236,246,255,.92);
+  font-size:16px;line-height:1;
+  cursor:pointer;
+  backdrop-filter:blur(10px) saturate(120%);
+  transition:background .15s ease,color .15s ease,border-color .15s ease;
+}
+.chrome-btn:hover:not(:disabled){
+  background:rgba(24,52,72,.62);
+  border-color:rgba(255,255,255,.2);
+  color:#fff;
+}
+.chrome-btn:disabled{opacity:.38;cursor:default}
+#omniForm{flex:1 1 auto;min-width:0;display:flex}
+#omni{
+  width:100%;height:34px;
+  padding:0 13px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:9px;
+  background:rgba(10,14,22,.5);
+  color:var(--ink);
+  font-size:13px;
+  outline:none;
+  backdrop-filter:blur(10px);
+  transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
+}
+#omni::placeholder{color:rgba(147,160,184,.72)}
+#omni:focus{
+  border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent);
+  background:rgba(10,14,22,.72);
+}
+#engineChip{
+  width:32px;height:32px;flex:0 0 32px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:9px;
+  background:transparent;
+  color:var(--muted);
+  font-size:12px;font-weight:600;
+  cursor:pointer;
+  transition:color .15s ease,border-color .15s ease,background .15s ease;
+}
+#engineChip:hover{
+  color:var(--ink);
+  border-color:color-mix(in srgb,var(--accent) 45%,transparent);
+  background:rgba(255,255,255,.05);
+}
+
+/* ---------- viewport ---------- */
+#viewport{
+  position:relative;
+  flex:1 1 auto;min-height:0;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--radius);
+  background:rgba(9,18,27,.30);
+  box-shadow:
+    0 30px 70px -26px rgba(0,0,0,.65),
+    inset 0 1px 0 rgba(255,255,255,.07);
+  backdrop-filter:blur(26px) saturate(125%);
+  overflow:hidden;
+}
+
+#newTabView{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;
+  padding:40px 24px 96px;
+  text-align:center;
+  overflow:hidden;
+}
+#startView{
+  position:absolute;inset:0;
+  display:grid;place-items:center;
+  padding:40px 24px 96px;
+  overflow:hidden;
+}
+.start-mark{
+  width:clamp(84px,13vw,132px);aspect-ratio:1;
+  display:grid;place-items:center;
+  color:rgba(125,224,255,.55);
+  filter:drop-shadow(0 18px 40px rgba(14,165,233,.35));
+  animation:startFloat 6s ease-in-out infinite;
+}
+.start-mark svg{
+  width:100%;height:100%;display:block;
+  fill:none;stroke:currentColor;
+  stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;
+}
+@keyframes startFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-7px)}
+}
+.hero-apps{
+  display:flex;gap:10px;margin-top:26px;flex-wrap:wrap;justify-content:center;
+}
+.hero-app{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 14px 9px 11px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:12px;
+  background:rgba(255,255,255,.045);
+  color:rgba(214,236,250,.86);
+  font-size:12.5px;letter-spacing:.2px;
+  cursor:pointer;
+  transition:background .16s ease,border-color .16s ease,transform .16s ease,color .16s ease;
+}
+.hero-app:hover{
+  background:rgba(255,255,255,.085);
+  border-color:color-mix(in srgb,var(--accent) 42%,transparent);
+  color:#eaf8ff;
+  transform:translateY(-1px);
+}
+.hero-app:active{transform:translateY(0)}
+.app-ico{width:17px;height:17px;display:grid;place-items:center;flex:0 0 17px;opacity:.9}
+.app-ico svg{
+  width:17px;height:17px;display:block;
+  fill:none;stroke:currentColor;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+.app-name{white-space:nowrap}
+.hero-time{
+  margin:0;
+  font-size:clamp(64px,12vw,132px);
+  font-weight:200;letter-spacing:-4px;line-height:.95;
+  font-variant-numeric:tabular-nums;
+  color:#d9eef9;
+  text-shadow:0 16px 60px rgba(103,232,249,.30);
+}
+.hero-greeting{
+  margin:8px 0 0;
+  font-size:13px;font-weight:500;letter-spacing:1.4px;
+  text-transform:uppercase;
+  color:rgba(176,205,226,.85);
+  text-shadow:0 2px 12px rgba(0,0,0,.45);
+}
+.hero-typing{
+  position:absolute;left:0;right:0;bottom:26px;
+  margin:0;
+  font-size:14px;letter-spacing:.3px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color:rgba(205,228,242,.92);
+  text-align:center;
+  pointer-events:none;
+  min-height:1.4em;
+}
+.typing-caret{
+  display:inline-block;
+  width:2px;height:1em;
+  margin-left:3px;
+  vertical-align:-.15em;
+  background:currentColor;
+  animation:caretBlink 1s steps(1) infinite;
+}
+@keyframes caretBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* ---------- web view ---------- */
+#webWrap{position:absolute;inset:0;display:flex;flex-direction:column;background:rgba(255,255,255,.02)}
+#webBanner{
+  display:flex;align-items:center;gap:10px;
+  height:34px;flex:0 0 34px;
+  padding:0 12px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  background:color-mix(in srgb,var(--accent) 9%,rgba(8,11,19,.88));
+  color:rgba(255,255,255,.62);
+  font-size:11.5px;
+}
+#webBanner p{margin:0;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#webFrame{flex:1 1 auto;width:100%;border:0;background:#fff}
+
+/* ---------- saleen search results ---------- */
+#searchPane{position:absolute;inset:34px 0 0;overflow-y:auto;background:rgba(10,14,22,.92)}
+.search-list{max-width:780px;margin:0 auto;padding:16px 24px 56px;display:flex;flex-direction:column;gap:4px}
+.search-count{
+  margin:2px 0 10px;font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;
+  color:rgba(147,160,184,.7);
+}
+.search-result{
+  display:flex;flex-direction:column;gap:3px;
+  padding:11px 13px;border-radius:12px;border:1px solid transparent;
+  text-decoration:none;cursor:pointer;color:inherit;
+  transition:background .14s ease,border-color .14s ease,transform .14s ease;
+}
+.search-result:hover{
+  background:rgba(255,255,255,.055);
+  border-color:rgba(255,255,255,.09);
+  transform:translateX(2px);
+}
+.search-url{font-size:11px;color:color-mix(in srgb,var(--accent) 72%,#a9b7cf)}
+.search-title{font-size:15px;line-height:1.35;color:#e9effb}
+.search-snippet{font-size:12.5px;line-height:1.5;color:var(--muted)}
+.search-status{margin:20px 13px 12px;font-size:12.5px;line-height:1.6;color:var(--muted)}
+.search-list .primary-btn{align-self:flex-start;margin:0 13px}
+
+#pageLoading{
+  position:absolute;inset:34px 0 0;z-index:3;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  background:rgba(8,11,19,.86);
+  backdrop-filter:blur(2px);
+  color:var(--muted);font-size:11.5px;letter-spacing:.2px;
+}
+.page-spinner{
+  width:26px;height:26px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.13);
+  border-top-color:var(--accent);
+  animation:pageSpin .8s linear infinite;
+}
+@keyframes pageSpin{to{transform:rotate(360deg)}}
+
+/* ---------- reader ---------- */
+.strip-btn{
+  flex:0 0 auto;
+  padding:4px 10px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:7px;
+  background:transparent;color:var(--ink);
+  font-size:11.5px;font-family:inherit;
+  cursor:pointer;
+}
+.strip-btn:hover{background:rgba(255,255,255,.07)}
+.strip-btn[aria-pressed="true"]{
+  border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  background:color-mix(in srgb,var(--accent) 18%,transparent);
+  color:#fff;
+}
+#webReader{flex:1 1 auto;min-height:0;overflow-y:auto;background:rgba(8,11,19,.55)}
+#readerDoc{
+  max-width:760px;margin:0 auto;
+  padding:26px 26px 64px;
+  color:var(--ink);font-size:14px;line-height:1.7;
+}
+#readerDoc h1,#readerDoc h2,#readerDoc h3,#readerDoc h4{line-height:1.25;margin:1.5em 0 .5em;font-weight:650}
+#readerDoc h1{font-size:24px;margin-top:.2em}
+#readerDoc h2{font-size:19px}
+#readerDoc h3{font-size:16px}
+#readerDoc p{margin:0 0 .95em}
+#readerDoc ul{margin:0 0 .95em;padding-left:20px}
+#readerDoc li{margin:.3em 0}
+#readerDoc a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent);cursor:pointer}
+#readerDoc a:hover{border-bottom-color:var(--accent)}
+#readerDoc code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12.5px;background:rgba(255,255,255,.07);padding:1px 5px;border-radius:5px}
+#readerDoc pre{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 14px;overflow:auto}
+#readerDoc pre code{background:transparent;padding:0}
+#readerDoc blockquote{margin:0 0 .95em;padding-left:12px;border-left:2px solid color-mix(in srgb,var(--accent) 45%,transparent);color:var(--muted)}
+#readerDoc img{max-width:100%;border-radius:8px}
+.reader-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 20px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.07);font-size:11.5px;color:var(--muted)}
+.reader-status{color:var(--muted);font-size:13px;line-height:1.6}
+.reader-status .strip-btn{margin-top:12px}
+
+/* ---------- customize ---------- */
+dialog#sheet{
+  width:min(520px,calc(100vw - 32px));
+  max-height:min(86vh,720px);
+  padding:0;border:0;
+  background:transparent;
+  color:var(--ink);
+}
+dialog#sheet::backdrop{background:rgba(3,5,10,.62);backdrop-filter:blur(6px)}
+.sheet-card{
+  display:flex;flex-direction:column;
+  max-height:inherit;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;
+  background:rgba(12,16,26,.94);
+  box-shadow:0 32px 80px rgba(0,0,0,.62);
+  overflow:hidden;
+}
+.sheet-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:15px 18px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.sheet-head h2{margin:0;font-size:14.5px;font-weight:600;letter-spacing:.1px}
+.icon-btn{
+  width:28px;height:28px;
+  display:grid;place-items:center;
+  border:0;border-radius:8px;
+  background:transparent;color:var(--muted);
+  font-size:11px;cursor:pointer;
+}
+.icon-btn:hover{background:rgba(255,255,255,.08);color:var(--ink)}
+.sheet-body{padding:18px;display:flex;flex-direction:column;gap:20px;overflow-y:auto}
+.field{display:flex;flex-direction:column;gap:9px}
+.label{
+  font-size:10.5px;font-weight:600;letter-spacing:.9px;
+  text-transform:uppercase;color:var(--muted);
+}
+.label .dim{text-transform:none;letter-spacing:0;font-weight:400;color:rgba(147,160,184,.72)}
+.text-input{
+  height:38px;padding:0 12px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;
+  background:rgba(255,255,255,.05);
+  color:var(--ink);
+  font-size:13px;
+  outline:none;
+  transition:border-color .15s ease,box-shadow .15s ease;
+}
+.text-input:focus{
+  border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent);
+}
+.emoji-row{display:flex;align-items:center;gap:12px}
+.emoji-preview{
+  width:52px;height:52px;flex:0 0 52px;
+  display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  background:rgba(255,255,255,.06);
+  font-size:29px;line-height:1;
+}
+.emoji-row .text-input{flex:1 1 auto;min-width:0;text-align:center;font-size:19px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  height:30px;padding:0 11px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  font-size:12px;
+  cursor:pointer;
+  transition:color .15s ease,border-color .15s ease,background .15s ease;
+}
+.chip:hover{color:var(--ink);border-color:rgba(255,255,255,.22)}
+.chip[aria-pressed="true"]{
+  border-color:color-mix(in srgb,var(--accent) 65%,transparent);
+  background:color-mix(in srgb,var(--accent) 16%,transparent);
+  color:#fff;
+}
+.chip.emoji{width:34px;padding:0;font-size:17px}
+.accent-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.color-input{
+  width:38px;height:34px;flex:0 0 38px;
+  padding:2px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:9px;
+  background:rgba(255,255,255,.04);
+  cursor:pointer;
+}
+.swatch{
+  width:26px;height:26px;
+  padding:0;
+  border:2px solid transparent;
+  border-radius:8px;
+  background:var(--sw);
+  cursor:pointer;
+}
+.swatch[aria-pressed="true"]{border-color:#fff}
+.sheet-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 18px;
+  border-top:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.02);
+}
+.ghost-btn{
+  height:32px;padding:0 13px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:9px;
+  background:transparent;
+  color:var(--muted);
+  font-size:12px;cursor:pointer;
+}
+.ghost-btn:hover{color:var(--ink);border-color:rgba(255,255,255,.22)}
+.primary-btn{
+  height:32px;padding:0 17px;
+  border:0;border-radius:9px;
+  background:var(--accent);
+  color:#0a0e17;
+  font-size:12px;font-weight:600;
+  cursor:pointer;
+}
+.primary-btn:hover{filter:brightness(1.08)}
+
+/* ---------- toast ---------- */
+#saleen-root[data-mode="ai"] #toast{bottom:92px}
+#toast{
+  position:fixed;left:50%;bottom:26px;
+  z-index:50;
+  max-width:80vw;
+  padding:9px 15px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;
+  background:rgba(12,16,26,.95);
+  color:var(--ink);
+  font-size:12.5px;text-align:center;
+  box-shadow:0 14px 34px rgba(0,0,0,.5);
+  opacity:0;pointer-events:none;
+  transform:translate(-50%,12px);
+  transition:opacity .2s ease,transform .2s ease;
+}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:760px){
+  :root{--rail-w:64px}
+  #rail{padding:14px 8px;gap:4px}
+  .brand{justify-content:center;padding:2px 0 8px}
+  .brand-name{display:none}
+  .rail-clock{display:none}
+  .new-tab,.rail-btn{justify-content:center;padding:9px 0}
+  .new-tab .btn-label,.rail-btn .btn-label{display:none}
+  .tab-title,.tab-x{display:none}
+  .tab{justify-content:center;padding:9px 0 9px 2px}
+  #main{padding:0 8px 8px 0}
+  #chrome{height:50px;flex:0 0 50px;gap:2px}
+  .chrome-btn{width:29px;flex:0 0 29px}
+  #newTabView{padding:28px 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  /* UI stays still, but the ocean keeps moving. */
+  *:not(#wall):not(#wall *):not(#ocean){animation:none!important;transition:none!important}
+}
+
+/* ---------- rail sections ---------- */
+.rail-nav{display:flex;flex-direction:column;gap:1px;padding:0 0 2px}
+.nav-item{
+  position:relative;
+  display:flex;align-items:center;gap:9px;
+  width:100%;padding:8px 8px 8px 11px;
+  border:0;border-radius:9px;
+  background:transparent;color:var(--muted);
+  font-size:13px;text-align:left;cursor:pointer;
+  transition:background .15s ease,color .15s ease;
+}
+.nav-item::before{
+  content:"";position:absolute;left:0;top:50%;
+  width:3px;height:0;border-radius:3px;
+  background:var(--accent);transform:translateY(-50%);
+  transition:height .18s ease;
+}
+.nav-item[aria-current="page"]{color:#fff}
+.nav-item[aria-current="page"]::before{height:16px}
+.nav-item:hover{background:rgba(255,255,255,.055);color:var(--ink)}
+.nav-ico{
+  width:18px;height:18px;flex:0 0 18px;
+  display:grid;place-items:center;
+  color:currentColor;
+  opacity:.85;
+  transition:opacity .15s ease,transform .15s ease;
+}
+.nav-ico svg{
+  width:17px;height:17px;display:block;
+  fill:none;stroke:currentColor;
+  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;
+}
+.nav-item:hover .nav-ico,
+.nav-item[aria-current="page"] .nav-ico{opacity:1}
+.nav-item[aria-current="page"] .nav-ico{transform:translateX(1px)}
+.nav-label{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rail-label{
+  padding:12px 10px 6px;
+  font-size:9.5px;font-weight:600;letter-spacing:1.3px;
+  text-transform:uppercase;color:rgba(147,160,184,.55);
+}
+
+/* ---------- section views ---------- */
+.view{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden}
+.movie-shell{position:relative;flex:1 1 auto;min-height:0;margin:0 20px 20px;border-radius:14px;overflow:hidden;background:rgba(4,14,22,.45);border:1px solid rgba(255,255,255,.07)}
+.movie-load{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;transition:opacity .5s ease}
+.movie-load.done{opacity:0;pointer-events:none}
+.movie-status{margin:0;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:rgba(176,205,226,.8)}
+.movie-bar{width:min(280px,70%);height:3px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
+.movie-bar span{display:block;height:100%;width:0;border-radius:99px;background:var(--accent);transition:width .25s ease}
+.movie-wrap{position:absolute;inset:0}
+.movie-wrap iframe{width:100%;height:100%;border:0;display:block;background:#04121c}
+.dd-frame{width:100%;height:100%;border:0;display:block;background:#0a0a0f}
+.movie-wrap video{width:100%;height:100%;display:block;background:#000;object-fit:contain}
+.movie-note{
+  position:absolute;left:12px;bottom:12px;z-index:5;display:flex;align-items:center;gap:8px;
+  padding:7px 9px 7px 12px;border-radius:11px;font-size:11.5px;color:var(--muted);
+  background:rgba(4,14,22,.82);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);
+}
+.movie-note .ghost-btn{padding:5px 9px;font-size:11px}
+.movie-tap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;padding:14px 38px;border-radius:999px;border:1px solid rgba(255,255,255,.26);background:rgba(4,18,28,.74);color:#eaf7ff;font:600 13px/1 "Inter",system-ui,sans-serif;letter-spacing:2.4px;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(6px);transition:background .2s ease,border-color .2s ease}
+.movie-tap:hover{background:rgba(9,42,58,.88);border-color:var(--accent)}
+.game-grid{position:absolute;inset:0;overflow:auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));grid-auto-rows:max-content;align-items:start;align-content:start;gap:12px;scrollbar-width:thin;scrollbar-color:rgba(157,247,255,.3) transparent}
+.game-grid::-webkit-scrollbar{width:8px}
+.game-grid::-webkit-scrollbar-thumb{background:rgba(157,247,255,.22);border-radius:99px}
+.game-card{position:relative;display:flex;flex-direction:column;padding:0;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;background:rgba(255,255,255,.03);color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.game-card:hover{transform:translateY(-2px);border-color:rgba(157,247,255,.42);background:rgba(255,255,255,.06)}
+.game-card:focus-visible{outline:2px solid rgba(157,247,255,.6);outline-offset:2px}
+.game-art{position:relative;display:block;width:100%;aspect-ratio:16/10;overflow:hidden;background:linear-gradient(135deg,#0a2a3d,#12455f)}
+.game-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.game-initial{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:rgba(157,247,255,.4);letter-spacing:1px}
+.game-card .game-name{display:block;width:100%;padding:8px 9px;font-size:11.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.game-empty{grid-column:1/-1;margin:18px 0;text-align:center;font-size:12.5px;color:var(--muted)}
+.game-search{width:160px;max-width:42vw;padding:7px 11px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:var(--ink);font:inherit;font-size:12px;outline:none}
+.game-search::placeholder{color:rgba(176,205,226,.55)}
+.game-search:focus{border-color:rgba(157,247,255,.5)}
+
+/* ---------- movies + tv ---------- */
+.media-filters{display:flex;gap:6px;align-items:center}
+.media-chip{
+  padding:7px 10px;border-radius:9px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.04);color:var(--muted);font:inherit;font-size:11.5px;
+  cursor:pointer;white-space:nowrap;transition:color .15s ease,background .15s ease,border-color .15s ease;
+}
+.media-chip:hover{color:var(--ink);border-color:rgba(255,255,255,.26)}
+.media-providers{gap:4px;max-width:min(100%,360px);flex-wrap:wrap;justify-content:flex-end}
+.media-providers .media-chip{padding:6px 9px;font-size:11px}
+.media-chip[aria-pressed="true"]{
+  color:#06202f;font-weight:600;border-color:transparent;
+  background:color-mix(in srgb,var(--accent) 88%,#ffffff 12%);
+}
+.media-select{
+  max-width:150px;padding:7px 9px;border-radius:9px;
+  border:1px solid rgba(255,255,255,.14);background:rgba(7,24,38,.92);
+  color:var(--ink);font:inherit;font-size:11.5px;outline:none;
+}
+.media-grid{
+  position:absolute;inset:0;overflow:auto;padding:14px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(126px,1fr));
+  grid-auto-rows:max-content;align-items:start;align-content:start;gap:12px;
+  scrollbar-width:thin;scrollbar-color:rgba(157,247,255,.3) transparent;
+}
+.media-grid::-webkit-scrollbar{width:8px}
+.media-grid::-webkit-scrollbar-thumb{background:rgba(157,247,255,.22);border-radius:99px}
+.media-card{
+  display:flex;flex-direction:column;padding:0;overflow:hidden;text-align:left;
+  border:1px solid rgba(255,255,255,.08);border-radius:12px;
+  background:rgba(255,255,255,.03);color:var(--ink);font:inherit;cursor:pointer;
+  transition:transform .16s ease,border-color .16s ease,background .16s ease;
+}
+.media-card:hover{transform:translateY(-2px);border-color:rgba(157,247,255,.42);background:rgba(255,255,255,.06)}
+.media-card:focus-visible{outline:2px solid rgba(157,247,255,.6);outline-offset:2px}
+.media-art{position:relative;display:block;width:100%;aspect-ratio:2/3;overflow:hidden;background:linear-gradient(135deg,#0a2a3d,#12455f)}
+.media-art img{width:100%;height:100%;object-fit:cover;display:block}
+.media-info{display:block;width:100%;padding:8px 9px 10px}
+.media-name{display:block;font-size:11.5px;line-height:1.3;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.media-year{display:block;margin-top:3px;font-size:10px;letter-spacing:.4px;color:rgba(176,205,226,.62)}
+.media-filters[hidden],.media-select[hidden],.media-chip[hidden]{display:none}
+.view-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  padding:20px 24px 12px;flex:0 0 auto;
+}
+.view-head h2{margin:0;font-size:18px;font-weight:600;letter-spacing:-.2px}
+.view-sub{margin:4px 0 0;font-size:11.5px;line-height:1.4;color:var(--muted)}
+.head-actions{display:flex;gap:6px;flex:0 0 auto;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+.fineprint{margin:0;font-size:11px;line-height:1.55;color:rgba(147,160,184,.78)}
+
+/* ---------- links ---------- */
+.links-body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:0 24px 48px}
+.link-form{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+.link-form .text-input{flex:1 1 auto}
+.link-form .primary-btn{flex:0 0 auto;height:38px}
+.links-section{margin:26px 0 0}
+.links-h{
+  display:flex;align-items:center;gap:8px;
+  margin:0 0 11px;
+  font-size:10.5px;font-weight:600;letter-spacing:1.1px;text-transform:uppercase;
+  color:rgba(147,160,184,.7);
+}
+.links-count{
+  min-width:18px;padding:1px 6px;border-radius:99px;
+  background:rgba(255,255,255,.07);
+  font-size:10px;letter-spacing:0;color:var(--muted);
+}
+.links-note{
+  font-size:10px;font-weight:400;letter-spacing:0;text-transform:none;
+  color:rgba(147,160,184,.55);
+}
+.links-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.links-empty{grid-column:1/-1;margin:2px 0 0}
+.link-card{
+  display:flex;align-items:center;min-width:0;
+  border:1px solid rgba(255,255,255,.075);
+  border-radius:11px;
+  background:rgba(255,255,255,.035);
+  transition:background .15s ease,border-color .15s ease,transform .15s ease;
+}
+.link-card:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);transform:translateY(-1px)}
+.link-open{
+  display:flex;align-items:center;gap:10px;flex:1 1 auto;min-width:0;
+  padding:9px 11px;
+  border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;
+}
+.link-ico{
+  flex:0 0 auto;width:26px;height:26px;
+  display:grid;place-items:center;border-radius:8px;
+  background:color-mix(in srgb,var(--accent) 16%,transparent);
+  border:1px solid color-mix(in srgb,var(--accent) 24%,transparent);
+  color:#fff;font-size:11.5px;font-weight:600;
+}
+.link-text{display:flex;flex-direction:column;gap:1px;min-width:0}
+.link-name{font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.link-host{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.link-del{
+  flex:0 0 auto;width:26px;height:26px;margin-right:6px;
+  border:0;border-radius:7px;background:transparent;
+  color:var(--muted);font-size:10px;cursor:pointer;
+}
+.link-del:hover{background:rgba(255,99,99,.16);color:#ffb4b4}
+#saleen-root:not([data-mode="browser"]) #main{padding-top:14px}
+#saleen-root:not([data-mode="browser"]) .tab[aria-selected="true"]{color:var(--muted)}
+#saleen-root:not([data-mode="browser"]) .tab[aria-selected="true"]::before{height:0}
+
+/* ---------- AI ---------- */
+.ai-log{flex:1 1 auto;min-height:0;overflow-y:auto;padding:4px 24px 14px}
+.msg{
+  max-width:min(660px,92%);
+  margin:0 0 10px;padding:10px 13px;
+  border-radius:12px;
+  font-size:12.5px;line-height:1.6;
+  white-space:pre-wrap;overflow-wrap:anywhere;
+}
+.msg.user{
+  margin-left:auto;
+  background:color-mix(in srgb,var(--accent) 18%,transparent);
+  border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);
+  color:#fff;
+}
+.msg.bot{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
+.msg.err{background:rgba(255,99,99,.08);border:1px solid rgba(255,99,99,.32);color:#ffb4b4}
+.msg.typing{color:var(--muted);font-style:italic}
+.msg .msg-retry{display:block;margin-top:8px;height:auto;padding:4px 11px;font-size:11px}
+.ai-compose{
+  flex:0 0 auto;
+  display:flex;gap:8px;align-items:flex-end;
+  padding:10px 24px 20px;
+}
+.ai-compose textarea{
+  flex:1 1 auto;min-height:42px;max-height:140px;
+  padding:11px 14px;resize:none;
+  border:1px solid rgba(255,255,255,.1);border-radius:12px;
+  background:rgba(255,255,255,.05);color:var(--ink);
+  font-size:13px;line-height:1.4;outline:none;
+  transition:border-color .15s ease,box-shadow .15s ease;
+}
+.ai-compose textarea:focus{
+  border-color:color-mix(in srgb,var(--accent) 60%,transparent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 13%,transparent);
+}
+.ai-compose .primary-btn{height:42px;padding:0 18px;flex:0 0 auto}
+
+@media (max-width:760px){
+  .nav-label,.rail-label{display:none}
+  .nav-item{justify-content:center;padding:9px 0 9px 2px}
+  .view-head{padding:16px 16px 10px}
+  .ai-log,.ai-compose{padding-left:16px;padding-right:16px}
+  .game-grid{grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:9px;padding:10px}
+  .game-search{width:120px}
+  .media-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:9px;padding:10px}
+  .media-filters{display:none}
+  .media-select{max-width:96px;font-size:11px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  #wall .blob{animation:blobDrift 90s ease-in-out infinite alternate!important}
+}
+
+/* ---------- 2026 shell: full-bleed stage + bottom dock ---------- */
+#app{
+  flex-direction:column-reverse;
+  height:100dvh;
+  border:0;outline:0;
+  padding:0;
+}
+#main{
+  flex:1 1 auto;min-height:0;
+  padding:0;
+  border:0;outline:0;
+}
+#viewport{
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  background:transparent;
+  backdrop-filter:none;
+  outline:0;
+}
+html,#saleen-root{border:0;outline:0}
+
+/* rail -> floating dock along the bottom edge */
+#rail{
+  flex:0 0 auto;width:auto;max-width:min(96vw,880px);
+  align-self:center;
+  flex-direction:row;align-items:center;gap:5px;
+  margin:0 auto 12px;
+  padding:6px;
+  border-radius:16px;
+  background:rgba(5,15,23,.58);
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:0 24px 48px -22px rgba(0,0,0,.9);
+  backdrop-filter:blur(18px) saturate(130%);
+  text-shadow:none;
+  overflow:hidden;
+}
+#rail .brand,
+#rail .rail-clock,
+#rail .rail-label,
+#rail .rail-spacer{display:none}
+
+.rail-nav{flex-direction:row;gap:2px;padding:0}
+.nav-item{
+  flex-direction:column;gap:3px;
+  width:auto;
+  padding:7px 12px;
+  border-radius:11px;
+  font-size:10px;letter-spacing:.2px;
+  text-align:center;
+}
+.nav-item::before{display:none}
+.nav-item .nav-ico{width:20px;height:20px;flex:0 0 20px;opacity:.7}
+.nav-item .nav-ico svg{width:19px;height:19px}
+.nav-item[aria-current="page"]{background:rgba(255,255,255,.07);color:#fff}
+.nav-item[aria-current="page"] .nav-ico{transform:none;opacity:1}
+.nav-item .nav-label{flex:0 0 auto;font-size:10px}
+
+#tabList{
+  flex-direction:row;gap:4px;
+  padding:0;
+  overflow-x:auto;overflow-y:hidden;
+  max-width:34vw;
+}
+.tab{
+  width:auto;max-width:170px;
+  padding:6px 9px;
+  font-size:11.5px;gap:6px;
+  border-radius:9px;
+}
+.tab::before{display:none}
+.tab-x{display:none}
+.new-tab{padding:8px 11px;border-radius:10px}
+.new-tab .btn-label{display:none}
+.new-tab .plus{font-size:16px}
+
+/* ---------- hero ---------- */
+#newTabView{gap:0;padding:36px 22px 96px}
+.hero-greeting{
+  margin:0;font-size:13px;font-weight:500;letter-spacing:.3px;
+  text-transform:none;
+  color:rgba(204,230,245,.8);
+}
+.hero-word{
+  margin:6px 0 0;
+  font-size:clamp(60px,11vw,124px);
+  font-weight:800;letter-spacing:-.045em;line-height:1;
+  color:#f3fcff;
+  text-shadow:0 22px 70px rgba(56,189,248,.32);
+}
+.hero-search{
+  display:flex;align-items:center;gap:10px;
+  width:min(660px,94%);
+  margin:26px 0 0;
+  padding:5px 5px 5px 18px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;
+  background:rgba(5,15,23,.5);
+  backdrop-filter:blur(14px);
+  box-shadow:0 20px 54px -30px rgba(0,0,0,.95);
+  transition:border-color .18s ease,box-shadow .18s ease;
+}
+.hero-search:focus-within{
+  border-color:color-mix(in srgb,var(--accent) 55%,transparent);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent),0 20px 54px -30px rgba(0,0,0,.95);
+}
+#heroInput{
+  flex:1 1 auto;min-width:0;height:40px;
+  border:0;background:transparent;outline:none;
+  color:var(--ink);font-size:15px;
+}
+#heroInput::placeholder{color:rgba(158,190,212,.55)}
+.hero-go{
+  width:42px;height:42px;flex:0 0 42px;
+  display:grid;place-items:center;
+  border:0;border-radius:11px;cursor:pointer;
+  background:linear-gradient(160deg,#f0fdff,#a8e6ff 42%,#57c6f0);
+  color:#04202c;
+  transition:filter .15s ease,transform .15s ease;
+}
+.hero-go:hover{filter:brightness(1.08)}
+.hero-go:active{transform:scale(.97)}
+.hero-go svg{
+  width:19px;height:19px;
+  fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+}
+.hero-apps{gap:9px;margin-top:20px}
+.hero-date{
+  position:absolute;left:0;right:0;bottom:54px;
+  margin:0;
+  font-size:11.5px;letter-spacing:.3px;
+  color:rgba(180,208,226,.72);
+}
+.hero-clock{
+  position:absolute;top:20px;right:24px;
+  margin:0;
+  font-size:11px;letter-spacing:2.4px;
+  font-variant-numeric:tabular-nums;
+  color:rgba(158,196,218,.6);
+}
+.hero-typing{bottom:22px}
+
+@media (max-width:760px){
+  #main{padding:0}
+  .nav-item{padding:6px 8px;font-size:9px}
+  .nav-item .nav-label{font-size:9px}
+  #tabList{max-width:26vw}
+  .hero-word{letter-spacing:-.03em}
+  .hero-date{bottom:46px}
+}
+
+/*]]>*/
+
+</style>
+
+<div id="wall" aria-hidden="true">
+  <span class="rays"></span>
+  <span class="caustics"></span>
+  <span class="blob b1"></span>
+  <span class="blob b2"></span>
+  <span class="blob b3"></span>
+  <span class="blob b4"></span>
+  <span class="wave w1"></span>
+  <span class="wave w2"></span>
+  <span class="grain"></span>
+</div>
+<canvas id="ocean" aria-hidden="true"></canvas>
+
+<div id="app">
+  <aside id="rail" aria-label="Saleen">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" focusable="false">
+          <defs>
+            <linearGradient id="saleenMark" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#9df7ff"/>
+              <stop offset=".5" stop-color="#22b8e6"/>
+              <stop offset="1" stop-color="#0b5478"/>
+            </linearGradient>
+          </defs>
+          <rect x=".6" y=".6" width="30.8" height="30.8" rx="9.4" fill="url(#saleenMark)"/>
+          <path d="M6.8 20.4c6.1-7.6 12.3-7.6 18.4 0" fill="none" stroke="#04212f" stroke-width="2.7" stroke-linecap="round" opacity=".45"/>
+          <path d="M6.8 24.6c6.1-7.6 12.3-7.6 18.4 0" fill="none" stroke="#f4feff" stroke-width="2.7" stroke-linecap="round"/>
+          <path d="M16.4 5.4l1.4 3.3 3.3 1.4-3.3 1.4-1.4 3.3-1.4-3.3-3.3-1.4 3.3-1.4z" fill="#f4feff" opacity=".95"/>
+        </svg>
+      </span>
+      <span class="brand-name">Saleen</span>
+    </div>
+
+    <div class="rail-clock" aria-label="Current time">
+      <span id="railTime">--:--</span>
+      <span id="railDate">—</span>
+    </div>
+
+    <nav class="rail-nav" aria-label="Sections">
+      <button id="navHome" class="nav-item" type="button" data-mode="home">
+        <span class="nav-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></svg></span><span class="nav-label">Home</span>
+      </button>
+      <button id="navAI" class="nav-item" type="button" data-mode="ai">
+        <span class="nav-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3.5l1.7 5.1 5.1 1.7-5.1 1.7L12 17.1l-1.7-5.1L5.2 10.3l5.1-1.7z"/><path d="M17.5 15.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg></span><span class="nav-label">AI</span>
+      </button>
+      <button id="navLinks" class="nav-item" type="button" data-mode="links">
+        <span class="nav-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.2 13.8a4.2 4.2 0 0 0 6 0l2.4-2.4a4.2 4.2 0 0 0-6-6l-1.3 1.3"/><path d="M13.8 10.2a4.2 4.2 0 0 0-6 0l-2.4 2.4a4.2 4.2 0 0 0 6 6l1.3-1.3"/></svg></span><span class="nav-label">Links</span>
+      </button>
+      <button id="navGames" class="nav-item" type="button" data-mode="games">
+        <span class="nav-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="7.5" width="18" height="9.5" rx="4.5"/><path d="M8 10.5v3.2M6.4 12.1h3.2"/><circle cx="16" cy="11.4" r=".9"/><circle cx="18.2" cy="13.6" r=".9"/></svg></span><span class="nav-label">Games</span>
+      </button>
+      <button id="navMovies" class="nav-item" type="button" data-mode="movies">
+        <span class="nav-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M8 5v14M16 5v14M3 9.5h5M3 14.5h5M16 9.5h5M16 14.5h5"/></svg></span><span class="nav-label">Movies</span>
+      </button>
+      <button id="navTV" class="nav-item" type="button" data-mode="tv">
+        <span class="nav-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="12.5" rx="2.5"/><path d="M8.4 3.6L12 7l3.6-3.4"/></svg></span><span class="nav-label">TV</span>
+      </button>
+      <button id="navMusic" class="nav-item" type="button" data-mode="music">
+        <span class="nav-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="7.4" cy="17.4" r="2.8"/><circle cx="17.6" cy="15.6" r="2.8"/><path d="M10.2 17.4V7.2l10.2-2.2v10.6"/></svg></span><span class="nav-label">Music</span>
+      </button>
+    </nav>
+
+    <div class="rail-label">Tabs</div>
+    <div id="tabList" role="tablist" aria-label="Open tabs"></div>
+    <button id="newTabBtn" class="new-tab" type="button">
+      <span class="plus" aria-hidden="true">+</span><span class="btn-label">New tab</span>
+    </button>
+    <div class="rail-spacer"></div>
+  </aside>
+
+  <main id="main">
+    <div id="chrome">
+      <button id="backBtn" class="chrome-btn" type="button" title="Back" aria-label="Back">←</button>
+      <button id="fwdBtn" class="chrome-btn" type="button" title="Forward" aria-label="Forward">→</button>
+      <button id="reloadBtn" class="chrome-btn" type="button" title="Reload" aria-label="Reload">↻</button>
+      <form id="omniForm" autocomplete="off">
+        <input id="omni" type="text" placeholder="Search the web or open anything" aria-label="Address and search" spellcheck="false" />
+      </form>
+    </div>
+
+    <div id="viewport">
+      <section id="newTabView">
+        <p class="hero-greeting" id="heroGreeting">good evening</p>
+        <h1 class="hero-word">Saleen</h1>
+
+        <form id="heroSearch" class="hero-search" autocomplete="off">
+          <input id="heroInput" type="text" placeholder="Search or paste a link" spellcheck="false" />
+          <button type="submit" class="hero-go" aria-label="Go">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12.5 5.5L19 12l-6.5 6.5"/></svg>
+          </button>
+        </form>
+
+        <div class="hero-apps">
+          <button class="hero-app" type="button" data-open="https://www.tiktok.com/">
+            <span class="app-ico" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M14 4.2v9.1a3.6 3.6 0 1 1-3.1-3.6"/>
+                <path d="M14 4.2c.3 2.2 1.9 3.7 4.1 3.9"/>
+              </svg>
+            </span>
+            <span class="app-name">TikTok</span>
+          </button>
+          <button class="hero-app" type="button" data-open="https://www.instagram.com/">
+            <span class="app-ico" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <rect x="3.6" y="3.6" width="16.8" height="16.8" rx="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17" cy="7" r="1"/>
+              </svg>
+            </span>
+            <span class="app-name">Instagram</span>
+          </button>
+          <button class="hero-app" type="button" data-open="https://discord.com/app">
+            <span class="app-ico" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M7.4 6.6c3-.9 6.2-.9 9.2 0 1.7 2.6 2.5 5.6 2.4 8.7-1.2.9-2.5 1.5-3.9 1.8l-.8-1.5c-1.9.4-3.9.4-5.8 0l-.8 1.5c-1.4-.3-2.7-.9-3.9-1.8-.1-3.1.7-6.1 2.4-8.7"/>
+                <circle cx="9.6" cy="12.4" r=".9"/>
+                <circle cx="14.4" cy="12.4" r=".9"/>
+              </svg>
+            </span>
+            <span class="app-name">Discord</span>
+          </button>
+          <button class="hero-app" type="button" data-open="https://www.youtube.com/">
+            <span class="app-ico" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <rect x="2.8" y="5.6" width="18.4" height="12.8" rx="4"/>
+                <path d="M10.4 9.4l4.8 2.6-4.8 2.6z"/>
+              </svg>
+            </span>
+            <span class="app-name">YouTube</span>
+          </button>
+          <button class="hero-app" type="button" data-open="https://chatgpt.com/">
+            <span class="app-ico" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 3.6l7.2 4.2v8.4L12 20.4 4.8 16.2V7.8z"/>
+                <path d="M12 8.4l3.4 2v4l-3.4 2-3.4-2v-4z"/>
+              </svg>
+            </span>
+            <span class="app-name">ChatGPT</span>
+          </button>
+        </div>
+
+        <p class="hero-date" id="heroDate"></p>
+        <p class="hero-clock" id="heroTime">--:--</p>
+      </section>
+
+      <section id="startView" hidden="hidden">
+        <div class="start-mark" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M2.5 13.2c2.1 0 2.1-2.1 4.2-2.1s2.1 2.1 4.2 2.1 2.1-2.1 4.2-2.1 2.1 2.1 4.2 2.1 2.1-2.1 2.2-2.1"/>
+            <path d="M2.5 17.6c2.1 0 2.1-2.1 4.2-2.1s2.1 2.1 4.2 2.1 2.1-2.1 4.2-2.1 2.1 2.1 4.2 2.1 2.1-2.1 2.2-2.1"/>
+            <path d="M2.5 8.8c2.1 0 2.1-2.1 4.2-2.1s2.1 2.1 4.2 2.1 2.1-2.1 4.2-2.1 2.1 2.1 4.2 2.1 2.1-2.1 2.2-2.1"/>
+          </svg>
+        </div>
+      </section>
+
+      <p id="heroTyping" class="hero-typing" aria-live="polite">
+        <span id="typingText"></span><span class="typing-caret" aria-hidden="true"></span>
+      </p>
+
+      <div id="webWrap" hidden="hidden">
+        <div id="webBanner">
+          <p id="webNote">Loading…</p>
+        </div>
+        <div id="searchPane" hidden="hidden">
+          <div id="searchList" class="search-list"></div>
+        </div>
+        <iframe id="webFrame" title="Web page" referrerpolicy="no-referrer" sandbox="allow-scripts allow-forms allow-popups"></iframe>
+        <div id="pageLoading" hidden="hidden">
+          <span class="page-spinner" aria-hidden="true"></span>
+          <span id="pageLoadingText">Opening through Saleen…</span>
+        </div>
+      </div>
+
+      <section id="aiView" class="view" hidden="hidden">
+        <header class="view-head">
+          <div>
+            <h2>AI</h2>
+          </div>
+          <div class="head-actions">
+            <button id="aiClear" class="ghost-btn" type="button">New chat</button>
+          </div>
+        </header>
+
+        <div id="aiLog" class="ai-log"></div>
+
+        <form id="aiForm" class="ai-compose" autocomplete="off">
+          <textarea id="aiInput" rows="1" placeholder="Ask anything…" spellcheck="false"></textarea>
+          <button id="aiSend" class="primary-btn" type="submit">Send</button>
+        </form>
+      </section>
+
+      <section id="linksView" class="view" hidden="hidden">
+        <header class="view-head">
+          <div>
+            <h2>Links</h2>
+          </div>
+        </header>
+
+        <div id="linksBody" class="links-body">
+          <section class="links-section">
+            <h3 class="links-h">My links <span id="myLinksCount" class="links-count">0</span></h3>
+            <div id="myLinks" class="links-grid"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="gamesView" class="view" hidden="hidden">
+        <header class="view-head">
+          <div>
+            <h2 id="gamesTitle">Games</h2>
+            <p id="gamesSub" class="view-sub"></p>
+          </div>
+          <div class="head-actions">
+            <input id="gameSearch" class="game-search" type="search" placeholder="Search games" autocomplete="off" spellcheck="false" />
+            <button id="gameBack" class="ghost-btn" type="button" hidden="hidden">Back</button>
+          </div>
+        </header>
+        <div class="movie-shell">
+          <div id="gameLoad" class="movie-load">
+            <p id="gameStatus" class="movie-status">Loading games</p>
+            <div class="movie-bar"><span id="gameFill"></span></div>
+          </div>
+          <div id="gameGrid" class="game-grid" hidden="hidden"></div>
+          <div id="gameWrap" class="movie-wrap" hidden="hidden"></div>
+        </div>
+      </section>
+
+      <section id="moviesView" class="view" hidden="hidden">
+        <header class="view-head">
+          <div>
+            <h2 id="mediaTitle">Movies</h2>
+            <p id="mediaSub" class="view-sub"></p>
+          </div>
+          <div class="head-actions">
+            <div id="mediaFilters" class="media-filters">
+              <button class="media-chip" type="button" data-filter="trending" aria-pressed="true">Trending</button>
+              <button class="media-chip" type="button" data-filter="popular" aria-pressed="false">Popular</button>
+              <button class="media-chip" type="button" data-filter="top" aria-pressed="false">Top rated</button>
+            </div>
+            <div id="providerFilters" class="media-filters media-providers" aria-label="Streaming provider">
+              <button class="media-chip" type="button" data-provider="" aria-pressed="true">All</button>
+              <button class="media-chip" type="button" data-provider="8" aria-pressed="false">Netflix</button>
+              <button class="media-chip" type="button" data-provider="9|119" aria-pressed="false">Prime</button>
+              <button class="media-chip" type="button" data-provider="337" aria-pressed="false">Disney+</button>
+              <button class="media-chip" type="button" data-provider="1899" aria-pressed="false">Max</button>
+              <button class="media-chip" type="button" data-provider="15" aria-pressed="false">Hulu</button>
+              <button class="media-chip" type="button" data-provider="350" aria-pressed="false">Apple TV+</button>
+              <button class="media-chip" type="button" data-provider="531" aria-pressed="false">Paramount+</button>
+              <button class="media-chip" type="button" data-provider="386" aria-pressed="false">Peacock</button>
+            </div>
+            <input id="mediaSearch" class="game-search" type="search" placeholder="Search movies" autocomplete="off" spellcheck="false" />
+            <select id="seasonSel" class="media-select" aria-label="Season" hidden="hidden"></select>
+            <select id="episodeSel" class="media-select" aria-label="Episode" hidden="hidden"></select>
+            <button id="mediaBack" class="ghost-btn" type="button" hidden="hidden">Back</button>
+          </div>
+        </header>
+        <div class="movie-shell">
+          <div id="movieLoad" class="movie-load">
+            <p id="movieStatus" class="movie-status">Loading</p>
+            <div class="movie-bar"><span id="movieFill"></span></div>
+          </div>
+          <div id="mediaGrid" class="media-grid" hidden="hidden"></div>
+          <div id="movieWrap" class="movie-wrap" hidden="hidden"></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+//<![CDATA[
+
+(function () {
+  'use strict';
+
+  var KEY = 'saleen.settings.v2';
+  var DEFAULTS = { name: '', accent: '#a78bfa', wallpaper: 'ocean' };
+  var ACCENTS = ['#a78bfa', '#c4b5fd', '#8b5cf6', '#d8b4fe', '#f0abfc', '#e879f9', '#fca5a5', '#a3e635'];
+
+  /* Saleen renders every page itself through a remote proxy, so the only thing
+     this browser talks to directly is the proxy. No DuckDuckGo, no Bing. */
+  var PROXY_RAW = 'https://api.allorigins.win/raw?url=';
+  var PROXY_ALT = 'https://api.codetabs.com/v1/proxy/?quest=';
+  var PROXY_FAST = 'https://proxy.corsfix.com/?';
+  /* Cloudflare Worker proxy. Raw URL goes straight after the slash. */
+  var PROXY_CF = 'https://cors.eu.org/';
+  /* Two more workers used only when the main one is busy or slow. */
+  var PROXY_LOL = 'https://api.cors.lol/?url=';
+  var PROXY_ORG = 'https://corsproxy.org/?';
+  var JINA = 'https://r.jina.ai/';
+  var SEARCH_URL = 'saleen://search?q=';
+  var WALLS = [
+    { id: 'ocean', label: '🟣 Purple' },
+    { id: 'reef', label: '🌸 Violet' },
+    { id: 'abyss', label: '🌌 Deep' },
+    { id: 'plain', label: '◻ Plain' }
+  ];
+  var MODE_TITLES = { home: 'Home', browser: 'Home', ai: 'AI', links: 'Links', games: 'Games', movies: 'Movies', tv: 'TV', music: 'Music' };
+  var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var DESKTOP = /[?&]desktop=1/.test(window.location.search);
+  var $ = function (sel) { return document.querySelector(sel); };
+  /* The same app also ships as a standalone SVG (for esm.sh, which refuses to
+     run scripts in .html). An SVG document has no <body>, so everything that
+     used to poke at document.body goes through here. */
+  function rootNode() {
+    return document.body || document.getElementById('saleen-root') || document.documentElement;
+  }
+
+  var settings = Object.assign({}, DEFAULTS);
+  var mode = 'browser';
+
+  var els = {
+    scene: $('#ocean'),
+    railTime: $('#railTime'),
+    railDate: $('#railDate'),
+    tabList: $('#tabList'),
+    newTabBtn: $('#newTabBtn'),
+    back: $('#backBtn'),
+    fwd: $('#fwdBtn'),
+    reload: $('#reloadBtn'),
+    omni: $('#omni'),
+    omniForm: $('#omniForm'),
+    chrome: $('#chrome'),
+    newTabView: $('#newTabView'),
+    startView: $('#startView'),
+    heroTime: $('#heroTime'),
+    heroGreeting: $('#heroGreeting'),
+    heroDate: $('#heroDate'),
+    heroSearch: $('#heroSearch'),
+    heroInput: $('#heroInput'),
+    typingText: $('#typingText'),
+    heroTyping: $('#heroTyping'),
+    webWrap: $('#webWrap'),
+    frame: $('#webFrame'),
+    banner: $('#webBanner p'),
+    note: $('#webNote'),
+    searchPane: $('#searchPane'),
+    searchList: $('#searchList'),
+    pageLoading: $('#pageLoading'),
+    pageLoadingText: $('#pageLoadingText'),
+    movieLoad: $('#movieLoad'),
+    movieStatus: $('#movieStatus'),
+    movieFill: $('#movieFill'),
+    movieWrap: $('#movieWrap'),
+    readerBtn: $('#readerBtn'),
+    readerPane: $('#webReader'),
+    webReader: $('#webReader'),
+    readerDoc: $('#readerDoc'),
+    aiView: $('#aiView'),
+    linksView: $('#linksView'),
+    gamesView: $('#gamesView'),
+    moviesView: $('#moviesView'),
+    mediaTitle: $('#mediaTitle'),
+    mediaSub: $('#mediaSub'),
+    mediaGrid: $('#mediaGrid'),
+    mediaFilters: $('#mediaFilters'),
+    providerFilters: $('#providerFilters'),
+    mediaChips: Array.prototype.slice.call(document.querySelectorAll('#mediaFilters .media-chip')),
+    providerChips: Array.prototype.slice.call(document.querySelectorAll('#providerFilters .media-chip')),
+    mediaSearch: $('#mediaSearch'),
+    mediaBack: $('#mediaBack'),
+    seasonSel: $('#seasonSel'),
+    episodeSel: $('#episodeSel'),
+    linksBody: $('#linksBody'),
+    myLinks: $('#myLinks'),
+    myLinksCount: $('#myLinksCount'),
+    gamesBody: $('#gamesBody'),
+    gamesTitle: $('#gamesTitle'),
+    gamesSub: $('#gamesSub'),
+    gameWrap: $('#gameWrap'),
+    gameLoad: $('#gameLoad'),
+    gameStatus: $('#gameStatus'),
+    gameFill: $('#gameFill'),
+    gameGrid: $('#gameGrid'),
+    gameSearch: $('#gameSearch'),
+    gameBack: $('#gameBack'),
+    toast: $('#toast')
+  };
+
+  var navItems = Array.prototype.slice.call(document.querySelectorAll('.nav-item'));
+
+  /* ---------------- settings ---------------- */
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return;
+      var saved = JSON.parse(raw);
+      if (!saved || typeof saved !== 'object') return;
+      Object.keys(DEFAULTS).forEach(function (k) {
+        if (typeof saved[k] === 'string') settings[k] = saved[k];
+      });
+    } catch (e) { /* ignore corrupt storage */ }
+  }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) {}
+  }
+
+  function sanitize() {
+    var legacy = { stars: 'ocean', aurora: 'reef', mesh: 'reef' };
+    if (legacy[settings.wallpaper]) settings.wallpaper = legacy[settings.wallpaper];
+    if (!WALLS.some(function (w) { return w.id === settings.wallpaper; })) settings.wallpaper = DEFAULTS.wallpaper;
+    if (!/^#[0-9a-f]{6}$/i.test(settings.accent)) settings.accent = DEFAULTS.accent;
+    if (settings.name.length > 24) settings.name = settings.name.slice(0, 24);
+  }
+
+  function greetingText() {
+    var h = new Date().getHours();
+    var g = h < 5 ? 'Still up' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+    return settings.name ? g + ', ' + settings.name : g;
+  }
+
+  function two(n) {
+    return n < 10 ? '0' + n : String(n);
+  }
+
+  function updateClock() {
+    var now = new Date();
+    var time = two(now.getHours()) + ':' + two(now.getMinutes());
+    var date = now.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+    if (els.railTime) els.railTime.textContent = time;
+    if (els.railDate) els.railDate.textContent = date;
+    if (els.heroTime) els.heroTime.textContent = time;
+    if (els.heroGreeting) els.heroGreeting.textContent = greetingText();
+    if (els.heroDate) {
+      els.heroDate.textContent = now.toLocaleDateString(undefined, {
+        weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+      });
+    }
+  }
+
+  /* ---------------- typewriter ---------------- */
+
+  var TYPED_LINES = [
+    '- Made by 762.',
+    '- Def not a proxy with movies and games \uD83D\uDC40.'
+  ];
+  var typeIndex = -1;
+  var typePos = 0;
+  var typePhase = 'typing';
+  var typeTimer = null;
+
+  function pickLine() {
+    if (TYPED_LINES.length < 2) return 0;
+    var next = typeIndex;
+    while (next === typeIndex) {
+      next = Math.floor(Math.random() * TYPED_LINES.length);
+    }
+    return next;
+  }
+
+  function typeRender() {
+    if (!els.typingText) return;
+    els.typingText.textContent = TYPED_LINES[typeIndex].slice(0, typePos);
+  }
+
+  function typeStep() {
+    if (!els.typingText) return;
+    var line = TYPED_LINES[typeIndex];
+    var delay = 70;
+
+    if (typePhase === 'typing') {
+      typePos += 1;
+      typeRender();
+      if (typePos >= line.length) {
+        typePhase = 'holding';
+        delay = 3000;
+      }
+    } else if (typePhase === 'holding') {
+      typePhase = 'deleting';
+      delay = 40;
+    } else {
+      typePos -= 1;
+      typeRender();
+      delay = 32;
+      if (typePos <= 0) {
+        typePos = 0;
+        typeRender();
+        typeIndex = pickLine();
+        typePhase = 'typing';
+        delay = 600;
+      }
+    }
+
+    typeTimer = window.setTimeout(typeStep, delay);
+  }
+
+  function startTyping() {
+    if (!els.typingText) return;
+    window.clearTimeout(typeTimer);
+    typeIndex = pickLine();
+    typePos = 0;
+    typePhase = 'typing';
+    typeRender();
+    typeTimer = window.setTimeout(typeStep, 500);
+  }
+
+  function updateTitle() {
+    /* The dashboard/disguise tab name: never shows what is really loaded. */
+    document.title = 'about:blank';
+  }
+
+  function apply() {
+    document.documentElement.style.setProperty('--accent', settings.accent);
+    rootNode().dataset.wall = settings.wallpaper;
+    renderTabs();
+    updateTitle();
+    startScene();
+  }
+
+  function setSetting(key, value) {
+    settings[key] = value;
+    save();
+    apply();
+  }
+
+  /* ---------------- ocean scene ---------------- */
+
+  var sctx = els.scene.getContext('2d');
+  var bubbles = [];
+  var motes = [];
+  var W = 0;
+  var H = 0;
+  var sceneRunning = false;
+
+  function sizeScene() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    els.scene.width = Math.max(1, Math.floor(W * dpr));
+    els.scene.height = Math.max(1, Math.floor(H * dpr));
+    sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    var bubbleCount = Math.max(26, Math.min(96, Math.round(W * H / 22000)));
+    bubbles = [];
+    for (var i = 0; i < bubbleCount; i++) {
+      bubbles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: 0.9 + Math.random() * Math.random() * 7,
+        s: 8 + Math.random() * 22,
+        wob: Math.random() * Math.PI * 2,
+        wobA: 0.4 + Math.random() * 1.4,
+        wobS: 0.006 + Math.random() * 0.014,
+        a: 0.18 + Math.random() * 0.34
+      });
+    }
+
+    var moteCount = Math.max(50, Math.min(180, Math.round(W * H / 12000)));
+    motes = [];
+    for (var k = 0; k < moteCount; k++) {
+      motes.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: 0.3 + Math.random() * 1.1,
+        v: 0.06 + Math.random() * 0.22,
+        p: Math.random() * Math.PI * 2,
+        s: 0.4 + Math.random()
+      });
+    }
+  }
+
+  function paintScene() {
+    sctx.clearRect(0, 0, W, H);
+
+    /* plankton: tiny lights that twinkle while drifting up */
+    for (var m = 0; m < motes.length; m++) {
+      var mo = motes[m];
+      mo.p += 0.01 * mo.s;
+      mo.y -= mo.v;
+      mo.x += Math.sin(mo.p * 0.7) * 0.12;
+      if (mo.y < -4) { mo.y = H + 4; mo.x = Math.random() * W; }
+      sctx.globalAlpha = 0.15 + 0.55 * (0.5 + 0.5 * Math.sin(mo.p));
+      sctx.beginPath();
+      sctx.arc(mo.x, mo.y, mo.r, 0, Math.PI * 2);
+      sctx.fillStyle = '#bdf3ff';
+      sctx.fill();
+    }
+
+    /* bubbles: rings with a highlight, rising and swaying */
+    for (var i = 0; i < bubbles.length; i++) {
+      var b = bubbles[i];
+      b.wob += b.wobS;
+      b.y -= b.s * 0.016;
+      b.x += Math.sin(b.wob) * b.wobA * 0.06;
+      if (b.y < -20) {
+        b.y = H + 20 + Math.random() * 60;
+        b.x = Math.random() * W;
+      }
+
+      sctx.globalAlpha = b.a;
+      sctx.beginPath();
+      sctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      sctx.strokeStyle = 'rgba(198,246,255,0.85)';
+      sctx.lineWidth = 1;
+      sctx.stroke();
+
+      if (b.r > 2) {
+        sctx.globalAlpha = b.a * 0.9;
+        sctx.beginPath();
+        sctx.arc(b.x - b.r * 0.34, b.y - b.r * 0.34, Math.max(0.6, b.r * 0.2), 0, Math.PI * 2);
+        sctx.fillStyle = '#ffffff';
+        sctx.fill();
+      }
+    }
+
+    sctx.globalAlpha = 1;
+  }
+
+  function stopScene() {
+    sceneRunning = false;
+    sctx.clearRect(0, 0, W, H);
+  }
+
+  function startScene() {
+    if (settings.wallpaper === 'plain') { stopScene(); return; }
+    if (!bubbles.length) sizeScene();
+    if (sceneRunning) return;
+    sceneRunning = true;
+    var tick = function () {
+      if (!sceneRunning) return;
+      paintScene();
+      window.requestAnimationFrame(tick);
+    };
+    window.requestAnimationFrame(tick);
+  }
+
+  /* ---------------- live wallpaper ---------------- */
+
+  var wall = document.getElementById('wall');
+  var parX = 0, parY = 0, parTX = 0, parTY = 0, parQueued = false;
+
+  function parStep() {
+    parX += (parTX - parX) * 0.14;
+    parY += (parTY - parY) * 0.14;
+    var done = Math.abs(parTX - parX) < 0.1 && Math.abs(parTY - parY) < 0.1;
+    if (done) { parX = parTX; parY = parTY; }
+    wall.style.setProperty('--px', parX.toFixed(2) + 'px');
+    wall.style.setProperty('--py', parY.toFixed(2) + 'px');
+    if (done) { parQueued = false; return; }
+    window.requestAnimationFrame(parStep);
+  }
+
+  function parQueue() {
+    if (parQueued) return;
+    parQueued = true;
+    window.requestAnimationFrame(parStep);
+  }
+
+  function parMove(e) {
+    if (REDUCED) return;
+    var nx = (e.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
+    var ny = (e.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
+    parTX = -nx * 16;
+    parTY = -ny * 16;
+    parQueue();
+  }
+
+  function parReset() {
+    if (REDUCED) return;
+    parTX = 0;
+    parTY = 0;
+    parQueue();
+  }
+
+  window.addEventListener('pointermove', parMove, { passive: true });
+  window.addEventListener('blur', parReset);
+  document.addEventListener('pointerleave', parReset);
+
+  /* ---------------- tabs ---------------- */
+
+  var tabs = [];
+  var activeId = null;
+  var seq = 0;
+
+  function activeTab() {
+    for (var i = 0; i < tabs.length; i++) if (tabs[i].id === activeId) return tabs[i];
+    return null;
+  }
+
+  function createTab() {
+    var t = { id: 't' + (++seq), title: '', url: '', mode: 'new', hist: [], hi: -1 };
+    tabs.push(t);
+    activeId = t.id;
+    renderTabs();
+    renderView();
+    return t;
+  }
+
+  function selectTab(id) {
+    if (activeId === id && mode === 'browser') return;
+    activeId = id;
+    if (mode !== 'browser') {
+      mode = 'browser';
+      document.dispatchEvent(new CustomEvent('saleen:mode', { detail: mode }));
+    }
+    renderTabs();
+    renderView();
+  }
+
+  function closeTab(id) {
+    var i = -1;
+    for (var n = 0; n < tabs.length; n++) if (tabs[n].id === id) { i = n; break; }
+    if (i < 0) return;
+    var wasActive = tabs[i].id === activeId;
+    tabs.splice(i, 1);
+    if (!tabs.length) {
+      activeId = null;
+      renderTabs();
+      createTab();
+      if (mode === 'browser') els.omni.focus();
+      return;
+    }
+    if (wasActive) {
+      activeId = (tabs[i] || tabs[i - 1]).id;
+      renderTabs();
+      renderView();
+    } else {
+      renderTabs();
+    }
+  }
+
+  function renderTabs() {
+    els.tabList.textContent = '';
+    tabs.forEach(function (t) {
+      var el = document.createElement('div');
+      el.className = 'tab';
+      el.setAttribute('role', 'tab');
+      el.tabIndex = 0;
+      el.setAttribute('aria-selected', t.id === activeId ? 'true' : 'false');
+
+      var ico = document.createElement('span');
+      ico.className = 'tab-ico';
+      ico.setAttribute('aria-hidden', 'true');
+      if (t.mode === 'web' && t.url) {
+        ico.textContent = (hostOf(t.url)[0] || '?').toUpperCase();
+      } else {
+        ico.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 14c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/><path d="M3 18c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/></svg>';
+        ico.classList.add('wave');
+      }
+
+      var title = document.createElement('span');
+      title.className = 'tab-title';
+      title.textContent = t.title || 'New tab';
+
+      var x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'tab-x';
+      x.textContent = '✕';
+      x.title = 'Close tab';
+      x.setAttribute('aria-label', 'Close tab');
+      x.addEventListener('click', function (e) {
+        e.stopPropagation();
+        closeTab(t.id);
+      });
+
+      el.addEventListener('click', function () { selectTab(t.id); });
+      el.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectTab(t.id); }
+        if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); closeTab(t.id); }
+      });
+
+      el.appendChild(ico);
+      el.appendChild(title);
+      el.appendChild(x);
+      els.tabList.appendChild(el);
+    });
+  }
+
+  function hostOf(u) {
+    try { return new URL(u).hostname.replace(/^www\./, '') || u; }
+    catch (e) { return u; }
+  }
+
+  /* ---------------- reader (plain text fallback) ---------------- */
+
+  var readerChoice = {};
+  var readerCache = {};
+  var readerReq = 0;
+
+  function autoReader(url) {
+    /* The proxy renders pages now, so text mode is only ever a manual choice
+       (or the automatic fallback when a page cannot be rendered at all). */
+    return false;
+  }
+
+  function wantsReader(t) {
+    if (Object.prototype.hasOwnProperty.call(readerChoice, t.url)) return readerChoice[t.url];
+    return autoReader(t.url);
+  }
+
+  function setReader(url, on) {
+    readerChoice[url] = on;
+    if (on) delete readerCache[url];
+    renderView();
+  }
+
+  function absoluteUrl(href, base) {
+    try {
+      var u = new URL(href, base);
+      if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
+      return u.href;
+    } catch (e) { return ''; }
+  }
+
+  function linkNode(label, href, doc) {
+    var a = doc.createElement('a');
+    a.textContent = label;
+    a.href = href;
+    a.title = href;
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      navigate(href);
+    });
+    return a;
+  }
+
+  function inlineNodes(text, baseUrl, doc) {
+    var out = [];
+    var src = String(text)
+      .replace(/\[!\[[^\]]*\]\([^)]*\)\]\([^)]*\)/g, '')
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, '');
+    var i = 0;
+    var re = /\[([^\][]*)\]\(([^()\s]+)[^)]*\)|\*\*([^*]+)\*\*|`([^`]+)`/g;
+    var m;
+    while ((m = re.exec(src))) {
+      if (m.index > i) out.push(doc.createTextNode(src.slice(i, m.index)));
+      if (m[2] !== undefined) {
+        var href = absoluteUrl(m[2], baseUrl);
+        if (href) out.push(linkNode(m[1] || href, href, doc));
+        else out.push(doc.createTextNode(m[1] || m[2]));
+      } else if (m[3] !== undefined) {
+        var strong = doc.createElement('strong');
+        inlineNodes(m[3], baseUrl, doc).forEach(function (n) { strong.appendChild(n); });
+        out.push(strong);
+      } else if (m[4] !== undefined) {
+        var code = doc.createElement('code');
+        code.textContent = m[4];
+        out.push(code);
+      }
+      i = re.lastIndex;
+    }
+    if (i < src.length) out.push(doc.createTextNode(src.slice(i)));
+    return out;
+  }
+
+  function renderMarkdown(root, md, baseUrl) {
+    var doc = document;
+    var lines = String(md).split(/\r?\n/);
+    var para = [];
+    var list = null;
+    var i = 0;
+
+    function flushPara() {
+      if (!para.length) return;
+      var p = doc.createElement('p');
+      para.forEach(function (line, idx) {
+        if (idx) p.appendChild(doc.createElement('br'));
+        inlineNodes(line, baseUrl, doc).forEach(function (n) { p.appendChild(n); });
+      });
+      root.appendChild(p);
+      para = [];
+    }
+
+    while (i < lines.length) {
+      var line = lines[i];
+
+      if (/^```/.test(line)) {
+        flushPara();
+        list = null;
+        var buf = [];
+        i += 1;
+        while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i += 1; }
+        i += 1;
+        var pre = doc.createElement('pre');
+        var code = doc.createElement('code');
+        code.textContent = buf.join('\n');
+        pre.appendChild(code);
+        root.appendChild(pre);
+        continue;
+      }
+
+      if (!line.trim()) {
+        flushPara();
+        list = null;
+        i += 1;
+        continue;
+      }
+
+      var h = line.match(/^(#{1,4})\s+(.*)$/);
+      if (h) {
+        flushPara();
+        list = null;
+        var el = doc.createElement('h' + h[1].length);
+        inlineNodes(h[2], baseUrl, doc).forEach(function (n) { el.appendChild(n); });
+        root.appendChild(el);
+        i += 1;
+        continue;
+      }
+
+      if (/^\s*([-*_])\s*\1\s*\1\s*$/.test(line)) {
+        flushPara();
+        list = null;
+        i += 1;
+        continue;
+      }
+
+      var li = line.match(/^\s*(?:[-*+]|\d+\.)\s+(.*)$/);
+      if (li) {
+        flushPara();
+        if (!list) {
+          list = doc.createElement('ul');
+          root.appendChild(list);
+        }
+        var item = doc.createElement('li');
+        inlineNodes(li[1], baseUrl, doc).forEach(function (n) { item.appendChild(n); });
+        list.appendChild(item);
+        i += 1;
+        continue;
+      }
+
+      var bq = line.match(/^>\s?(.*)$/);
+      if (bq) {
+        flushPara();
+        list = null;
+        var quote = doc.createElement('blockquote');
+        inlineNodes(bq[1], baseUrl, doc).forEach(function (n) { quote.appendChild(n); });
+        root.appendChild(quote);
+        i += 1;
+        continue;
+      }
+
+      list = null;
+      para.push(line.trim());
+      i += 1;
+    }
+    flushPara();
+  }
+
+  function paintReaderError(t, err) {
+    els.readerDoc.textContent = '';
+    els.readerDoc.dataset.url = t.url;
+    var p = document.createElement('p');
+    p.className = 'reader-status';
+    p.textContent = 'The reader could not load this page' +
+      (err && err.message ? ' (' + err.message + ')' : '') + '.';
+
+    var retry = document.createElement('button');
+    retry.type = 'button';
+    retry.className = 'strip-btn';
+    retry.textContent = 'Try again';
+    retry.addEventListener('click', function () {
+      delete readerCache[t.url];
+      els.readerDoc.dataset.url = '';
+      renderView();
+    });
+
+    var page = document.createElement('button');
+    page.type = 'button';
+    page.className = 'strip-btn';
+    page.textContent = 'Show the page';
+    page.addEventListener('click', function () { setReader(t.url, false); });
+
+    p.appendChild(document.createElement('br'));
+    p.appendChild(retry);
+    p.appendChild(document.createTextNode(' '));
+    p.appendChild(page);
+    els.readerDoc.appendChild(p);
+  }
+
+  function paintReader(t, parsed) {
+    els.readerDoc.textContent = '';
+    els.readerDoc.dataset.url = t.url;
+
+    var meta = document.createElement('div');
+    meta.className = 'reader-meta';
+    var host = document.createElement('span');
+    host.textContent = hostOf(t.url);
+    var dot = document.createElement('span');
+    dot.className = 'dotsep';
+    dot.textContent = '·';
+    var kind = document.createElement('span');
+    kind.textContent = 'text view';
+    meta.appendChild(host);
+    meta.appendChild(dot);
+    meta.appendChild(kind);
+    els.readerDoc.appendChild(meta);
+
+    renderMarkdown(els.readerDoc, parsed.body, t.url);
+
+    if (!els.readerDoc.textContent.trim()) {
+      var empty = document.createElement('p');
+      empty.className = 'reader-status';
+      empty.textContent = 'The reader returned no text for this page.';
+      els.readerDoc.appendChild(empty);
+    }
+
+    var title = (parsed.title || '').trim();
+    if (title && !/^https?:\/\//i.test(title) && title.length <= 90 && title !== t.title) {
+      t.title = title.slice(0, 60);
+      renderTabs();
+      updateTitle();
+    }
+  }
+
+  function loadReader(t) {
+    var url = t.url;
+    if (els.readerDoc.dataset.url === url) return;
+    els.readerDoc.dataset.url = url;
+    var token = ++readerReq;
+
+    if (readerCache[url]) {
+      paintReader(t, readerCache[url]);
+      return;
+    }
+
+    els.readerDoc.textContent = '';
+    var status = document.createElement('p');
+    status.className = 'reader-status';
+    status.textContent = 'Loading a text version…';
+    els.readerDoc.appendChild(status);
+
+    fetchReader(url)
+      .then(function (parsed) {
+        readerCache[url] = parsed;
+        if (token !== readerReq || !stillReading(t, url)) return;
+        paintReader(t, parsed);
+      })
+      .catch(function (err) {
+        if (token !== readerReq || !stillReading(t, url)) return;
+        readerCache[url] = null;
+        paintReaderError(t, err);
+      });
+  }
+
+  function stillReading(t, url) {
+    return mode === 'browser' && activeTab() === t && t.url === url && wantsReader(t);
+  }
+
+  function fetchWithTimeout(target, ms, options) {
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = ctrl ? window.setTimeout(function () { ctrl.abort(); }, ms) : null;
+    var opts = Object.assign({}, options || {});
+    if (ctrl) opts.signal = ctrl.signal;
+    return fetch(target, opts).then(
+      function (res) {
+        if (timer) window.clearTimeout(timer);
+        return res;
+      },
+      function (err) {
+        if (timer) window.clearTimeout(timer);
+        throw err;
+      }
+    );
+  }
+
+  function htmlToText(html) {
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    Array.prototype.forEach.call(doc.querySelectorAll('script,style,noscript,svg,iframe,template'), function (n) {
+      n.parentNode.removeChild(n);
+    });
+    var out = [];
+    Array.prototype.forEach.call(doc.querySelectorAll('h1,h2,h3,h4,p,li,blockquote,pre'), function (el) {
+      if (el.querySelector('h1,h2,h3,h4,p,li,blockquote,pre')) return;
+      var txt = (el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (!txt) return;
+      var tag = el.tagName.toLowerCase();
+      if (/^h[1-4]$/.test(tag)) out.push(new Array(Number(tag.charAt(1)) + 1).join('#') + ' ' + txt);
+      else if (tag === 'li') out.push('- ' + txt);
+      else if (tag === 'blockquote') out.push('> ' + txt);
+      else out.push(txt);
+    });
+    if (!out.length && doc.body) {
+      var plain = (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+      if (plain) out.push(plain);
+    }
+    var body = out.join('\n\n');
+    if (!body.trim()) throw new Error('no text found');
+    return { title: (doc.title || '').trim(), body: body };
+  }
+
+  /* r.jina.ai: fastest and cleanest (markdown). Returns 403 for a few "anonymous access"
+     domains, so a bare host is retried with www. below. */
+  function fromJina(url) {
+    return fetchWithTimeout('https://r.jina.ai/' + url, 12000).then(function (res) {
+      if (!res.ok) throw new Error('reader returned HTTP ' + res.status);
+      return res.text();
+    }).then(function (text) {
+      var title = '';
+      var body = text;
+      var titleMatch = text.match(/^Title:\s*(.+)$/m);
+      if (titleMatch) title = titleMatch[1].trim();
+      var cut = text.indexOf('Markdown Content:');
+      if (cut >= 0) body = text.slice(cut + 'Markdown Content:'.length);
+      body = body.replace(/^\s*\n/, '');
+      if (!body.trim()) throw new Error('empty reader response');
+      return { title: title, body: body };
+    });
+  }
+
+  function withWww(url) {
+    try {
+      var u = new URL(url);
+      if (u.hostname.split('.').length === 2) {
+        u.hostname = 'www.' + u.hostname;
+        return u.href;
+      }
+    } catch (e) {}
+    return '';
+  }
+
+  function fromAllOrigins(url) {
+    return fetchWithTimeout('https://api.allorigins.win/get?url=' + encodeURIComponent(url), 12000)
+      .then(function (res) {
+        if (!res.ok) throw new Error('proxy returned HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data || !data.contents) throw new Error('empty proxy response');
+        return htmlToText(data.contents);
+      });
+  }
+
+  function fromCodetabs(url) {
+    return fetchWithTimeout('https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent(url), 12000)
+      .then(function (res) {
+        if (!res.ok) throw new Error('proxy returned HTTP ' + res.status);
+        return res.text();
+      })
+      .then(function (html) { return htmlToText(html); });
+  }
+
+  /* Last resort: Microlink renders the page server-side and returns the body HTML. */
+  function fromMicrolink(url) {
+    var api = 'https://api.microlink.io/?url=' + encodeURIComponent(url) +
+      '&meta=false&data.content.selector=body&data.content.type=html';
+    return fetchWithTimeout(api, 15000)
+      .then(function (res) {
+        if (!res.ok) throw new Error('renderer returned HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        var html = data && data.data && data.data.content;
+        if (!html) throw new Error('empty renderer response');
+        return htmlToText(html);
+      });
+  }
+
+  function firstOf(factories) {
+    return new Promise(function (resolve, reject) {
+      var pending = factories.length;
+      var lastErr = null;
+      if (!pending) { reject(new Error('nothing to try')); return; }
+      factories.forEach(function (make) {
+        Promise.resolve().then(make).then(resolve, function (err) {
+          lastErr = err;
+          pending -= 1;
+          if (!pending) reject(lastErr || new Error('all readers failed'));
+        });
+      });
+    });
+  }
+
+  function fetchReader(url) {
+    var alt = withWww(url);
+    return fromJina(url)
+      .catch(function () { return alt ? fromJina(alt) : Promise.reject(new Error('no www variant')); })
+      .catch(function () { return firstOf([function () { return fromAllOrigins(url); }, function () { return fromCodetabs(url); }]); })
+      .catch(function () { return fromMicrolink(url); });
+  }
+
+  /* ---------------- Saleen browser ---------------- */
+
+  /* Pages are fetched by a proxy and redrawn by Saleen itself, so a school
+     filter that blocks a domain never sees a request to that domain. */
+  var pageCache = {};
+  var pageReq = 0;
+  var searchCache = {};
+  var searchReq = 0;
+  var proxyHealth = {};
+
+  function cooling(key) {
+    return proxyHealth[key] && (Date.now() - proxyHealth[key] < 60000);
+  }
+
+  function proxyUrl(target) {
+    return PROXY_RAW + encodeURIComponent(target);
+  }
+
+  function cfUrl(target) {
+    return PROXY_CF + target;
+  }
+
+  /* The fastest proxy writes the target URL straight into the query string.
+     Encoding it makes the service answer 400, so it gets its own builder. */
+  function fastUrl(target) {
+    return PROXY_FAST + target;
+  }
+
+  function lolUrl(target) {
+    return PROXY_LOL + encodeURIComponent(target);
+  }
+
+  function orgUrl(target) {
+    return PROXY_ORG + encodeURIComponent(target);
+  }
+
+  /* ---- Wisp transport ----
+     The public CORS relays are rewritten HTML fetchers, not real proxies, and
+     they are the slow part of the browser view. Saleen can instead open a
+     WebSocket to a Wisp server and let libcurl.js do the TLS itself, so pages
+     are fetched end-to-end without a third party in the middle. The relays stay
+     as a fallback for when the socket is blocked. */
+
+  var WISP_WS = 'wss://wisp.mercurywork.shop/';
+  var LIBCURL_JS = 'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/libcurl.js';
+  var LIBCURL_WASM = 'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/libcurl.wasm';
+  var wispBoot = null;
+
+  function bootWisp() {
+    if (wispBoot) return wispBoot;
+    wispBoot = loadScriptOnce(LIBCURL_JS, 'libcurl').then(function () {
+      return libcurl.load_wasm(LIBCURL_WASM);
+    }).then(function () {
+      libcurl.set_websocket(WISP_WS);
+      return libcurl;
+    }).catch(function (err) {
+      wispBoot = null;
+      throw err;
+    });
+    return wispBoot;
+  }
+
+  function wispFetchText(url, accept) {
+    return bootWisp().then(function (lc) {
+      return lc.fetch(url, {
+        headers: {
+          'user-agent': navigator.userAgent,
+          'accept-language': 'en-US,en;q=0.9',
+          accept: accept || 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        }
+      });
+    }).then(function (res) {
+      if (!res.ok) throw new Error('wisp HTTP ' + res.status);
+      return res.text();
+    });
+  }
+
+  function withTimeout(promise, ms) {
+    return new Promise(function (resolve, reject) {
+      var timer = window.setTimeout(function () { reject(new Error('timeout')); }, ms);
+      promise.then(function (v) { window.clearTimeout(timer); resolve(v); },
+        function (e) { window.clearTimeout(timer); reject(e); });
+    });
+  }
+
+  /* Search engines wrap result links in redirectors. Saleen follows the real
+     target so a click does not land on a redirect page that needs scripts. */
+  function unwrapLink(href, base) {
+    try {
+      var u = new URL(href, base);
+      var host = u.hostname.replace(/^www\./, '').toLowerCase();
+      if (host === 'google.com' && /^\/url\/?$/i.test(u.pathname)) {
+        var q = u.searchParams.get('q') || u.searchParams.get('url');
+        if (q && /^https?:\/\//i.test(q)) return q;
+      }
+      if (host === 'startpage.com' && /^\/sp\/do\//i.test(u.pathname)) return u.href;
+      return u.href;
+    } catch (e) { return ''; }
+  }
+
+  function isSearchUrl(u) {
+    return String(u).indexOf(SEARCH_URL) === 0;
+  }
+
+  function queryOf(u) {
+    try { return new URL(u).searchParams.get('q') || ''; } catch (e) { return ''; }
+  }
+
+  function redirectTarget(href) {
+    var h = String(href || '');
+    try {
+      var u = new URL(h, 'https://search.brave.com/');
+      var encoded = u.searchParams.get('click_url');
+      if (encoded && /^https?:\/\//i.test(encoded)) return encoded;
+      return u.href;
+    } catch (e) { return ''; }
+  }
+
+  function parseBrave(html) {
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    var out = [];
+    var seen = {};
+
+    Array.prototype.forEach.call(doc.querySelectorAll('.snippet'), function (node) {
+      var a = node.querySelector('a[href]');
+      if (!a) return;
+      var href = redirectTarget(a.getAttribute('href'));
+      if (!/^https?:\/\//i.test(href)) return;
+
+      var host = hostOf(href);
+      if (/(^|\.)brave\.com$/i.test(host) || /(^|\.)brave\.com$/i.test(hostOf(a.getAttribute('href')))) return;
+      if (/sponsored/i.test(node.textContent || '')) return;
+
+      var titleEl = node.querySelector('.title') || node.querySelector('[class*="title"]');
+      var title = (titleEl ? titleEl.textContent : '').replace(/\s+/g, ' ').trim();
+      if (!title) title = (a.textContent || '').replace(/\s+/g, ' ').trim();
+      if (!title || title.length < 4) return;
+
+      var descEl = node.querySelector('.snippet-description, [class*="description"], .snippet-content');
+      var snippet = (descEl ? descEl.textContent : '').replace(/\s+/g, ' ').trim();
+      if (!snippet && node.innerText) {
+        var lines = node.innerText.split(/\r?\n/).map(function (l) { return l.trim(); });
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i];
+          if (!line || line === title) continue;
+          if (/^https?:\/\//i.test(line)) continue;
+          if (line.length > 30) { snippet = line; break; }
+        }
+      }
+      if (snippet.length > 280) snippet = snippet.slice(0, 278) + '…';
+      if (seen[href]) return;
+      seen[href] = true;
+
+      out.push({ title: title.slice(0, 120), url: href, snippet: snippet.replace(/\s+/g, ' ').trim() });
+    });
+
+    return out.slice(0, 20);
+  }
+
+  function searchEndpoint(q) {
+    return 'https://search.brave.com/search?q=' + encodeURIComponent(q) + '&source=web';
+  }
+
+  function fetchSearch(q) {
+    if (searchCache[q]) return Promise.resolve(searchCache[q]);
+    var target = searchEndpoint(q);
+
+    /* Four transports race; the first one with real results wins. Timeouts are
+       short so a dead mirror never makes a search feel broken. */
+    var viaReader = function () {
+      return fetchWithTimeout(JINA + target, 12000, { headers: { 'x-return-format': 'html' } })
+        .then(function (res) {
+          if (!res.ok) throw new Error('reader HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    var viaFast = function () {
+      return fetchWithTimeout(fastUrl(target), 10000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('proxy HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    var viaProxy = function () {
+      return fetchWithTimeout(proxyUrl(target), 12000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('proxy HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    var viaCodetabs = function () {
+      return fetchWithTimeout(PROXY_ALT + encodeURIComponent(target), 11000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('proxy HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    var viaCloudflare = function () {
+      return fetchWithTimeout(cfUrl(target), 11000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('cloudflare HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    var viaLol = function () {
+      return fetchWithTimeout(lolUrl(target), 10000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('corslol HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    var viaOrg = function () {
+      return fetchWithTimeout(orgUrl(target), 12000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('corsorg HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          var results = parseBrave(html);
+          if (!results.length) throw new Error('no results');
+          return results;
+        });
+    };
+
+    return firstOf([viaCloudflare, viaLol, viaFast, viaOrg, viaProxy, viaCodetabs, viaReader]).then(function (results) {
+      searchCache[q] = results;
+      return results;
+    });
+  }
+
+  function paintResults(t, results) {
+    els.searchList.textContent = '';
+    els.searchList.dataset.q = t.query;
+
+    var head = document.createElement('p');
+    head.className = 'search-count';
+    head.textContent = results.length + ' results for “' + t.query + '” · Saleen Search';
+    els.searchList.appendChild(head);
+
+    results.forEach(function (r) {
+      var a = document.createElement('a');
+      a.className = 'search-result';
+      a.href = r.url;
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        navigate(r.url);
+      });
+
+      var title = document.createElement('span');
+      title.className = 'search-title';
+      title.textContent = r.title;
+
+      var host = document.createElement('span');
+      host.className = 'search-url';
+      host.textContent = hostOf(r.url);
+
+      var snip = document.createElement('span');
+      snip.className = 'search-snippet';
+      snip.textContent = r.snippet;
+
+      a.appendChild(host);
+      a.appendChild(title);
+      if (r.snippet) a.appendChild(snip);
+      els.searchList.appendChild(a);
+    });
+  }
+
+  function renderSearch(t) {
+    var q = t.query;
+    els.searchPane.hidden = false;
+    els.frame.hidden = true;
+    els.note.textContent = 'Saleen Search';
+    els.pageLoadingText.textContent = 'Searching the web…';
+
+    if (els.searchList.dataset.q === q && els.searchList.children.length) {
+      els.pageLoading.hidden = true;
+      return;
+    }
+
+    els.searchList.textContent = '';
+    els.searchList.dataset.q = '';
+    els.pageLoading.hidden = false;
+
+    var token = ++searchReq;
+    fetchSearch(q).then(function (results) {
+      if (token !== searchReq || activeTab() !== t || t.url !== SEARCH_URL + encodeURIComponent(q)) return;
+      els.pageLoading.hidden = true;
+      paintResults(t, results);
+    }).catch(function () {
+      if (token !== searchReq || activeTab() !== t) return;
+      els.pageLoading.hidden = true;
+      els.searchList.textContent = '';
+
+      var p = document.createElement('p');
+      p.className = 'search-status';
+      p.textContent = 'The search proxy did not answer. Saleen can still read a page if you type a link.';
+
+      var again = document.createElement('button');
+      again.type = 'button';
+      again.className = 'primary-btn';
+      again.textContent = 'Try again';
+      again.addEventListener('click', function () {
+        delete searchCache[q];
+        els.searchList.dataset.q = '';
+        renderSearch(t);
+      });
+
+      els.searchList.appendChild(p);
+      els.searchList.appendChild(again);
+    });
+  }
+
+  function rewriteCss(css, base) {
+    return String(css).replace(/url\((['"]?)([^)'"]+)\1\)/gi, function (m, q, u) {
+      if (/^(data:|#|about:)/i.test(u)) return m;
+      var abs = absoluteUrl(u, base);
+      if (!abs) return m;
+      /* Secure URLs load straight from their host (much faster); only insecure
+         ones need the proxy so the page stays https-clean. */
+      return 'url(' + (/^https:/i.test(abs) ? abs : cfUrl(abs)) + ')';
+    });
+  }
+
+  var cssCache = {};
+
+  /* Page stylesheets are fetched through the same proxy and inlined, because a
+     linked sheet inside a proxied document can silently fail and leave a site
+     looking blank. Text is cheap; a broken layout is not. */
+  function fetchCss(url) {
+    if (cssCache[url] !== undefined) return Promise.resolve(cssCache[url]);
+
+    var pull = function (builder) {
+      return fetchWithTimeout(builder(url), 9000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('css HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (css) {
+          var text = String(css || '');
+          if (!text || text.length < 16 || text.length > 900000 || text.charAt(0) === '<') {
+            throw new Error('not css');
+          }
+          return text;
+        });
+    };
+
+    return firstOf([
+      function () { return pull(cfUrl); },
+      function () { return pull(lolUrl); },
+      function () { return pull(fastUrl); },
+      function () { return pull(proxyUrl); }
+    ])
+      .then(function (text) {
+        cssCache[url] = text;
+        return text;
+      })
+      .catch(function () {
+        cssCache[url] = '';
+        return '';
+      });
+  }
+
+  var BASE_CSS = [
+    '*,*::before,*::after{box-sizing:border-box}',
+    'html{background:#fff;-webkit-text-size-adjust:100%}',
+    'body{margin:0;background:#fff;color:#15171c;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}',
+    'img,svg,video,canvas{max-width:100%;height:auto}',
+    'a{color:#1a56db}',
+    'pre{overflow:auto}',
+    'table{border-collapse:collapse;max-width:100%}',
+    '::selection{background:#cddfff;color:#000}'
+  ].join('');
+
+  /* When a site's own skin cannot be fetched, the page would otherwise show a
+     huge unstyled masthead of menus. In that case the chrome is hidden and the
+     article column is given a clean, readable layout instead. */
+  var FALLBACK_CSS = [
+    'header,nav,aside,footer,[role="banner"],[role="navigation"],[role="contentinfo"],',
+    '.mw-header,.vector-header-container,.vector-sticky-header,#mw-navigation,',
+    '.mw-jump-link,.mw-aria-live-region,.nav,.navbar,.site-header,.sidebar{display:none!important}',
+    'main,article,#mw-content-text,.content,#content,.post,.entry-content{',
+    'max-width:860px;margin:0 auto;padding:26px 22px;float:none!important;width:auto!important}',
+    'h1,h2,h3{line-height:1.28;margin:1.4em 0 .5em}',
+    'p,li{max-width:74ch}',
+    'figure,table,.infobox,.thumb{float:none!important;margin:18px auto!important;max-width:100%!important}'
+  ].join('');
+
+  function buildPage(html, url) {
+    if (!/<(html|body|div|p|article|main)\b/i.test(html)) return null;
+
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    Array.prototype.forEach.call(
+      doc.querySelectorAll('script,noscript,iframe,object,embed,applet,frame,frameset,base,meta[http-equiv]'),
+      function (n) { if (n.parentNode) n.parentNode.removeChild(n); }
+    );
+
+    var sheets = [];
+    Array.prototype.forEach.call(doc.querySelectorAll('link[href]'), function (l) {
+      var rel = (l.getAttribute('rel') || '').toLowerCase();
+      if (rel.indexOf('stylesheet') < 0 || sheets.length >= 3) {
+        if (l.parentNode) l.parentNode.removeChild(l);
+        return;
+      }
+      var abs = absoluteUrl(l.getAttribute('href'), url);
+      if (!abs) { if (l.parentNode) l.parentNode.removeChild(l); return; }
+      sheets.push({ link: l, url: abs });
+    });
+
+    Array.prototype.forEach.call(doc.querySelectorAll('img'), function (img) {
+      img.removeAttribute('srcset');
+      var src = img.getAttribute('src') || img.getAttribute('data-src') || '';
+      var abs = absoluteUrl(src, url);
+      if (abs) {
+        img.setAttribute('src', /^https:/i.test(abs) ? abs : cfUrl(abs));
+        img.setAttribute('loading', 'lazy');
+      } else {
+        img.removeAttribute('src');
+      }
+    });
+
+    Array.prototype.forEach.call(doc.querySelectorAll('[style]'), function (el) {
+      el.setAttribute('style', rewriteCss(el.getAttribute('style') || '', url));
+    });
+    Array.prototype.forEach.call(doc.querySelectorAll('style'), function (el) {
+      el.textContent = rewriteCss(el.textContent || '', url);
+    });
+
+    Array.prototype.forEach.call(doc.querySelectorAll('a[href]'), function (a) {
+      var abs = unwrapLink(a.getAttribute('href'), url);
+      if (abs) a.setAttribute('href', abs);
+      else a.removeAttribute('href');
+    });
+
+    Array.prototype.forEach.call(doc.querySelectorAll('form'), function (f) {
+      var abs = absoluteUrl(f.getAttribute('action') || url, url);
+      if (abs) f.setAttribute('action', abs);
+    });
+
+    var head = doc.head || doc.documentElement;
+    var base = doc.createElement('style');
+    base.setAttribute('data-saleen', 'base');
+    base.textContent = BASE_CSS;
+    head.insertBefore(base, head.firstChild);
+
+    return Promise.all(sheets.map(function (s) { return fetchCss(s.url); })).then(function (texts) {
+      var failed = 0;
+      sheets.forEach(function (s, i) {
+        var css = texts[i];
+        if (!css) {
+          failed += 1;
+          s.link.setAttribute('href', proxyUrl(s.url));
+          return;
+        }
+        var inline = doc.createElement('style');
+        inline.setAttribute('data-saleen', 'sheet');
+        inline.textContent = rewriteCss(css, s.url);
+        if (s.link.parentNode) s.link.parentNode.replaceChild(inline, s.link);
+      });
+
+      if (failed) {
+        var fallback = doc.createElement('style');
+        fallback.setAttribute('data-saleen', 'fallback');
+        fallback.textContent = FALLBACK_CSS;
+        head.appendChild(fallback);
+      }
+
+      var bridge = doc.createElement('script');
+      bridge.textContent = [
+        '(function(){',
+        'function send(u){try{parent.postMessage({saleen:"nav",url:u},"*")}catch(e){}}',
+        'document.addEventListener("click",function(e){',
+        'var a=e.target&&e.target.closest?e.target.closest("a"):null;if(!a)return;',
+        'var h=a.getAttribute("href")||"";if(!/^https?:/i.test(h))return;',
+        'e.preventDefault();send(h);},true);',
+        'document.addEventListener("submit",function(e){',
+        'var f=e.target;if(!f||!f.action)return;e.preventDefault();',
+        'var qs="";try{qs=new URLSearchParams(new FormData(f)).toString()}catch(err){}',
+        'send(f.action.split("?")[0]+(qs?"?"+qs:""));},true);',
+        '})();'
+      ].join('\n');
+      (doc.body || doc.documentElement).appendChild(bridge);
+
+      var title = (doc.title || '').replace(/\s+/g, ' ').trim();
+      var text = (doc.body ? doc.body.textContent : '').replace(/\s+/g, ' ').trim();
+      if (text.length < 40 && !doc.querySelector('img,video,canvas,svg')) return null;
+
+      return { html: '<!doctype html>' + doc.documentElement.outerHTML, title: title, url: url };
+    });
+  }
+
+  function fetchPage(url) {
+    if (pageCache[url]) return Promise.resolve(pageCache[url]);
+
+    var attempt = function (key, make, ms) {
+      return fetchWithTimeout(make(url), ms)
+        .then(function (res) {
+          if (!res.ok) throw new Error(key + ' HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) {
+          if (!html || html.length < 120) throw new Error(key + ' empty');
+          return buildPage(html, url);
+        })
+        .then(function (built) {
+          if (!built) throw new Error(key + ' unreadable');
+          proxyHealth[key] = 0;
+          return built;
+        })
+        .catch(function (err) {
+          proxyHealth[key] = Date.now();
+          throw err;
+        });
+    };
+
+    /* Several proxies race and the first page that actually renders wins, so a
+       slow or rate-limited host never stalls the tab. A proxy that just failed
+       is skipped for a minute. */
+    var race = function () {
+      var tries = [];
+      if (!cooling('cloudflare')) tries.push(function () { return attempt('cloudflare', cfUrl, 9000); });
+      if (!cooling('corslol')) tries.push(function () { return attempt('corslol', lolUrl, 9000); });
+      if (!cooling('corsfix')) tries.push(function () { return attempt('corsfix', fastUrl, 9000); });
+      if (!cooling('corsorg')) tries.push(function () { return attempt('corsorg', orgUrl, 11000); });
+      if (!cooling('allorigins')) tries.push(function () { return attempt('allorigins', proxyUrl, 11000); });
+      if (!cooling('codetabs')) tries.push(function () { return attempt('codetabs', function (u) { return PROXY_ALT + encodeURIComponent(u); }, 11000); });
+      if (!tries.length) {
+        tries.push(
+          function () { return attempt('cloudflare', cfUrl, 9000); },
+          function () { return attempt('corsfix', fastUrl, 9000); }
+        );
+      }
+      return firstOf(tries);
+    };
+
+    var viaReader = function () {
+      return fetchWithTimeout(JINA + url, 12000, { headers: { 'x-return-format': 'html' } })
+        .then(function (res) {
+          if (!res.ok) throw new Error('reader HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function (html) { return buildPage(html, url); })
+        .then(function (built) {
+          if (!built) throw new Error('reader unreadable');
+          return built;
+        });
+    };
+
+    var viaWisp = function () {
+      return withTimeout(wispFetchText(url), 15000)
+        .then(function (html) {
+          if (!html || html.length < 120) throw new Error('wisp empty');
+          return buildPage(html, url);
+        })
+        .then(function (built) {
+          if (!built) throw new Error('wisp unreadable');
+          return built;
+        });
+    };
+
+    return viaWisp()
+      .catch(function () {
+        return race()
+          .catch(function () {
+            /* One more shot before falling back to the reader. */
+            return new Promise(function (resolve) { window.setTimeout(resolve, 350); }).then(race);
+          })
+          .catch(viaReader);
+      })
+      .then(function (built) {
+        pageCache[url] = built;
+        return built;
+      });
+  }
+
+  function paintPage(t, built) {
+    els.pageLoading.hidden = true;
+    els.frame.srcdoc = built.html;
+    els.frame.dataset.url = built.url;
+    if (built.title && built.title !== t.title) {
+      t.title = built.title.slice(0, 60);
+      renderTabs();
+      updateTitle();
+    }
+  }
+
+  function paintPageError(url) {
+    els.pageLoading.hidden = true;
+    els.frame.hidden = false;
+    els.note.textContent = 'Saleen · ' + hostOf(url);
+    els.frame.dataset.url = url;
+    els.frame.srcdoc = [
+      '<!doctype html><html><head><meta charset="utf-8">',
+      '<meta name="viewport" content="width=device-width,initial-scale=1">',
+      '</head><body><div>',
+      '<p>That page would not open.</p>',
+      '<button id="again" type="button">Try again</button>',
+      '</div><script>',
+      'document.getElementById("again").onclick=function(){parent.postMessage({saleen:"retry"},"*");};',
+      '<\/script></body></html>'
+    ].join('');
+  }
+
+  function loadPage(t) {
+    var url = t.url;
+    els.searchPane.hidden = true;
+    els.frame.hidden = false;
+    els.pageLoading.hidden = false;
+    els.pageLoadingText.textContent = DESKTOP ? 'Opening page…' : 'Opening through Saleen…';
+    els.note.textContent = DESKTOP ? 'Desktop mode · real rendering' : 'Saleen · ' + hostOf(url);
+
+    if (DESKTOP) {
+      if (els.frame.dataset.url !== url) {
+        els.frame.removeAttribute('srcdoc');
+        els.frame.dataset.url = url;
+        els.frame.src = url;
+      }
+      els.pageLoading.hidden = true;
+      return;
+    }
+
+    if (pageCache[url]) { paintPage(t, pageCache[url]); return; }
+    if (els.frame.dataset.url === url && els.frame.srcdoc) { els.pageLoading.hidden = true; return; }
+
+    var token = ++pageReq;
+    els.frame.removeAttribute('src');
+    els.frame.dataset.url = url;
+    els.frame.srcdoc = '';
+
+    fetchPage(url).then(function (built) {
+      if (token !== pageReq || activeTab() !== t || t.url !== url) return;
+      paintPage(t, built);
+    }).catch(function () {
+      if (token !== pageReq || activeTab() !== t || t.url !== url) return;
+      paintPageError(url);
+    });
+  }
+
+  window.addEventListener('message', function (e) {
+    var data = e.data;
+    if (!data || e.source !== els.frame.contentWindow) return;
+
+    if (data.saleen === 'retry') {
+      var t = activeTab();
+      if (!t || !t.url) return;
+      delete pageCache[t.url];
+      loadPage(t);
+      return;
+    }
+
+    if (data.saleen !== 'nav' || typeof data.url !== 'string') return;
+    if (!/^https?:\/\//i.test(data.url)) return;
+    navigate(data.url);
+  });
+
+  function renderView() {
+    var t = activeTab();
+    rootNode().dataset.mode = mode;
+
+    var hasWeb = !!(mode === 'browser' && t && t.mode === 'web' && t.url);
+    var isSearch = !!(hasWeb && isSearchUrl(t.url));
+    var emptyTab = mode === 'browser' && !hasWeb;
+    var clockPage = mode === 'home';
+
+    els.chrome.hidden = mode !== 'browser';
+    els.newTabView.hidden = !clockPage;
+    els.startView.hidden = !emptyTab;
+    els.heroTyping.hidden = !(clockPage || emptyTab);
+    els.webWrap.hidden = !hasWeb;
+    els.aiView.hidden = mode !== 'ai';
+    els.linksView.hidden = mode !== 'links';
+    els.gamesView.hidden = mode !== 'games';
+    var isMedia = mode === 'movies' || mode === 'tv' || mode === 'music';
+    els.moviesView.hidden = !isMedia;
+    if (isMedia && els.mediaTitle) els.mediaTitle.textContent = MODE_TITLES[mode];
+
+    navItems.forEach(function (item) {
+      item.setAttribute('aria-current', item.dataset.mode === mode ? 'page' : 'false');
+    });
+
+    if (mode === 'browser' && t) {
+      if (hasWeb) {
+        els.omni.value = isSearch ? queryOf(t.url) : t.url;
+
+        if (isSearch) {
+          renderSearch(t);
+        } else {
+          els.searchPane.hidden = true;
+          t.reader = false;
+          loadPage(t);
+        }
+      } else {
+        els.omni.value = '';
+        els.searchPane.hidden = true;
+        els.pageLoading.hidden = true;
+        els.frame.hidden = false;
+        els.frame.dataset.url = '';
+      }
+      els.back.disabled = t.hi <= 0;
+      els.fwd.disabled = t.hi >= t.hist.length - 1;
+      els.reload.disabled = !(t.mode === 'web' && t.url);
+    }
+
+    updateTitle();
+  }
+
+  function setMode(next) {
+    if (['home', 'ai', 'links', 'games', 'movies', 'tv', 'music', 'browser'].indexOf(next) < 0) next = 'home';
+    var changed = next !== mode;
+    /* Leaving the player stops the stream instead of letting it keep pulling
+       segments behind the other tabs. */
+    if (changed && next !== 'movies' && next !== 'tv' && media.item) closeMedia();
+    mode = next;
+    renderView();
+    if (next === 'home') startTyping();
+    if (next === 'movies' || next === 'tv' || next === 'music') startMovies(next);
+    if (next === 'games') startGames();
+    if (changed) document.dispatchEvent(new CustomEvent('saleen:mode', { detail: mode }));
+  }
+
+  function setTabUrl(t, url) {
+    t.url = url;
+    t.mode = 'web';
+    t.kind = isSearchUrl(url) ? 'search' : 'page';
+    t.query = t.kind === 'search' ? queryOf(url) : '';
+    t.title = t.kind === 'search' ? t.query : hostOf(url);
+    els.frame.dataset.url = '';
+  }
+
+  function navigate(url) {
+    var t = activeTab();
+    if (!t) t = createTab();
+    t.hist = t.hist.slice(0, t.hi + 1);
+    t.hist.push(url);
+    t.hi = t.hist.length - 1;
+    setTabUrl(t, url);
+    renderTabs();
+    renderView();
+  }
+
+  function goBack() {
+    var t = activeTab();
+    if (!t || t.hi <= 0) return;
+    t.hi -= 1;
+    setTabUrl(t, t.hist[t.hi]);
+    renderTabs();
+    renderView();
+  }
+
+  function goFwd() {
+    var t = activeTab();
+    if (!t || t.hi >= t.hist.length - 1) return;
+    t.hi += 1;
+    setTabUrl(t, t.hist[t.hi]);
+    renderTabs();
+    renderView();
+  }
+
+  function reload() {
+    var t = activeTab();
+    if (!t || t.mode !== 'web' || !t.url) return;
+    delete readerCache[t.url];
+    delete pageCache[t.url];
+    if (isSearchUrl(t.url)) {
+      delete searchCache[queryOf(t.url)];
+      els.searchList.dataset.q = '';
+    }
+    els.frame.dataset.url = '';
+    renderView();
+  }
+
+  /* ---------------- address + search ---------------- */
+
+  function looksLikeUrl(v) {
+    if (/^[a-z][a-z0-9+.-]*:\/\//i.test(v)) return true;
+    if (/^(localhost|\d{1,3}(\.\d{1,3}){3})(:\d+)?([/?#]|$)/i.test(v)) return true;
+    if (/\s/.test(v)) return false;
+    return /^[^\s/?#:]+\.[a-z]{2,}(:\d+)?([/?#]|$)/i.test(v);
+  }
+
+  function toUrl(v) {
+    if (/^[a-z][a-z0-9+.-]*:\/\//i.test(v)) return v;
+    if (/^(localhost|\d{1,3}(\.\d{1,3}){3})(:\d+)?/i.test(v)) return 'http://' + v;
+    return 'https://' + v;
+  }
+
+  function search(q) {
+    els.omni.value = '';
+    navigate(SEARCH_URL + encodeURIComponent(q));
+  }
+
+  function submit(raw) {
+    var v = (raw || '').trim();
+    if (!v) return;
+    if (looksLikeUrl(v)) {
+      var url = toUrl(v);
+      if (/^https?:\/\//i.test(url) || /^file:\/\//i.test(url)) {
+        els.omni.value = '';
+        navigate(url);
+        return;
+      }
+    }
+    search(v);
+  }
+
+  /* ---------------- toast ---------------- */
+
+  var toastTimer = null;
+  function toast(msg) {
+    els.toast.textContent = msg;
+    els.toast.classList.add('show');
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(function () { els.toast.classList.remove('show'); }, 2600);
+  }
+
+  /* ---------------- links ---------------- */
+
+  var LINKS_KEY = 'saleen.links.v3';
+  var myLinks = [];
+
+  /* Every link, always present. Any that go missing are added back once, in
+     order, and duplicates are dropped. */
+  var KEEP_LINK = 'https://cdn.jsdelivr.net/gh/blunts294/saleen/saleen.svg';
+  var SEED_LINKS = [];
+
+  function seedLinks() {
+    return SEED_LINKS.map(function (l) {
+      return { id: 'l' + Math.random().toString(36).slice(2, 8), name: l.name, url: l.url, tag: l.tag, added: Date.now() };
+    });
+  }
+
+  /* One link only. Everything else that used to live on this shelf is dropped,
+     so the tab always shows exactly the single live address. */
+  function withSeedLinks() {
+    return seedLinks();
+  }
+
+  function readMyLinks() {
+    try {
+      /* Older builds saved a shelf of starter links under these keys. They are
+         removed once so the Links tab starts genuinely empty. */
+      ['saleen.links.v1', 'saleen.links.v2'].forEach(function (k) {
+        try { localStorage.removeItem(k); } catch (e) {}
+      });
+      var raw = localStorage.getItem(LINKS_KEY);
+      if (!raw) {
+        myLinks = seedLinks();
+        writeMyLinks();
+        return;
+      }
+      var before = localStorage.getItem(LINKS_KEY) || '';
+      myLinks = withSeedLinks();
+      if (JSON.stringify(myLinks) !== before) writeMyLinks();
+    } catch (e) { myLinks = seedLinks(); }
+  }
+
+  function writeMyLinks() {
+    try { localStorage.setItem(LINKS_KEY, JSON.stringify(myLinks)); } catch (e) {}
+    broadcast('links');
+  }
+
+  function linkFromInput(raw) {
+    var v = String(raw || '').trim();
+    if (!v) return null;
+    var url;
+    var name;
+    if (/^https?:\/\//i.test(v)) {
+      url = v;
+    } else if (looksLikeUrl(v)) {
+      url = toUrl(v);
+    } else {
+      url = SEARCH_URL + encodeURIComponent(v);
+      name = v;
+    }
+    if (!/^https?:\/\//i.test(url) && url.indexOf(SEARCH_URL) !== 0) return null;
+    return { url: url, name: name || hostOf(url), added: Date.now() };
+  }
+
+  /* Links are the one thing that leaves Saleen: each opens in a real browser
+     tab. Everything searched or opened from the address bar stays inside. */
+  function openLink(link) {
+    if (!link || !link.url) return;
+    window.open(link.url, '_blank', 'noopener,noreferrer');
+  }
+
+  function makeCard(link, removable) {
+    var card = document.createElement('div');
+    card.className = 'link-card';
+
+    var open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'link-open';
+    open.title = link.url;
+
+    var ico = document.createElement('span');
+    ico.className = 'link-ico';
+    ico.setAttribute('aria-hidden', 'true');
+    var isSearchLink = link.url.indexOf(SEARCH_URL) === 0;
+    ico.textContent = isSearchLink
+      ? '⌕'
+      : (link.name || link.url).replace(/^www\./i, '').charAt(0).toUpperCase();
+
+    var text = document.createElement('span');
+    text.className = 'link-text';
+    var name = document.createElement('span');
+    name.className = 'link-name';
+    name.textContent = link.name || hostOf(link.url);
+    var meta = document.createElement('span');
+    meta.className = 'link-host';
+    var prefix = link.tag || '';
+    var where = isSearchLink ? queryOf(link.url) : hostOf(link.url);
+    meta.textContent = prefix ? prefix + ' · ' + where : where;
+    text.appendChild(name);
+    text.appendChild(meta);
+
+    open.appendChild(ico);
+    open.appendChild(text);
+    open.addEventListener('click', function () { openLink(link); });
+    card.appendChild(open);
+
+    if (removable) {
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'link-del';
+      del.textContent = '✕';
+      del.title = 'Remove link';
+      del.setAttribute('aria-label', 'Remove ' + (link.name || link.url));
+      del.addEventListener('click', function () {
+        myLinks = myLinks.filter(function (l) { return l.url !== link.url; });
+        writeMyLinks();
+        renderLinks();
+        toast('Link removed');
+      });
+      card.appendChild(del);
+    }
+
+    return card;
+  }
+
+  function renderLinks() {
+    if (!els.myLinks) return;
+    els.myLinks.textContent = '';
+    els.myLinksCount.textContent = String(myLinks.length);
+
+    if (myLinks.length) {
+      myLinks.forEach(function (link) { els.myLinks.appendChild(makeCard(link, false)); });
+    }
+  }
+
+  /* ---------------- games (live shelf) ---------------- */
+
+  var GAMES_KEY = 'saleen.games.v2';
+  var games = [];
+
+  function readGames() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(GAMES_KEY) || '[]');
+      if (Array.isArray(saved)) {
+        games = saved.filter(function (g) {
+          return g && typeof g.url === 'string' && /^(https?:\/\/|saleen:\/\/)/i.test(g.url);
+        });
+      }
+    } catch (e) { games = []; }
+  }
+
+  function writeGames() {
+    try { localStorage.setItem(GAMES_KEY, JSON.stringify(games)); } catch (e) {}
+    broadcast('games');
+    renderGames();
+  }
+
+  function renderGames() {
+    if (!els.gamesBody) return;
+    els.gamesBody.textContent = '';
+
+    if (!games.length) {
+      return;
+    }
+
+    var grid = document.createElement('div');
+    grid.className = 'links-grid';
+    games.forEach(function (g) { grid.appendChild(makeCard(g, false)); });
+    els.gamesBody.appendChild(grid);
+  }
+
+  /* ---------------- movies + tv (catalogue, one English stream) ----------------
+     CinemaOS is only used as a keyless TMDB reader now: its own player kept
+     cycling through dead sources and language tracks. The posters and titles
+     come from that API. Playback is not an embed any more: the provider's own
+     HLS playlist is resolved and handed to a plain <video> element, with every
+     non-English audio track and every subtitle track stripped out. */
+
+  var MEDIA_API = 'https://cinemaos.in/api/tmdb';
+  var MEDIA_IMG = 'https://image.tmdb.org/t/p/w342';
+  var MEDIA_PLAY = 'https://vidlink.pro/movie';
+  var MEDIA_PLAY_TV = 'https://vidlink.pro/tv';
+  var VIX_API_MOVIE = 'https://vixsrc.to/api/movie/';
+  var VIX_API_TV = 'https://vixsrc.to/api/tv/';
+  var HLS_JS = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js';
+  var MEDIA_FILTERS = {
+    movie: {
+      trending: '/trending/movie/day',
+      popular: '/movie/popular',
+      top: '/movie/top_rated'
+    },
+    tv: {
+      trending: '/trending/tv/day',
+      popular: '/tv/popular',
+      top: '/tv/top_rated'
+    }
+  };
+  var MEDIA_CACHE = {};
+  var MEDIA_MAX_PAGE = 10;
+  var MEDIA_REGION = 'US';
+  var media = {
+    kind: 'movie',
+    filter: 'trending',
+    provider: '',
+    query: '',
+    mode: 'grid',
+    items: [],
+    page: 1,
+    maxPage: 1,
+    loadingMore: false,
+    item: null,
+    seasons: [],
+    season: 1,
+    frame: null,
+    stepTimer: 0
+  };
+  var mediaSearchTimer = null;
+  var musicFrame = null;
+  var movieProgress = 0;
+  var movieTarget = 0;
+  var movieTicker = null;
+
+  function movieStep(at, to, text) {
+    movieProgress = Math.max(movieProgress, at);
+    movieTarget = to;
+    if (els.movieFill) els.movieFill.style.width = movieProgress + '%';
+    if (text && els.movieStatus) els.movieStatus.textContent = text;
+  }
+
+  function movieTickerStart() {
+    window.clearInterval(movieTicker);
+    movieTicker = window.setInterval(function () {
+      if (movieProgress >= movieTarget - 1) return;
+      movieProgress += (movieTarget - movieProgress) * 0.08;
+      if (els.movieFill) els.movieFill.style.width = movieProgress + '%';
+    }, 180);
+  }
+
+  function movieDone() {
+    window.clearInterval(movieTicker);
+    movieStep(100, 100, 'Tap play');
+    window.setTimeout(function () {
+      if (els.movieLoad) els.movieLoad.classList.add('done');
+      if (els.movieWrap) els.movieWrap.hidden = false;
+    }, 420);
+  }
+
+  function movieReset(text) {
+    window.clearInterval(movieTicker);
+    movieProgress = 0;
+    movieTarget = 0;
+    if (els.movieFill) els.movieFill.style.width = '0%';
+    if (els.movieLoad) {
+      els.movieLoad.hidden = false;
+      els.movieLoad.classList.remove('done');
+    }
+    if (text) movieStep(6, 40, text);
+    movieTickerStart();
+  }
+
+  function mediaName(item) {
+    return item.title || item.name || item.original_title || item.original_name || 'Untitled';
+  }
+
+  function mediaYear(item) {
+    return String(item.release_date || item.first_air_date || '').slice(0, 4);
+  }
+
+  function mediaPoster(item) {
+    var path = item.poster_path || item.backdrop_path || '';
+    return path ? MEDIA_IMG + path : '';
+  }
+
+  function mediaCountLabel(n) {
+    if (!els.mediaSub) return;
+    els.mediaSub.textContent = n ? n + (n === 1 ? ' title' : ' titles') : '';
+  }
+
+  function mediaChipsMark() {
+    els.mediaChips.forEach(function (chip) {
+      var f = chip.getAttribute('data-filter');
+      var ok = !!(MEDIA_FILTERS[media.kind] && MEDIA_FILTERS[media.kind][f]);
+      chip.hidden = !ok;
+      chip.setAttribute('aria-pressed', ok && f === media.filter && !media.provider ? 'true' : 'false');
+    });
+    els.providerChips.forEach(function (chip) {
+      var p = chip.getAttribute('data-provider') || '';
+      chip.setAttribute('aria-pressed', p === media.provider ? 'true' : 'false');
+    });
+  }
+
+  function mediaChrome(view) {
+    var grid = view === 'grid';
+    media.mode = grid ? 'grid' : 'player';
+    if (els.mediaGrid) els.mediaGrid.hidden = !grid;
+    if (els.mediaFilters) els.mediaFilters.hidden = !grid;
+    if (els.providerFilters) els.providerFilters.hidden = !grid;
+    if (els.mediaSearch) els.mediaSearch.hidden = !grid;
+    /* Always leave a way out: from a movie it goes back to the list, from the
+       list it goes back Home. */
+    if (els.mediaBack) {
+      els.mediaBack.hidden = false;
+      els.mediaBack.textContent = grid ? 'Home' : 'Back';
+    }
+    if (grid) {
+      if (els.seasonSel) { els.seasonSel.hidden = true; els.seasonSel.textContent = ''; }
+      if (els.episodeSel) { els.episodeSel.hidden = true; els.episodeSel.textContent = ''; }
+    }
+  }
+
+  function mediaFetch(path) {
+    var url = MEDIA_API + path;
+    return fetchWithTimeout(url, 14000).then(function (res) {
+      if (!res.ok) throw new Error('media HTTP ' + res.status);
+      return res.json();
+    }).catch(function () {
+      return fetchWithTimeout(cfUrl(url), 16000).then(function (res) {
+        if (!res.ok) throw new Error('media HTTP ' + res.status);
+        return res.json();
+      });
+    });
+  }
+
+  function renderMediaGrid(list, append) {
+    if (!els.mediaGrid) return;
+    if (!append) els.mediaGrid.textContent = '';
+    var frag = document.createDocumentFragment();
+    list.forEach(function (item) {
+      var card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'media-card';
+      card.title = mediaName(item);
+
+      var art = document.createElement('span');
+      art.className = 'media-art';
+      var src = mediaPoster(item);
+      if (src) {
+        var img = document.createElement('img');
+        img.alt = '';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.src = src;
+        img.addEventListener('error', function () { img.remove(); });
+        art.appendChild(img);
+      }
+
+      var info = document.createElement('span');
+      info.className = 'media-info';
+      var name = document.createElement('span');
+      name.className = 'media-name';
+      name.textContent = mediaName(item);
+      var year = document.createElement('span');
+      year.className = 'media-year';
+      year.textContent = mediaYear(item) || (media.kind === 'tv' ? 'TV' : 'Movie');
+
+      info.appendChild(name);
+      info.appendChild(year);
+      card.appendChild(art);
+      card.appendChild(info);
+      card.addEventListener('click', function () { openMedia(item); });
+      frag.appendChild(card);
+    });
+    els.mediaGrid.appendChild(frag);
+    els.mediaGrid.hidden = false;
+    mediaCountLabel(els.mediaGrid.querySelectorAll('.media-card').length);
+  }
+
+  /* ---------------- paging: the whole catalogue, not just page 1 ---------------- */
+
+  function mediaPagePath(page) {
+    var base;
+    if (media.query) {
+      base = '/search/' + (media.kind === 'tv' ? 'tv' : 'movie') +
+        '?query=' + encodeURIComponent(media.query) + '&include_adult=false';
+    } else if (media.provider) {
+      base = '/discover/' + (media.kind === 'tv' ? 'tv' : 'movie') +
+        '?with_watch_providers=' + encodeURIComponent(media.provider) +
+        '&watch_region=' + MEDIA_REGION +
+        '&sort_by=popularity.desc&vote_count.gte=100&include_adult=false';
+    } else {
+      base = MEDIA_FILTERS[media.kind][media.filter];
+    }
+    if (page <= 1) return base;
+    return base + (base.indexOf('?') >= 0 ? '&' : '?') + 'page=' + page;
+  }
+
+  /* The catalogue is a popularity feed, but TMDB still slips brand-new or
+     straight-to-video titles with a handful of votes into it. Those are the
+     cards that looked like filler, so they are dropped unless the user asked
+     for them by name. */
+  function mediaTooObscure(item) {
+    var votes = Number(item.vote_count) || 0;
+    var pop = Number(item.popularity) || 0;
+    if (votes >= 60) return false;
+    return pop < 60;
+  }
+
+  function mediaParse(data, page) {
+    var list = ((data && data.results) || []).filter(function (item) {
+      if (!item || !item.id || !mediaPoster(item)) return false;
+      if (!media.query && mediaTooObscure(item)) return false;
+      return true;
+    });
+    var pages = Number(data && data.total_pages) || page;
+    media.maxPage = Math.max(1, Math.min(pages, MEDIA_MAX_PAGE));
+    return list;
+  }
+
+  function mediaRemember() {
+    var key = media.kind + ':' + (media.query ? 'q:' + media.query : (media.provider ? 'p:' + media.provider : media.filter));
+    MEDIA_CACHE[key] = {
+      items: media.items,
+      page: media.page,
+      maxPage: media.maxPage,
+      query: media.query,
+      filter: media.filter,
+      provider: media.provider
+    };
+  }
+
+  function mediaSettled() {
+    window.clearInterval(movieTicker);
+    movieStep(100, 100, 'Ready');
+    if (els.movieLoad) els.movieLoad.classList.add('done');
+  }
+
+  function mediaLoad(filter, force) {
+    if (!els.mediaGrid) return Promise.resolve();
+    var kind = media.kind;
+    var key = kind + ':' + filter;
+    media.filter = filter;
+    media.query = '';
+    media.page = 1;
+    media.maxPage = 1;
+    media.loadingMore = false;
+    mediaChipsMark();
+    movieReset(kind === 'tv' ? 'Loading shows' : 'Loading movies');
+
+    var cached = MEDIA_CACHE[key];
+    if (!force && cached) {
+      media.items = cached.items;
+      media.page = cached.page;
+      media.maxPage = cached.maxPage;
+      renderMediaGrid(media.items);
+      mediaSettled();
+      return Promise.resolve();
+    }
+
+    if (els.mediaGrid) els.mediaGrid.hidden = true;
+    return mediaFetch(MEDIA_FILTERS[kind][filter]).then(function (data) {
+      var list = mediaParse(data, 1);
+      if (!list.length) throw new Error('empty list');
+      media.items = list;
+      mediaRemember();
+      renderMediaGrid(list);
+      mediaSettled();
+    }).catch(function () {
+      window.clearInterval(movieTicker);
+      if (els.movieStatus) els.movieStatus.textContent = 'Could not load the list. Try another tab.';
+      if (els.movieFill) els.movieFill.style.width = '0%';
+      if (els.movieLoad) {
+        els.movieLoad.hidden = false;
+        els.movieLoad.classList.remove('done');
+      }
+    });
+  }
+
+  /* Appends the next page in place. Uses the same path builder as page 1 so
+     search results page too, and de-dupes ids TMDB repeats across pages. */
+  function mediaMore() {
+    if (media.mode !== 'grid' || media.loadingMore) return Promise.resolve();
+    if (media.page >= media.maxPage) return Promise.resolve();
+    media.loadingMore = true;
+    var want = media.page + 1;
+    if (els.mediaSub) els.mediaSub.textContent = 'Loading more…';
+
+    return mediaFetch(mediaPagePath(want)).then(function (data) {
+      if (want !== media.page + 1) return;
+      var list = mediaParse(data, want);
+      var seen = {};
+      media.items.forEach(function (i) { seen[i.id] = 1; });
+      var fresh = list.filter(function (i) { return !seen[i.id]; });
+      media.page = want;
+      if (fresh.length) {
+        media.items = media.items.concat(fresh);
+        renderMediaGrid(fresh, true);
+      } else {
+        mediaCountLabel(els.mediaGrid.querySelectorAll('.media-card').length);
+      }
+      mediaRemember();
+    }).catch(function () {
+      /* keep whatever is on screen; the scroll handler can retry */
+      mediaCountLabel(els.mediaGrid.querySelectorAll('.media-card').length);
+    }).then(function () {
+      media.loadingMore = false;
+    });
+  }
+
+  function openMedia(item) {
+    media.item = item;
+    media.seasons = [];
+    media.season = 1;
+    if (els.mediaTitle) els.mediaTitle.textContent = mediaName(item);
+    if (els.mediaSub) {
+      var bits = [];
+      var year = mediaYear(item);
+      if (year) bits.push(year);
+      if (item.vote_average) bits.push(Number(item.vote_average).toFixed(1) + '/10');
+      bits.push('English');
+      els.mediaSub.textContent = bits.join(' · ');
+    }
+    mediaChrome('player');
+    if (media.kind === 'tv') loadSeasons(item);
+    else playMedia(1, 1);
+  }
+
+  function loadSeasons(item) {
+    movieReset('Loading episodes');
+    mediaFetch('/tv/' + item.id).then(function (data) {
+      if (!media.item || media.item.id !== item.id) return;
+      var seasons = ((data && data.seasons) || []).filter(function (s) {
+        return s && s.season_number > 0 && s.episode_count > 0;
+      });
+      if (!seasons.length) throw new Error('no seasons');
+      media.seasons = seasons;
+      if (els.seasonSel) {
+        els.seasonSel.textContent = '';
+        seasons.forEach(function (s) {
+          var opt = document.createElement('option');
+          opt.value = String(s.season_number);
+          opt.textContent = 'Season ' + s.season_number + ' (' + s.episode_count + ')';
+          els.seasonSel.appendChild(opt);
+        });
+        els.seasonSel.hidden = false;
+      }
+      selectSeason(seasons[0].season_number, true);
+    }).catch(function () {
+      if (!media.item || media.item.id !== item.id) return;
+      playMedia(1, 1);
+    });
+  }
+
+  function selectSeason(number, autoplay) {
+    media.season = number;
+    if (els.seasonSel) { els.seasonSel.value = String(number); els.seasonSel.hidden = false; }
+    if (els.episodeSel) { els.episodeSel.textContent = ''; els.episodeSel.hidden = true; }
+    var id = media.item ? media.item.id : 0;
+    mediaFetch('/tv/' + id + '/season/' + number).then(function (data) {
+      if (!media.item || media.item.id !== id) return;
+      var eps = ((data && data.episodes) || []).filter(function (e) { return e && e.episode_number; });
+      if (!eps.length) throw new Error('no episodes');
+      if (els.episodeSel) {
+        eps.forEach(function (e) {
+          var opt = document.createElement('option');
+          opt.value = String(e.episode_number);
+          opt.textContent = 'E' + e.episode_number + (e.name ? ' · ' + e.name : '');
+          els.episodeSel.appendChild(opt);
+        });
+        els.episodeSel.hidden = false;
+      }
+      if (autoplay) playMedia(number, eps[0].episode_number);
+    }).catch(function () {
+      if (autoplay) playMedia(number, 1);
+    });
+  }
+
+  /* ---- resolving the stream (no iframe) ---- */
+
+  function loadScriptOnce(src, marker) {
+    return new Promise(function (resolve, reject) {
+      if (marker && window[marker]) { resolve(window[marker]); return; }
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      s.onload = function () {
+        if (marker && !window[marker]) { reject(new Error('script empty')); return; }
+        resolve(marker ? window[marker] : true);
+      };
+      s.onerror = function () { reject(new Error('script blocked')); };
+      document.head.appendChild(s);
+    });
+  }
+
+  var hlsBoot = null;
+  var hlsPlayer = null;
+  var hlsBlob = null;
+  var playerVideo = null;
+  var VIX_CACHE = {};
+
+  function loadHls() {
+    if (window.Hls) return Promise.resolve(window.Hls);
+    if (!hlsBoot) {
+      hlsBoot = loadScriptOnce(HLS_JS, 'Hls').catch(function (err) {
+        hlsBoot = null;
+        throw err;
+      });
+    }
+    return hlsBoot;
+  }
+
+  /* vixsrc's metadata endpoints are Cloudflare-protected and send no CORS
+     headers, so the small JSON/HTML lookups go through public readers. The
+     playlist itself is CORS-open, so the video segments come straight from
+     the CDN and stream at full speed. */
+  function vixText(url, accept) {
+    var tries = [
+      function (u) { return 'https://corsproxy.org/?' + encodeURIComponent(u); },
+      function (u) { return 'https://api.codetabs.com/v1/proxy/?quest=' + encodeURIComponent(u); },
+      function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+      function (u) { return cfUrl(u); },
+      function (u) { return fastUrl(u); }
+    ].map(function (make) {
+      return function () {
+        return fetchWithTimeout(make(url), 12000, { headers: { accept: accept || '*/*' } })
+          .then(function (res) {
+            if (!res.ok) throw new Error('meta ' + res.status);
+            return res.text();
+          });
+      };
+    });
+    return firstOf(tries);
+  }
+
+  function vixPlaylistUrl(kind, id, season, episode) {
+    var key = kind + ':' + id + ':' + season + ':' + episode;
+    if (VIX_CACHE[key]) return VIX_CACHE[key];
+
+    var api = kind === 'tv'
+      ? VIX_API_TV + id + '/' + season + '/' + episode
+      : VIX_API_MOVIE + id;
+
+    var job = vixText(api, 'application/json').then(function (txt) {
+      var data;
+      try { data = JSON.parse(txt); } catch (e) { throw new Error('bad api'); }
+      if (!data || !data.src) throw new Error('no source');
+      return /^https?:/i.test(data.src) ? data.src : 'https://vixsrc.to' + data.src;
+    }).then(function (embed) {
+      return vixText(embed, 'text/html').then(function (html) {
+        var token = (html.match(/'token':\s*'([^']+)'/) || [])[1] || '';
+        var expires = (html.match(/'expires':\s*'([^']+)'/) || [])[1] || '';
+        var playlist = (html.match(/url:\s*'([^']+)'/) || [])[1];
+        if (!playlist) throw new Error('no playlist');
+        return playlist + '?token=' + encodeURIComponent(token) +
+          '&expires=' + encodeURIComponent(expires) + '&h=1&lang=en';
+      });
+    });
+
+    VIX_CACHE[key] = job;
+    job.catch(function () { delete VIX_CACHE[key]; });
+    return job;
+  }
+
+  /* Keeps only the English audio rendition and drops every subtitle track, so
+     the player has nothing to switch to. */
+  function englishOnlyPlaylist(text) {
+    var audio = '';
+    var out = [];
+    String(text || '').split(/\r?\n/).forEach(function (line) {
+      if (/^#EXT-X-MEDIA:TYPE=SUBTITLES/i.test(line)) return;
+      if (/^#EXT-X-MEDIA:TYPE=AUDIO/i.test(line)) {
+        if (!audio && /LANGUAGE="eng"/i.test(line)) audio = line;
+        return;
+      }
+      if (/^#EXT-X-STREAM-INF/i.test(line)) line = line.replace(/,SUBTITLES="[^"]*"/i, '');
+      out.push(line);
+    });
+    if (audio) {
+      var at = 0;
+      while (at < out.length && !/^#EXT-X-STREAM-INF/i.test(out[at])) at += 1;
+      out.splice(at, 0, audio);
+    }
+    return out.join('\n');
+  }
+
+  /* ---- vidrock: a CORS-open metadata endpoint that returns the real HLS
+     playlist, encrypted with a key that ships in its own bundle. Decrypting it
+     in the page means no relay, no iframe and no third party in the path. Its
+     segments are MPEG-TS wrapped in a tiny PNG shell (a filter dodge on their
+     side), so a custom hls.js loader peels the shell off before demuxing. */
+
+  var VIDROCK_API = 'https://vidrock.net/api/';
+  var VIDROCK_KEY = '7f3e9c2a8b5d1f4e6a9c3b7d2e5f8a1c4b6d9e2f5a8c1b4d7e9f2a5c8b1d4e7f';
+  var vidrockKeyJob = null;
+
+  function hexBytes(hex) {
+    var out = new Uint8Array(hex.length / 2);
+    for (var i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
+    return out;
+  }
+
+  function b64urlBytes(text) {
+    var s = String(text || '').replace(/-/g, '+').replace(/_/g, '/');
+    var pad = s.length % 4;
+    if (pad === 2) s += '==';
+    else if (pad === 3) s += '=';
+    else if (pad === 1) throw new Error('bad base64');
+    var bin = atob(s);
+    var out = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+
+  function vidrockKey() {
+    if (!window.crypto || !window.crypto.subtle) return Promise.reject(new Error('no webcrypto'));
+    if (!vidrockKeyJob) {
+      vidrockKeyJob = window.crypto.subtle.importKey(
+        'raw', hexBytes(VIDROCK_KEY), { name: 'AES-GCM' }, false, ['decrypt']
+      ).catch(function (err) {
+        vidrockKeyJob = null;
+        throw err;
+      });
+    }
+    return vidrockKeyJob;
+  }
+
+  function vidrockDecrypt(key, payload) {
+    var raw = b64urlBytes(payload);
+    if (raw.length < 28) return Promise.reject(new Error('short ciphertext'));
+    return window.crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: raw.slice(0, 12) }, key, raw.slice(12)
+    ).then(function (plain) {
+      return new TextDecoder().decode(plain);
+    });
+  }
+
+  /* Only English, HLS sources are considered. Nova is normally the English
+     one; the loop just means a renamed slot still works. */
+  function vidrockStream(kind, id, season, episode) {
+    var path = kind === 'tv'
+      ? 'tv/' + id + '/' + season + '/' + episode
+      : 'movie/' + id;
+    return fetchWithTimeout(VIDROCK_API + path, 9000, { headers: { accept: 'application/json' } })
+      .then(function (res) {
+        if (!res.ok) throw new Error('vidrock ' + res.status);
+        return res.json();
+      })
+      .then(function (map) {
+        var names = Object.keys(map || {}).filter(function (name) {
+          var src = map[name];
+          return src && src.url && /^hls$/i.test(src.type || '') &&
+            /english/i.test(src.language || '');
+        });
+        if (!names.length) throw new Error('no english source');
+        return vidrockKey().then(function (key) {
+          /* Every mirror is decrypted up front. Some of them answer 403 to a
+             plain fetch (they want a vidrock referer), so the player walks the
+             whole list instead of trusting the first name. */
+          return Promise.all(names.map(function (name) {
+            return vidrockDecrypt(key, map[name].url).then(function (url) {
+              if (!/^https?:\/\//i.test(url)) return null;
+              return { url: url, name: name };
+            }).catch(function () { return null; });
+          })).then(function (list) {
+            var out = list.filter(Boolean);
+            if (!out.length) throw new Error('no url');
+            return out;
+          });
+        });
+      });
+  }
+
+  /* Strips the PNG wrapper: 64 bytes of fake 1x1 PNG in front, sometimes a
+     trailer behind. Returns the TS payload on a 188-byte packet boundary. */
+  function tsPayload(buffer) {
+    var u = new Uint8Array(buffer);
+    if (u[0] !== 0x89 || u[1] !== 0x50) return buffer;
+    var start = -1;
+    for (var i = 0; i < 600 && i + 188 * 8 < u.length; i++) {
+      var ok = true;
+      for (var k = 0; k < 8; k++) {
+        if (u[i + 188 * k] !== 0x47) { ok = false; break; }
+      }
+      if (ok) { start = i; break; }
+    }
+    if (start < 0) return buffer;
+    var keep = Math.floor((u.length - start) / 188) * 188;
+    return u.slice(start, start + keep).buffer;
+  }
+
+  function pngLoader(Hls) {
+    var Base = Hls.DefaultConfig.loader;
+    return class PngLoader extends Base {
+      load(context, config, callbacks) {
+        var done = callbacks.onSuccess;
+        callbacks.onSuccess = function (response, stats, ctx, net) {
+          try {
+            if (response && response.data instanceof ArrayBuffer) {
+              response.data = tsPayload(response.data);
+            }
+          } catch (e) { }
+          done(response, stats, ctx, net);
+        };
+        super.load(context, config, callbacks);
+      }
+    };
+  }
+
+  function stopPlayer() {
+    window.clearTimeout(media.stepTimer);
+    if (hlsPlayer) {
+      try { hlsPlayer.destroy(); } catch (e) { }
+      hlsPlayer = null;
+    }
+    if (hlsBlob) { try { URL.revokeObjectURL(hlsBlob); } catch (e) { } hlsBlob = null; }
+    if (playerVideo && playerVideo.parentNode) playerVideo.parentNode.removeChild(playerVideo);
+    playerVideo = null;
+    if (media.frame && media.frame.parentNode) media.frame.parentNode.removeChild(media.frame);
+    media.frame = null;
+  }
+
+  function embedFallback(src, note) {
+    stopPlayer();
+    if (!els.movieWrap) return;
+    if (note) movieStep(100, 100, note);
+    var frame = document.createElement('iframe');
+    frame.title = media.item ? mediaName(media.item) : 'Player';
+    frame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
+    frame.setAttribute('allowfullscreen', '');
+    frame.setAttribute('referrerpolicy', 'origin');
+    els.movieWrap.appendChild(frame);
+    media.frame = frame;
+    frame.src = src;
+
+    /* Some networks block the embed host itself. The backup player stays on
+       screen, but there is always a way into the proxied browser with the same
+       episode loaded. */
+    var panel = document.createElement('div');
+    panel.className = 'movie-note';
+    var label = document.createElement('span');
+    label.textContent = 'Player not loading?';
+    var open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'ghost-btn';
+    open.textContent = 'Open in Browser';
+    open.addEventListener('click', function () { window.open(src, '_blank', 'noopener'); });
+    panel.appendChild(label);
+    panel.appendChild(open);
+    els.movieWrap.appendChild(panel);
+    movieDone();
+  }
+
+  function playMedia(season, episode) {
+    if (!els.movieWrap || !media.item) return;
+    var item = media.item;
+    var kind = media.kind === 'tv' ? 'tv' : 'movie';
+    var s = Math.max(1, season || 1);
+    var e = Math.max(1, episode || 1);
+    var src = kind === 'tv'
+      ? MEDIA_PLAY_TV + '/' + item.id + '/' + s + '/' + e
+      : MEDIA_PLAY + '/' + item.id;
+
+    stopPlayer();
+    els.movieWrap.textContent = '';
+    els.movieWrap.hidden = false;
+    movieReset('Finding the English stream');
+
+    var video = document.createElement('video');
+    video.className = 'movie-video';
+    video.controls = true;
+    video.autoplay = true;
+    video.preload = 'metadata';
+    video.setAttribute('playsinline', '');
+    video.setAttribute('controlslist', 'nodownload');
+    els.movieWrap.appendChild(video);
+    playerVideo = video;
+    media.video = video;
+
+    /* Browsers can refuse unmuted autoplay when the click that opened the card
+       is a few seconds old. Rather than muting the film, show one button. */
+    var tapBtn = document.createElement('button');
+    tapBtn.type = 'button';
+    tapBtn.className = 'movie-tap';
+    tapBtn.textContent = 'Play';
+    tapBtn.hidden = true;
+    els.movieWrap.appendChild(tapBtn);
+    tapBtn.addEventListener('click', function () {
+      tapBtn.hidden = true;
+      video.play().catch(function () { tapBtn.hidden = false; });
+    });
+    video.addEventListener('playing', function () { tapBtn.hidden = true; });
+
+    var settled = false;
+    var giveUp = window.setTimeout(function () {
+      if (settled) return;
+      settled = true;
+      embedFallback(src, 'Tap play');
+    }, 24000);
+
+    loadHls().then(function (Hls) {
+      if (!Hls) throw new Error('no hls');
+
+      function tryStream(url) {
+        return new Promise(function (resolve, reject) {
+          var done = false;
+          var timer = window.setTimeout(function () {
+            if (done) return;
+            done = true;
+            reject(new Error('stream timeout'));
+          }, 20000);
+          if (hlsPlayer) {
+            try { hlsPlayer.destroy(); } catch (err) { }
+            hlsPlayer = null;
+          }
+          var player = new Hls({
+            enableWorker: true,
+            loader: pngLoader(Hls),
+            /* The source ladder tops out at 1080p (~5 Mbps). Start from an
+               optimistic bandwidth estimate so the first frames are already
+               sharp, then let ABR drop fast if the line cannot keep up. */
+            startLevel: -1,
+            testBandwidth: true,
+            abrEwmaDefaultEstimate: 6500000,
+            abrBandWidthFactor: 0.9,
+            abrBandWidthUpFactor: 0.7,
+            maxStarvationDelay: 3,
+            maxLoadingDelay: 6,
+            maxBufferLength: 40,
+            maxMaxBufferLength: 90,
+            backBufferLength: 30
+          });
+          hlsPlayer = player;
+          window.__saleenHls = player;
+          player.on(Hls.Events.MANIFEST_PARSED, function () {
+            if (done) return;
+            done = true;
+            window.clearTimeout(timer);
+            resolve();
+          });
+          player.on(Hls.Events.ERROR, function (evt, data) {
+            if (!data || !data.fatal) return;
+            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+              try { player.startLoad(); return; } catch (err) { }
+            }
+            if (done) return;
+            done = true;
+            window.clearTimeout(timer);
+            reject(new Error('stream error'));
+          });
+          player.loadSource(url);
+          player.attachMedia(video);
+        });
+      }
+
+      /* The master playlist is filtered before hls.js sees it, so only the
+         English audio rendition survives and subtitles disappear entirely. */
+      function filteredPlaylist(url) {
+        return fetchWithTimeout(url, 12000, { headers: { accept: '*/*' } })
+          .then(function (res) {
+            if (!res.ok) throw new Error('playlist ' + res.status);
+            return res.text();
+          })
+          .then(function (text) {
+            var clean = englishOnlyPlaylist(text);
+            if (!/^#EXTM3U/m.test(clean)) throw new Error('bad playlist');
+            if (hlsBlob) { try { URL.revokeObjectURL(hlsBlob); } catch (err) { } }
+            hlsBlob = URL.createObjectURL(new Blob([clean], { type: 'application/vnd.apple.mpegurl' }));
+            return hlsBlob;
+          });
+      }
+
+      if (!settled) movieStep(45, 70, 'Loading the stream');
+
+      var job = vidrockStream(kind, item.id, s, e)
+        .then(function (sources) {
+          var chain = Promise.reject(new Error('none'));
+          sources.forEach(function (found) {
+            chain = chain.catch(function () {
+              if (!settled) movieStep(60, 82, 'Loading the stream');
+              return filteredPlaylist(found.url).then(tryStream);
+            });
+          });
+          return chain;
+        });
+
+      job.then(function () {
+        window.clearTimeout(giveUp);
+        if (settled) return;
+        settled = true;
+        movieStep(100, 100, 'Playing');
+        movieDone();
+        video.play().catch(function () { tapBtn.hidden = false; });
+      }).catch(function () {
+        window.clearTimeout(giveUp);
+        if (settled) return;
+        settled = true;
+        embedFallback(src, 'Tap play');
+      });
+    }).catch(function () {
+      window.clearTimeout(giveUp);
+      if (settled) return;
+      settled = true;
+      embedFallback(src, 'Tap play');
+    });
+  }
+
+  function closeMedia() {
+    stopPlayer();
+    if (els.movieWrap) { els.movieWrap.textContent = ''; els.movieWrap.hidden = true; }
+    media.item = null;
+    window.clearInterval(movieTicker);
+    if (els.movieLoad) els.movieLoad.classList.add('done');
+    mediaChrome('grid');
+    if (els.mediaTitle) els.mediaTitle.textContent = media.kind === 'tv' ? 'TV' : 'Movies';
+    mediaCountLabel(media.items.length);
+  }
+
+  function doMediaSearch(q) {
+    if (!q) { mediaLoad(media.filter, false); return; }
+    media.query = q;
+    media.page = 1;
+    media.maxPage = 1;
+    media.loadingMore = false;
+    if (els.mediaGrid) els.mediaGrid.hidden = true;
+    movieReset('Searching');
+    mediaFetch(mediaPagePath(1)).then(function (data) {
+      if (media.query !== q) return;
+      var list = mediaParse(data, 1);
+      media.items = list;
+      mediaRemember();
+      renderMediaGrid(list);
+      mediaSettled();
+      if (!list.length && els.mediaSub) els.mediaSub.textContent = 'No matches';
+    }).catch(function () {
+      window.clearInterval(movieTicker);
+      if (els.movieStatus) els.movieStatus.textContent = 'Search failed. Try again.';
+    });
+  }
+
+  function startMusic() {
+    if (!els.movieWrap || !els.movieLoad) return;
+    if (media.frame && media.frame.parentNode) media.frame.parentNode.removeChild(media.frame);
+    media.frame = null;
+    media.item = null;
+    mediaChrome('player');
+    if (els.mediaFilters) els.mediaFilters.hidden = true;
+    if (els.mediaSearch) els.mediaSearch.hidden = true;
+    if (els.mediaBack) els.mediaBack.hidden = true;
+    if (els.mediaGrid) els.mediaGrid.hidden = true;
+    if (els.mediaTitle) els.mediaTitle.textContent = 'Music';
+    if (els.mediaSub) els.mediaSub.textContent = '';
+    if (musicFrame && musicFrame.parentNode) return;
+
+    els.movieWrap.textContent = '';
+    els.movieWrap.hidden = false;
+    movieReset('Loading music');
+    movieStep(30, 82, 'Loading music');
+
+    musicFrame = document.createElement('iframe');
+    musicFrame.title = 'Music';
+    musicFrame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
+    musicFrame.setAttribute('allowfullscreen', '');
+    els.movieWrap.appendChild(musicFrame);
+    musicFrame.addEventListener('load', function () {
+      movieStep(92, 100, 'Ready');
+      window.setTimeout(movieDone, 300);
+    });
+    window.setTimeout(movieDone, 15000);
+    musicFrame.src = 'https://cinemaos.in/music';
+  }
+
+  function startMovies(kind) {
+    if (kind === 'music') { startMusic(); return; }
+    if (!els.mediaGrid || !els.movieWrap) return;
+
+    if (musicFrame) {
+      if (musicFrame.parentNode) musicFrame.parentNode.removeChild(musicFrame);
+      musicFrame = null;
+    }
+
+    var next = kind === 'tv' ? 'tv' : 'movie';
+    if (media.kind !== next) {
+      MEDIA_CACHE = {};
+      media.items = [];
+      media.filter = 'trending';
+      media.provider = '';
+      media.query = '';
+      media.page = 1;
+      media.maxPage = 1;
+      media.loadingMore = false;
+      if (els.mediaSearch) {
+        els.mediaSearch.value = '';
+        els.mediaSearch.placeholder = next === 'tv' ? 'Search shows' : 'Search movies';
+      }
+    }
+    media.kind = next;
+
+    if (media.frame && media.frame.parentNode) media.frame.parentNode.removeChild(media.frame);
+    media.frame = null;
+    media.item = null;
+    if (els.movieWrap) { els.movieWrap.textContent = ''; els.movieWrap.hidden = true; }
+    mediaChrome('grid');
+    if (els.mediaTitle) els.mediaTitle.textContent = MODE_TITLES[next === 'tv' ? 'tv' : 'movies'];
+    mediaChipsMark();
+
+    if (media.items.length) {
+      renderMediaGrid(media.items);
+      if (els.movieLoad) els.movieLoad.classList.add('done');
+      return;
+    }
+    mediaLoad(media.filter, false);
+  }
+
+  function mediaInit() {
+    els.mediaChips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var f = chip.getAttribute('data-filter');
+        if (!MEDIA_FILTERS[media.kind] || !MEDIA_FILTERS[media.kind][f]) return;
+        if (els.mediaSearch) els.mediaSearch.value = '';
+        media.provider = '';
+        mediaLoad(f, false);
+      });
+    });
+    els.providerChips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var p = chip.getAttribute('data-provider') || '';
+        if (els.mediaSearch) els.mediaSearch.value = '';
+        media.provider = p;
+        media.query = '';
+        mediaLoad(p ? 'popular' : media.filter, false);
+      });
+    });
+    if (els.mediaSearch) {
+      els.mediaSearch.addEventListener('input', function () {
+        var q = els.mediaSearch.value.trim();
+        window.clearTimeout(mediaSearchTimer);
+        mediaSearchTimer = window.setTimeout(function () { doMediaSearch(q); }, 350);
+      });
+    }
+    if (els.mediaBack) els.mediaBack.addEventListener('click', function () {
+      if (media.mode === 'player') closeMedia();
+      else setMode('home');
+    });
+
+    /* Infinite scroll: fetch the next catalogue page before the user hits the
+       bottom, so the grid keeps growing instead of stopping at 20 titles. */
+    if (els.mediaGrid) {
+      els.mediaGrid.addEventListener('scroll', function () {
+        if (media.mode !== 'grid' || media.loadingMore) return;
+        if (media.page >= media.maxPage) return;
+        var box = els.mediaGrid;
+        if (box.scrollTop + box.clientHeight >= box.scrollHeight - 800) mediaMore();
+      }, { passive: true });
+    }
+    if (els.seasonSel) {
+      els.seasonSel.addEventListener('change', function () {
+        selectSeason(Number(els.seasonSel.value) || 1, true);
+      });
+    }
+    if (els.episodeSel) {
+      els.episodeSel.addEventListener('change', function () {
+        playMedia(media.season, Number(els.episodeSel.value) || 1);
+      });
+    }
+  }
+
+  mediaInit();
+
+  /* ---------------- games (GN Math catalogue, without the blocked host) ---------------- */
+
+  /* gn-math.com itself is often filtered and jsDelivr's /gh/gn-math paths are
+     blocked, so the catalogue and the game files are pulled from places that
+     stay reachable: raw GitHub (plus a proxy fallback), the npm mirror, and
+     an image resizer for the covers. */
+  var GAMES_HTML_BASE = 'https://raw.githubusercontent.com/gn-math/html/main/';
+  var GAMES_NPM_BASE = 'https://cdn.jsdelivr.net/npm/gn-math.github.io-main@1.0.5/html-main/';
+  var GAMES_COVER_BASE = 'https://raw.githubusercontent.com/gn-math/covers/main/';
+  var GAMES_CATALOGS = [
+    'https://raw.githubusercontent.com/gn-math/assets/main/zones.json',
+    'https://cdn.jsdelivr.net/npm/gn-math.github.io-main@1.0.5/zones.json'
+  ];
+  var GAMES_CACHE_KEY = 'saleen.games.catalog.v4';
+  var GAMES_CACHE_MS = 6 * 60 * 60 * 1000;
+  /* Titles that loaded the frame but never became playable in the sweep. */
+  var GAME_BLOCK_IDS = { 10: 1, 198: 1, 368: 1 };
+  var GAME_BLOCK_NAMES = /^(slope( 2)?|temple run 2|drive mad)$/i;
+  var gameCatalog = null;
+  var gameFrame = null;
+
+  /* Covers: the resize CDN first (a few KB instead of ~100KB), then the raw
+     file, then another GitHub mirror. If all three fail the card keeps its
+     gradient and shows the game's initial, so the grid never looks broken. */
+  var GAME_COVER_SOURCES = [
+    function (id) { return 'https://wsrv.nl/?url=raw.githubusercontent.com/gn-math/covers/main/' + id + '.png&w=320&h=200&fit=cover&output=webp&q=80'; },
+    function (id) { return GAMES_COVER_BASE + id + '.png'; },
+    function (id) { return 'https://cdn.statically.io/gh/gn-math/covers/main/' + id + '.png'; }
+  ];
+
+  function gameCover(img, id) {
+    var step = 0;
+    img.addEventListener('error', function () {
+      step += 1;
+      if (step >= GAME_COVER_SOURCES.length) { img.remove(); return; }
+      img.src = GAME_COVER_SOURCES[step](id);
+    });
+    img.src = GAME_COVER_SOURCES[0](id);
+  }
+
+  function readGameCache() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(GAMES_CACHE_KEY) || 'null');
+      if (saved && Array.isArray(saved.list) && saved.list.length && Date.now() - saved.at < GAMES_CACHE_MS) {
+        return saved.list;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function saveGameCache(list) {
+    try { localStorage.setItem(GAMES_CACHE_KEY, JSON.stringify({ at: Date.now(), list: list })); } catch (e) {}
+  }
+
+  /* One source at a time, best first. A race would let the stale npm mirror win
+     and its games point at asset files that do not exist. */
+  function tryEach(factories) {
+    return factories.reduce(function (chain, make) {
+      return chain.catch(function () { return make(); });
+    }, Promise.reject(new Error('no sources')));
+  }
+
+  /* School filters answer with their own HTML page instead of an error, which
+     would otherwise look like a game and get painted into the frame. */
+  function looksBlocked(html) {
+    var head = String(html || '').slice(0, 3000).toLowerCase();
+    if (head.indexOf('<html') < 0) return false;
+    return /securly|fortiguard|lightspeed systems|goguardian|iboss|content blocked|access denied|web filter|this site is blocked|site is blocked/.test(head);
+  }
+
+  function stripGameAds(html) {
+    return html
+      .replace(/<script[^>]*(?:googletagmanager|google-analytics|adsbygoogle|pagead2|fundingchoices|doubleclick|adservice)[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<ins[^>]*class=["'][^"']*adsbygoogle[^"']*["'][^>]*>[\s\S]*?<\/ins>/gi, '')
+      .replace(/<iframe[^>]*(?:googlesyndication|doubleclick|adservice)[^>]*>[\s\S]*?<\/iframe>/gi, '');
+  }
+
+  function fetchCatalog(url) {
+    return fetchWithTimeout(url, 16000).then(function (res) {
+      if (!res.ok) throw new Error('catalog HTTP ' + res.status);
+      return res.json();
+    }).then(function (list) {
+      if (!Array.isArray(list)) throw new Error('bad catalogue');
+      var playable = list.filter(function (g) {
+        if (!g || !(g.id >= 0) || !g.name || typeof g.url !== 'string' || !/\.html$/.test(g.url)) return false;
+        if (GAME_BLOCK_IDS[g.id]) return false;
+        if (GAME_BLOCK_NAMES.test(String(g.name).trim())) return false;
+        return true;
+      });
+      if (playable.length < 20) throw new Error('catalogue too small');
+      return playable;
+    });
+  }
+
+  function loadGameCatalog() {
+    var cached = readGameCache();
+    if (cached) return Promise.resolve(cached);
+    var tries = [function () { return fetchCatalog(GAMES_CATALOGS[0]); }];
+    tries.push(function () { return fetchCatalog(cfUrl(GAMES_CATALOGS[0])); });
+    tries.push(function () { return fetchCatalog('https://cdn.statically.io/gh/gn-math/assets/main/zones.json'); });
+    tries.push(function () { return fetchCatalog('https://rawcdn.githack.com/gn-math/assets/main/zones.json'); });
+    tries.push(function () { return fetchCatalog(GAMES_CATALOGS[1]); });
+    return tryEach(tries).then(function (list) {
+      saveGameCache(list);
+      return list;
+    });
+  }
+
+  function gameCountLabel(shown) {
+    if (!els.gamesSub) return;
+    var total = gameCatalog ? gameCatalog.length : 0;
+    if (!total) { els.gamesSub.textContent = ''; return; }
+    els.gamesSub.textContent = shown === total ? total + ' games' : shown + ' of ' + total + ' games';
+  }
+
+  function gameEmptyNote(show) {
+    var note = $('#gameEmpty');
+    if (!note && show && els.gameGrid) {
+      note = document.createElement('p');
+      note.id = 'gameEmpty';
+      note.className = 'game-empty';
+      note.textContent = 'No games match that search.';
+      els.gameGrid.appendChild(note);
+    }
+    if (note) note.hidden = !show;
+  }
+
+  function renderGameGrid(list) {
+    if (!els.gameGrid) return;
+    els.gameGrid.textContent = '';
+    var frag = document.createDocumentFragment();
+    list.forEach(function (g) {
+      var card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'game-card';
+      card.title = g.name;
+      card.setAttribute('data-name', String(g.name).toLowerCase());
+
+      var art = document.createElement('span');
+      art.className = 'game-art';
+      var initial = document.createElement('span');
+      initial.className = 'game-initial';
+      initial.textContent = String(g.name).charAt(0).toUpperCase();
+
+      var img = document.createElement('img');
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      gameCover(img, g.id);
+
+      var label = document.createElement('span');
+      label.className = 'game-name';
+      label.textContent = g.name;
+
+      art.appendChild(initial);
+      art.appendChild(img);
+      card.appendChild(art);
+      card.appendChild(label);
+      card.addEventListener('click', function () { openGame(g); });
+      frag.appendChild(card);
+    });
+    els.gameGrid.appendChild(frag);
+    gameEmptyNote(false);
+    gameCountLabel(list.length);
+    els.gameGrid.hidden = false;
+  }
+
+  function openGame(g) {
+    if (!els.gameWrap) return;
+    if (els.gamesTitle) els.gamesTitle.textContent = g.name;
+    if (els.gamesSub) els.gamesSub.textContent = '';
+    if (els.gameBack) els.gameBack.hidden = false;
+    if (els.gameSearch) els.gameSearch.hidden = true;
+    if (els.gameGrid) els.gameGrid.hidden = true;
+    els.gameWrap.textContent = '';
+    els.gameWrap.hidden = false;
+    if (els.gameLoad) {
+      els.gameLoad.hidden = false;
+      els.gameLoad.classList.remove('done');
+    }
+    if (els.gameStatus) els.gameStatus.textContent = 'Loading ' + g.name;
+    if (els.gameFill) els.gameFill.style.width = '20%';
+
+    var file = g.url.split('/').pop();
+    var sources = [
+      GAMES_HTML_BASE + file,
+      cfUrl(GAMES_HTML_BASE + file),
+      'https://cdn.statically.io/gh/gn-math/html/main/' + file,
+      'https://rawcdn.githack.com/gn-math/html/main/' + file,
+      GAMES_NPM_BASE + file
+    ];
+
+    var pull = sources.map(function (src) {
+      return function () {
+        return fetchWithTimeout(src, 16000).then(function (res) {
+          if (!res.ok) throw new Error('game HTTP ' + res.status);
+          return res.text();
+        }).then(function (html) {
+          if (!html || html.length < 120 || html.indexOf('<') < 0) throw new Error('not a game page');
+          if (looksBlocked(html)) throw new Error('blocked page');
+          return stripGameAds(html);
+        });
+      };
+    });
+
+    tryEach(pull).then(function (html) {
+      if (!els.gameWrap || (els.gameGrid && !els.gameGrid.hidden)) return;
+      gameFrame = document.createElement('iframe');
+      gameFrame.title = g.name;
+      gameFrame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture; gamepad';
+      gameFrame.setAttribute('allowfullscreen', '');
+      els.gameWrap.appendChild(gameFrame);
+      if (els.gameFill) els.gameFill.style.width = '85%';
+      gameFrame.addEventListener('load', function () {
+        if (els.gameFill) els.gameFill.style.width = '100%';
+        window.setTimeout(function () {
+          if (els.gameLoad) els.gameLoad.classList.add('done');
+        }, 250);
+      });
+      gameFrame.srcdoc = html;
+    }).catch(function () {
+      if (els.gameFill) els.gameFill.style.width = '100%';
+      if (els.gameStatus) els.gameStatus.textContent = 'That game could not load. Tap Back and try another.';
+      if (els.gameLoad) {
+        els.gameLoad.hidden = false;
+        els.gameLoad.classList.remove('done');
+      }
+    });
+  }
+
+  function closeGame() {
+    if (gameFrame && gameFrame.parentNode) gameFrame.parentNode.removeChild(gameFrame);
+    gameFrame = null;
+    if (els.gameWrap) {
+      els.gameWrap.textContent = '';
+      els.gameWrap.hidden = true;
+    }
+    if (els.gameGrid) els.gameGrid.hidden = false;
+    if (els.gameBack) els.gameBack.hidden = true;
+    if (els.gameSearch) els.gameSearch.hidden = false;
+    if (els.gamesTitle) els.gamesTitle.textContent = 'Games';
+    gameCountLabel(gameCatalog ? gameCatalog.length : 0);
+    if (els.gameLoad) els.gameLoad.classList.add('done');
+  }
+
+  function filterGames() {
+    var q = els.gameSearch ? els.gameSearch.value.trim().toLowerCase() : '';
+    var cards = els.gameGrid ? els.gameGrid.querySelectorAll('.game-card') : [];
+    var shown = 0;
+    Array.prototype.forEach.call(cards, function (card) {
+      var hit = !q || (card.getAttribute('data-name') || '').indexOf(q) >= 0;
+      card.hidden = !hit;
+      if (hit) shown += 1;
+    });
+    gameEmptyNote(shown === 0);
+    gameCountLabel(shown);
+  }
+
+  function startGames() {
+    if (!els.gameGrid || !els.gameWrap) return;
+    if (gameCatalog) return;
+    if (els.gameLoad) {
+      els.gameLoad.hidden = false;
+      els.gameLoad.classList.remove('done');
+    }
+    if (els.gameStatus) els.gameStatus.textContent = 'Loading games';
+    if (els.gameFill) els.gameFill.style.width = '12%';
+
+    loadGameCatalog().then(function (list) {
+      gameCatalog = list;
+      if (els.gameFill) els.gameFill.style.width = '100%';
+      renderGameGrid(list);
+      if (els.gameLoad) els.gameLoad.classList.add('done');
+    }).catch(function () {
+      if (els.gameStatus) els.gameStatus.textContent = 'Games could not load. Tap Games again to retry.';
+      if (els.gameFill) els.gameFill.style.width = '0%';
+      if (els.gameLoad) {
+        els.gameLoad.hidden = false;
+        els.gameLoad.classList.remove('done');
+      }
+    });
+  }
+
+  /* ---------------- live sync ---------------- */
+
+  var channel = null;
+  try { channel = new BroadcastChannel('saleen-live'); } catch (e) { channel = null; }
+
+  function broadcast(topic) {
+    if (channel) {
+      try { channel.postMessage({ topic: topic, at: Date.now() }); } catch (e) {}
+    }
+    document.dispatchEvent(new CustomEvent('saleen:live', { detail: topic }));
+  }
+
+  function onLive(topic) {
+    if (topic === 'links') { readMyLinks(); renderLinks(); }
+    else if (topic === 'games') { readGames(); renderGames(); }
+  }
+
+  if (channel) channel.addEventListener('message', function (e) {
+    if (e.data && e.data.topic) onLive(e.data.topic);
+  });
+
+  window.addEventListener('storage', function (e) {
+    if (e.key === LINKS_KEY) onLive('links');
+    else if (e.key === GAMES_KEY) onLive('games');
+  });
+
+  document.addEventListener('saleen:live', function (e) { onLive(e.detail); });
+
+  /* ---------------- events ---------------- */
+
+  els.newTabBtn.addEventListener('click', function () {
+    if (mode !== 'browser') setMode('browser');
+    createTab();
+    els.omni.focus();
+  });
+
+  navItems.forEach(function (item) {
+    item.addEventListener('click', function () { setMode(item.dataset.mode); });
+  });
+
+
+  if (els.gameSearch) els.gameSearch.addEventListener('input', filterGames);
+  if (els.gameBack) els.gameBack.addEventListener('click', closeGame);
+
+  Array.prototype.forEach.call(document.querySelectorAll('.hero-app'), function (btn) {
+    btn.addEventListener('click', function () {
+      var url = btn.getAttribute('data-open');
+      if (!url) return;
+      setMode('browser');
+      navigate(url);
+    });
+  });
+
+  if (els.heroSearch) {
+    els.heroSearch.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = els.heroInput ? els.heroInput.value.trim() : '';
+      if (!v) { if (els.heroInput) els.heroInput.blur(); return; }
+      els.heroInput.value = '';
+      setMode('browser');
+      submit(v);
+    });
+  }
+
+  els.omniForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    submit(els.omni.value);
+  });
+
+  els.back.addEventListener('click', goBack);
+  els.fwd.addEventListener('click', goFwd);
+  els.reload.addEventListener('click', reload);
+
+  window.addEventListener('resize', function () {
+    if (REDUCED) {
+      sizeScene();
+      if (settings.wallpaper !== 'plain') paintScene();
+      return;
+    }
+    if (!bubbles.length) return;
+    sizeScene();
+  });
+
+  /* ---------------- init ---------------- */
+
+  load();
+  sanitize();
+  sizeScene();
+  apply();
+  var deepTab = (/[?&]tab=([a-z]+)/i.exec(location.search || '') || [])[1];
+  mode = deepTab && MODE_TITLES[deepTab] ? deepTab : 'home';
+  renderView();
+  if (mode === 'games') startGames();
+  if (mode === 'movies' || mode === 'tv' || mode === 'music') startMovies(mode);
+  readMyLinks();
+  renderLinks();
+  readGames();
+  renderGames();
+  updateClock();
+  window.setInterval(updateClock, 5000);
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      if (playerVideo && !playerVideo.paused) playerVideo.pause();
+      return;
+    }
+    updateClock();
+    if (mode === 'home') startTyping();
+  });
+
+  /* Ask before the page is closed or navigated away from, so an accidental
+     close (or something trying to kick you off the page) can be cancelled. */
+  window.addEventListener('beforeunload', function (e) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  });
+  startTyping();
+  els.omni.focus();
+
+  /* The play.xhtml wrapper listens for this so it can tell a real boot from a
+     block page and move on to the next mirror instead of sitting on an error. */
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage('saleen:ready', '*');
+    }
+  } catch (e) { }
+
+  window.Saleen = {
+    toast: toast,
+    setMode: setMode,
+    search: search,
+    navigate: navigate,
+    getSettings: function () { return settings; },
+    getGames: function () { return games.slice(); },
+    setGames: function (list) { games = Array.isArray(list) ? list : []; writeGames(); },
+    addGame: function (game) { games.unshift(game); writeGames(); }
+  };
+})();
+
+
+(function () {
+  'use strict';
+
+  var CHAIN = [
+    { base: 'https://api.llm7.io/v1', model: 'gpt-oss:20b' },
+    { base: 'https://api.llm7.io/v1', model: 'mistral-Nemo-Instruct-2407' },
+    { base: 'https://api.llm7.io/v1', model: 'nemotron-3-nano:30b' },
+    { base: 'https://text.pollinations.ai/openai', model: 'openai' }
+  ];
+  var messages = [];
+  var busy = false;
+  var reqId = 0;
+
+  var el = {
+    log: document.getElementById('aiLog'),
+    form: document.getElementById('aiForm'),
+    input: document.getElementById('aiInput'),
+    clear: document.getElementById('aiClear')
+  };
+
+  try {
+    ['saleen.ai.v1', 'saleen.ai.v2', 'saleen.ai.v3'].forEach(function (k) {
+      localStorage.removeItem(k);
+    });
+  } catch (e) {}
+
+  function endpointOf(base) {
+    var b = (base || '').replace(/\/+$/, '');
+    if (!b) return '';
+    if (/\/chat\/completions$/.test(b)) return b;
+    if (/\/v1$/.test(b)) return b + '/chat/completions';
+    return b;
+  }
+
+  function autosize() {
+    el.input.style.height = 'auto';
+    el.input.style.height = Math.min(el.input.scrollHeight, 140) + 'px';
+  }
+
+  function bubble(role, text) {
+    var d = document.createElement('div');
+    d.className = 'msg ' + role;
+    d.appendChild(document.createTextNode(text));
+    if (role === 'err') {
+      var again = document.createElement('button');
+      again.type = 'button';
+      again.className = 'ghost-btn msg-retry';
+      again.textContent = 'Retry';
+      again.addEventListener('click', retry);
+      d.appendChild(again);
+    }
+    return d;
+  }
+
+  function drawLog() {
+    el.log.textContent = '';
+    messages.forEach(function (m) {
+      el.log.appendChild(bubble(m.role === 'error' ? 'err' : m.role === 'user' ? 'user' : 'bot', m.content));
+    });
+    if (busy) el.log.appendChild(bubble('typing', 'Thinking…'));
+    el.log.scrollTop = el.log.scrollHeight;
+  }
+
+  function friendlyError(err) {
+    var msg = (err && err.message) ? err.message : 'Request failed.';
+    if (err && err.name === 'AbortError') {
+      return 'The model took too long to answer. Try again.';
+    }
+    if (/failed to fetch|networkerror|load failed|network request failed/i.test(msg)) {
+      return 'Could not reach a model. Check your connection and try again.';
+    }
+    return msg;
+  }
+
+  function requestOne(attempt, history, signal) {
+    var payload = {
+      model: attempt.model,
+      messages: [{ role: 'system', content: 'You are Saleen, a concise, friendly assistant inside a small browser. Reply in plain text.' }].concat(history)
+    };
+
+    return fetch(endpointOf(attempt.base), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: signal
+    })
+      .then(function (res) {
+        return res.text().then(function (body) { return { ok: res.ok, status: res.status, body: body }; });
+      })
+      .then(function (r) {
+        var data = null;
+        var parsed = false;
+        try { data = JSON.parse(r.body); parsed = true; } catch (e) {}
+        if (!r.ok) {
+          var msg = 'HTTP ' + r.status;
+          if (data && data.error) {
+            msg = typeof data.error === 'string' ? data.error : (data.error.message || JSON.stringify(data.error));
+          } else if (r.body) {
+            msg = r.body.slice(0, 240);
+          }
+          throw new Error(msg);
+        }
+        var content = '';
+        if (data && data.choices && data.choices[0]) {
+          content = data.choices[0].message ? data.choices[0].message.content : data.choices[0].text;
+        }
+        if (!content && parsed && typeof data === 'string') content = data;
+        if (!content && !parsed) content = r.body;
+        if (Array.isArray(content)) {
+          content = content.map(function (p) { return p && p.text ? p.text : ''; }).join('');
+        }
+        if (!content) throw new Error('The model returned an empty reply.');
+        return String(content);
+      });
+  }
+
+  function respond() {
+    var my = ++reqId;
+    busy = true;
+    drawLog();
+
+    var history = messages.filter(function (m) {
+      return m.role === 'user' || m.role === 'assistant';
+    }).slice(-16).map(function (m) {
+      return { role: m.role, content: m.content };
+    });
+
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = ctrl ? window.setTimeout(function () { ctrl.abort(); }, 25000) : null;
+    var lastErr = null;
+    var i = 0;
+
+    function next() {
+      if (i >= CHAIN.length) return Promise.reject(lastErr || new Error('Request failed.'));
+      if (ctrl && ctrl.signal.aborted) return Promise.reject(lastErr || new Error('Aborted'));
+      var attempt = CHAIN[i++];
+      return requestOne(attempt, history, ctrl ? ctrl.signal : undefined).catch(function (err) {
+        lastErr = err;
+        if (ctrl && ctrl.signal.aborted) return Promise.reject(err);
+        return next();
+      });
+    }
+
+    next()
+      .then(function (content) {
+        if (my !== reqId) return;
+        messages.push({ role: 'assistant', content: content });
+      })
+      .catch(function (err) {
+        if (my !== reqId) return;
+        messages.push({ role: 'error', content: friendlyError(err) });
+      })
+      .then(function () {
+        if (timer) window.clearTimeout(timer);
+        if (my !== reqId) return;
+        busy = false;
+        drawLog();
+        if (document.body.dataset.mode === 'ai') el.input.focus();
+      });
+  }
+
+  /* Anything about the school filter gets the same short answer instead of a
+     model request (which is also what keeps the tab working). */
+  var BLOCKED = /securly|securley|secur[il]y|securly\.com|go ?guardian/i;
+
+  function send() {
+    var text = el.input.value.trim();
+    if (!text || busy) return;
+    el.input.value = '';
+    autosize();
+    messages.push({ role: 'user', content: text });
+
+    if (BLOCKED.test(text)) {
+      messages.push({ role: 'assistant', content: 'no bro \uD83D\uDE2D' });
+      drawLog();
+      el.input.focus();
+      return;
+    }
+
+    respond();
+  }
+
+  function retry() {
+    if (busy) return;
+    while (messages.length && messages[messages.length - 1].role === 'error') messages.pop();
+    if (!messages.length) return;
+
+    var lastUser = null;
+    for (var i = messages.length - 1; i >= 0; i -= 1) {
+      if (messages[i].role === 'user') { lastUser = messages[i]; break; }
+    }
+    if (lastUser && BLOCKED.test(lastUser.content)) {
+      messages.push({ role: 'assistant', content: 'no bro \uD83D\uDE2D' });
+      drawLog();
+      return;
+    }
+
+    respond();
+  }
+
+  el.form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    send();
+  });
+
+  el.input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  });
+
+  el.input.addEventListener('input', autosize);
+
+  el.clear.addEventListener('click', function () {
+    reqId += 1;
+    busy = false;
+    messages = [];
+    drawLog();
+    el.input.focus();
+  });
+
+  document.addEventListener('saleen:mode', function (e) {
+    if (e.detail === 'ai') {
+      window.setTimeout(function () { el.input.focus(); }, 30);
+    }
+  });
+
+  drawLog();
+})();
+
+//]]>
+</script>
+
+</div>
+</foreignObject>
+</svg>
