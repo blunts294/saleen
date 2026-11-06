@@ -1446,6 +1446,22 @@ html,#saleen-root{border:0;outline:0}
     return document.body || document.getElementById('saleen-root') || document.documentElement;
   }
 
+  /* In an SVG document document.createElement() builds SVG-namespace elements.
+     Those get no HTML layout at all, so every card, poster and cover assembled
+     at runtime collapsed into loose text. Point element creation back at the
+     XHTML namespace the app is drawn in. */
+  var XHTML_NS = 'http://www.w3.org/1999/xhtml';
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+  if (document.documentElement.namespaceURI === SVG_NS) {
+    var nativeCreate = document.createElement.bind(document);
+    document.createElement = function (tag) {
+      if (/^(svg|g|defs|path|circle|ellipse|rect|line|polyline|polygon|text|tspan|use|clipPath|mask|linearGradient|radialGradient|stop)$/i.test(String(tag))) {
+        return nativeCreate(tag);
+      }
+      return document.createElementNS(XHTML_NS, tag);
+    };
+  }
+
   var settings = Object.assign({}, DEFAULTS);
   var mode = 'browser';
 
@@ -1574,7 +1590,7 @@ html,#saleen-root{border:0;outline:0}
 
   var TYPED_LINES = [
     '- Made by 762.',
-    '- Def not a proxy with movies and games \uD83D\uDC40.'
+    '- saleen still in progress, might be blocked but wtv \uD83D\uDC94'
   ];
   var typeIndex = -1;
   var typePos = 0;
@@ -2710,8 +2726,8 @@ html,#saleen-root{border:0;outline:0}
 
   var BASE_CSS = [
     '*,*::before,*::after{box-sizing:border-box}',
-    'html{background:#fff;-webkit-text-size-adjust:100%}',
-    'body{margin:0;background:#fff;color:#15171c;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}',
+    'html{background:#fff;-webkit-text-size-adjust:100%;overflow-x:hidden}',
+    'body{margin:0;background:#fff;color:#15171c;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow-x:hidden}',
     'img,svg,video,canvas{max-width:100%;height:auto}',
     'a{color:#1a56db}',
     'pre{overflow:auto}',
@@ -2790,6 +2806,18 @@ html,#saleen-root{border:0;outline:0}
     base.textContent = BASE_CSS;
     head.insertBefore(base, head.firstChild);
 
+    /* Without a script runtime the site's own fixed-width chrome is all that is
+       left. Give it a normal device viewport and then, after paint, scale the
+       document down if it is still wider than the frame (the "zoomed in"
+       look glitchy sites have in a small window). */
+    var viewport = doc.querySelector('meta[name="viewport"]');
+    if (!viewport) {
+      viewport = doc.createElement('meta');
+      viewport.setAttribute('name', 'viewport');
+      head.insertBefore(viewport, head.firstChild);
+    }
+    viewport.setAttribute('content', 'width=device-width,initial-scale=1');
+
     return Promise.all(sheets.map(function (s) { return fetchCss(s.url); })).then(function (texts) {
       var failed = 0;
       sheets.forEach(function (s, i) {
@@ -2824,6 +2852,16 @@ html,#saleen-root{border:0;outline:0}
         'var f=e.target;if(!f||!f.action)return;e.preventDefault();',
         'var qs="";try{qs=new URLSearchParams(new FormData(f)).toString()}catch(err){}',
         'send(f.action.split("?")[0]+(qs?"?"+qs:""));},true);',
+        'var over=false;',
+        'function fit(){',
+        'var d=document.documentElement;if(!d)return;',
+        'var w=d.clientWidth||window.innerWidth;if(!w)return;',
+        'var sw=d.scrollWidth||0;if(over){d.style.zoom="";over=false;sw=d.scrollWidth||0}',
+        'if(sw>w+12&&w>240){var z=Math.max(.4,Math.min(1,w/sw));if(z<.995){d.style.zoom=String(z);over=true}}',
+        '}',
+        'window.addEventListener("resize",function(){setTimeout(fit,180)});',
+        'window.addEventListener("load",function(){setTimeout(fit,120)});',
+        'setTimeout(fit,500);setTimeout(fit,1800);setTimeout(fit,4000);',
         '})();'
       ].join('\n');
       (doc.body || doc.documentElement).appendChild(bridge);
@@ -3738,7 +3776,11 @@ html,#saleen-root{border:0;outline:0}
         resolve(marker ? window[marker] : true);
       };
       s.onerror = function () { reject(new Error('script blocked')); };
-      document.head.appendChild(s);
+      /* This app also runs as an SVG document, where document.head is null.
+         The XHTML wrapper inside the foreignObject hosts scripts fine. */
+      var mount = document.getElementById('saleen-root') ||
+        document.head || document.documentElement;
+      mount.appendChild(s);
     });
   }
 
@@ -3956,6 +3998,87 @@ html,#saleen-root{border:0;outline:0}
     };
   }
 
+  /* The stream hosts reject a browser request no matter which referer is sent:
+     they fingerprint the presence of an Origin header. libcurl on the other
+     side of the Wisp socket is a plain HTTP client, so playlists and segments
+     can be pulled with the referer the CDN expects. */
+  function wispLoader(Hls) {
+    var Base = Hls.DefaultConfig.loader;
+    return class WispLoader extends Base {
+      constructor(config) {
+        super(config);
+        this.aborted = false;
+        this.timer = null;
+      }
+      load(context, config, callbacks) {
+        var self = this;
+        var url = context.url;
+        var wantsText = context.type === 'manifest' || context.type === 'level' ||
+          context.type === 'audioTrack' || context.type === 'subtitleTrack' ||
+          /\.m3u8(?:[?#]|$)/i.test(url);
+        var stats = self.stats = {
+          trequest: performance.now(), tfirst: 0, tload: 0,
+          loaded: 0, total: 0, bwEstimate: 0, aborted: false
+        };
+
+        self.aborted = false;
+        self.callbacks = callbacks;
+
+        var fail = function (err) {
+          if (self.aborted) return;
+          self.aborted = true;
+          window.clearTimeout(self.timer);
+          callbacks.onError({
+            code: 0,
+            text: String(err && err.message ? err.message : err)
+          }, context, null, stats);
+        };
+
+        self.timer = window.setTimeout(function () { fail(new Error('wisp timeout')); }, 24000);
+
+        bootWisp().then(function (lc) {
+          if (self.aborted) return null;
+          return lc.fetch(url, {
+            headers: {
+              'user-agent': navigator.userAgent,
+              referer: 'https://vidrock.net/',
+              origin: 'https://vidrock.net',
+              accept: '*/*'
+            }
+          });
+        }).then(function (res) {
+          if (!res || self.aborted) return null;
+          if (stats.tfirst === 0) stats.tfirst = performance.now();
+          return (wantsText ? res.text() : res.arrayBuffer()).then(function (body) {
+            if (self.aborted) return;
+            window.clearTimeout(self.timer);
+            var data = body;
+            if (wantsText) {
+              var text = String(body);
+              /* hls.js asks for the master and every variant through here, so
+                 the English-only edit happens before it ever parses them. */
+              if (/^#EXTM3U/.test(text)) text = englishOnlyPlaylist(text);
+              data = text;
+            } else {
+              data = tsPayload(body);
+            }
+            stats.tload = performance.now();
+            stats.loaded = stats.total = data.byteLength || data.length || 0;
+            callbacks.onSuccess({ url: url, data: data }, stats, context, res);
+          });
+        }).catch(fail);
+      }
+      abort() {
+        this.aborted = true;
+        window.clearTimeout(this.timer);
+      }
+      destroy() {
+        this.aborted = true;
+        window.clearTimeout(this.timer);
+      }
+    };
+  }
+
   function stopPlayer() {
     window.clearTimeout(media.stepTimer);
     if (hlsPlayer) {
@@ -3982,21 +4105,6 @@ html,#saleen-root{border:0;outline:0}
     media.frame = frame;
     frame.src = src;
 
-    /* Some networks block the embed host itself. The backup player stays on
-       screen, but there is always a way into the proxied browser with the same
-       episode loaded. */
-    var panel = document.createElement('div');
-    panel.className = 'movie-note';
-    var label = document.createElement('span');
-    label.textContent = 'Player not loading?';
-    var open = document.createElement('button');
-    open.type = 'button';
-    open.className = 'ghost-btn';
-    open.textContent = 'Open in Browser';
-    open.addEventListener('click', function () { window.open(src, '_blank', 'noopener'); });
-    panel.appendChild(label);
-    panel.appendChild(open);
-    els.movieWrap.appendChild(panel);
     movieDone();
   }
 
@@ -4045,7 +4153,11 @@ html,#saleen-root{border:0;outline:0}
       if (settled) return;
       settled = true;
       embedFallback(src, 'Tap play');
-    }, 24000);
+    }, 45000);
+
+    /* Warm the Wisp socket while the stream list is being decrypted, so the
+       first playlist request does not also wait for the wasm runtime. */
+    bootWisp().catch(function () { });
 
     loadHls().then(function (Hls) {
       if (!Hls) throw new Error('no hls');
@@ -4057,14 +4169,14 @@ html,#saleen-root{border:0;outline:0}
             if (done) return;
             done = true;
             reject(new Error('stream timeout'));
-          }, 20000);
+          }, 30000);
           if (hlsPlayer) {
             try { hlsPlayer.destroy(); } catch (err) { }
             hlsPlayer = null;
           }
           var player = new Hls({
             enableWorker: true,
-            loader: pngLoader(Hls),
+            loader: wispLoader(Hls),
             /* The source ladder tops out at 1080p (~5 Mbps). Start from an
                optimistic bandwidth estimate so the first frames are already
                sharp, then let ABR drop fast if the line cannot keep up. */
@@ -4102,23 +4214,8 @@ html,#saleen-root{border:0;outline:0}
         });
       }
 
-      /* The master playlist is filtered before hls.js sees it, so only the
-         English audio rendition survives and subtitles disappear entirely. */
-      function filteredPlaylist(url) {
-        return fetchWithTimeout(url, 12000, { headers: { accept: '*/*' } })
-          .then(function (res) {
-            if (!res.ok) throw new Error('playlist ' + res.status);
-            return res.text();
-          })
-          .then(function (text) {
-            var clean = englishOnlyPlaylist(text);
-            if (!/^#EXTM3U/m.test(clean)) throw new Error('bad playlist');
-            if (hlsBlob) { try { URL.revokeObjectURL(hlsBlob); } catch (err) { } }
-            hlsBlob = URL.createObjectURL(new Blob([clean], { type: 'application/vnd.apple.mpegurl' }));
-            return hlsBlob;
-          });
-      }
-
+      /* The master playlist is filtered inside the Wisp loader, so hls.js only
+         ever sees the English audio rendition and no subtitle tracks. */
       if (!settled) movieStep(45, 70, 'Loading the stream');
 
       var job = vidrockStream(kind, item.id, s, e)
@@ -4127,7 +4224,7 @@ html,#saleen-root{border:0;outline:0}
           sources.forEach(function (found) {
             chain = chain.catch(function () {
               if (!settled) movieStep(60, 82, 'Loading the stream');
-              return filteredPlaylist(found.url).then(tryStream);
+              return tryStream(found.url);
             });
           });
           return chain;
@@ -4896,7 +4993,8 @@ html,#saleen-root{border:0;outline:0}
         if (my !== reqId) return;
         busy = false;
         drawLog();
-        if (document.body.dataset.mode === 'ai') el.input.focus();
+        var root = document.body || document.getElementById('saleen-root');
+        if (root && root.dataset.mode === 'ai') el.input.focus();
       });
   }
 
