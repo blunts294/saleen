@@ -4227,146 +4227,52 @@ html,body{border:0;outline:0}
     movieDone();
   }
 
+  /* Playback itself is handed to the provider's own player. Its streams sit on
+     Cloudflare-protected CDNs that refuse a browser fetch from a jsDelivr page
+     and refuse relay/proxy egress as well, but they happily serve the provider
+     when the request comes from the provider's own origin. So the movie view is
+     the provider player in a frame: no decrypting, no proxying, and the full
+     film plays with the provider's own controls. */
+  var VIDROCK_WATCH = 'https://vidrock.net';
+
   function playMedia(season, episode) {
     if (!els.movieWrap || !media.item) return;
     var item = media.item;
-    var kind = media.kind === 'tv' ? 'tv' : 'movie';
     var s = Math.max(1, season || 1);
     var e = Math.max(1, episode || 1);
-    var src = kind === 'tv'
-      ? MEDIA_PLAY_TV + '/' + item.id + '/' + s + '/' + e
-      : MEDIA_PLAY + '/' + item.id;
+    var src = media.kind === 'tv'
+      ? VIDROCK_WATCH + '/tv/' + item.id + '/' + s + '/' + e
+      : VIDROCK_WATCH + '/movie/' + item.id;
 
     stopPlayer();
     els.movieWrap.textContent = '';
     els.movieWrap.hidden = false;
-    movieReset('Finding the English stream');
+    movieReset('Starting the player');
 
-    var video = document.createElement('video');
-    video.className = 'movie-video';
-    video.controls = true;
-    video.autoplay = true;
-    video.preload = 'metadata';
-    video.setAttribute('playsinline', '');
-    video.setAttribute('controlslist', 'nodownload');
-    els.movieWrap.appendChild(video);
-    playerVideo = video;
-    media.video = video;
-
-    /* Browsers can refuse unmuted autoplay when the click that opened the card
-       is a few seconds old. Rather than muting the film, show one button. */
-    var tapBtn = document.createElement('button');
-    tapBtn.type = 'button';
-    tapBtn.className = 'movie-tap';
-    tapBtn.textContent = 'Play';
-    tapBtn.hidden = true;
-    els.movieWrap.appendChild(tapBtn);
-    tapBtn.addEventListener('click', function () {
-      tapBtn.hidden = true;
-      video.play().catch(function () { tapBtn.hidden = false; });
-    });
-    video.addEventListener('playing', function () { tapBtn.hidden = true; });
+    var frame = document.createElement('iframe');
+    frame.title = mediaName(item);
+    frame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
+    frame.setAttribute('allowfullscreen', '');
+    frame.setAttribute('referrerpolicy', 'origin');
+    frame.src = src;
+    els.movieWrap.appendChild(frame);
+    media.frame = frame;
+    media.video = null;
 
     var settled = false;
     var giveUp = window.setTimeout(function () {
       if (settled) return;
       settled = true;
-      embedFallback(src, 'Tap play');
-    }, 45000);
+      movieStep(100, 100, 'Playing');
+      movieDone();
+    }, 6000);
 
-    /* Warm the Wisp socket while the stream list is being decrypted, so the
-       first playlist request does not also wait for the wasm runtime. */
-    bootWisp().catch(function () { });
-
-    loadHls().then(function (Hls) {
-      if (!Hls) throw new Error('no hls');
-
-      function tryStream(url) {
-        return new Promise(function (resolve, reject) {
-          var done = false;
-          var timer = window.setTimeout(function () {
-            if (done) return;
-            done = true;
-            reject(new Error('stream timeout'));
-          }, 30000);
-          if (hlsPlayer) {
-            try { hlsPlayer.destroy(); } catch (err) { }
-            hlsPlayer = null;
-          }
-          var player = new Hls({
-            enableWorker: true,
-            loader: wispLoader(Hls),
-            /* The source ladder tops out at 1080p (~5 Mbps). Start from an
-               optimistic bandwidth estimate so the first frames are already
-               sharp, then let ABR drop fast if the line cannot keep up. */
-            startLevel: -1,
-            testBandwidth: true,
-            abrEwmaDefaultEstimate: 6500000,
-            abrBandWidthFactor: 0.9,
-            abrBandWidthUpFactor: 0.7,
-            maxStarvationDelay: 3,
-            maxLoadingDelay: 6,
-            maxBufferLength: 40,
-            maxMaxBufferLength: 90,
-            backBufferLength: 30
-          });
-          hlsPlayer = player;
-          window.__saleenHls = player;
-          player.on(Hls.Events.MANIFEST_PARSED, function () {
-            if (done) return;
-            done = true;
-            window.clearTimeout(timer);
-            resolve();
-          });
-          player.on(Hls.Events.ERROR, function (evt, data) {
-            if (!data || !data.fatal) return;
-            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-              try { player.startLoad(); return; } catch (err) { }
-            }
-            if (done) return;
-            done = true;
-            window.clearTimeout(timer);
-            reject(new Error('stream error'));
-          });
-          player.loadSource(url);
-          player.attachMedia(video);
-        });
-      }
-
-      /* The master playlist is filtered inside the Wisp loader, so hls.js only
-         ever sees the English audio rendition and no subtitle tracks. */
-      if (!settled) movieStep(45, 70, 'Loading the stream');
-
-      var job = vidrockStream(kind, item.id, s, e)
-        .then(function (sources) {
-          var chain = Promise.reject(new Error('none'));
-          sources.forEach(function (found) {
-            chain = chain.catch(function () {
-              if (!settled) movieStep(60, 82, 'Loading the stream');
-              return tryStream(found.url);
-            });
-          });
-          return chain;
-        });
-
-      job.then(function () {
-        window.clearTimeout(giveUp);
-        if (settled) return;
-        settled = true;
-        movieStep(100, 100, 'Playing');
-        movieDone();
-        video.play().catch(function () { tapBtn.hidden = false; });
-      }).catch(function () {
-        window.clearTimeout(giveUp);
-        if (settled) return;
-        settled = true;
-        embedFallback(src, 'Tap play');
-      });
-    }).catch(function () {
+    frame.addEventListener('load', function () {
       window.clearTimeout(giveUp);
       if (settled) return;
       settled = true;
-      embedFallback(src, 'Tap play');
+      movieStep(100, 100, 'Playing');
+      movieDone();
     });
   }
 
