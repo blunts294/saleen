@@ -2425,9 +2425,7 @@ html,#saleen-root{border:0;outline:0}
         if (boot && boot.__resolve) boot.__resolve(true);
         return;
       }
-      if (wispFrame && wispFrame.parentNode) wispFrame.parentNode.removeChild(wispFrame);
-      wispFrame = null;
-      wispBoot = null;
+      cleanupWisp();
       if (boot && boot.__reject) boot.__reject(new Error(d.text || 'wisp failed'));
       return;
     }
@@ -2440,24 +2438,29 @@ html,#saleen-root{border:0;outline:0}
     else job.resolve({ status: d.status, ok: d.ok, body: d.body });
   });
 
+  function cleanupWisp() {
+    if (wispFrame && wispFrame.parentNode) wispFrame.parentNode.removeChild(wispFrame);
+    wispFrame = null;
+    wispBoot = null;
+  }
+
   function bootWisp() {
     if (wispBoot) return wispBoot;
+    var timer = null;
+    var settleResolve = null;
+    var settleReject = null;
     var promise = new Promise(function (resolve, reject) {
-      var timer = window.setTimeout(function () {
-        wispBoot = null;
-        if (wispFrame && wispFrame.parentNode) wispFrame.parentNode.removeChild(wispFrame);
-        wispFrame = null;
+      settleResolve = resolve;
+      settleReject = reject;
+      timer = window.setTimeout(function () {
+        cleanupWisp();
         reject(new Error('wisp boot timeout'));
       }, 30000);
-      promise.__resolve = function () { window.clearTimeout(timer); resolve(true); };
-      promise.__reject = function (err) { window.clearTimeout(timer); reject(err); };
     });
+    promise.__resolve = function () { window.clearTimeout(timer); settleResolve(true); };
+    promise.__reject = function (err) { window.clearTimeout(timer); settleReject(err); };
     wispBoot = promise;
-    promise.catch(function () {
-      if (wispFrame && wispFrame.parentNode) wispFrame.parentNode.removeChild(wispFrame);
-      wispFrame = null;
-      wispBoot = null;
-    });
+    promise.catch(function () { cleanupWisp(); });
     var frame = document.createElement('iframe');
     frame.setAttribute('sandbox', 'allow-scripts');
     frame.setAttribute('aria-hidden', 'true');
