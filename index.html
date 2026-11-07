@@ -2366,43 +2366,149 @@ html,body{border:0;outline:0}
   }
 
   /* ---- Wisp transport ----
-     The public CORS relays are rewritten HTML fetchers, not real proxies, and
-     they are the slow part of the browser view. Saleen can instead open a
-     WebSocket to a Wisp server and let libcurl.js do the TLS itself, so pages
-     are fetched end-to-end without a third party in the middle. The relays stay
-     as a fallback for when the socket is blocked. */
+     libcurl.js has to live in its own little document. The Wisp server rejects
+     the jsDelivr origin during the WebSocket handshake, and a script in a
+     sandboxed srcdoc frame has an opaque origin, which the server accepts.
+     The frame is invisible; requests and responses cross by postMessage. The
+     relays stay as a fallback for when the socket is blocked. */
 
   var WISP_WS = 'wss://wisp.mercurywork.shop/';
   var LIBCURL_JS = 'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/libcurl.js';
   var LIBCURL_WASM = 'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/libcurl.wasm';
   var wispBoot = null;
+  var wispFrame = null;
+  var wispSeq = 0;
+  var wispPending = {};
+
+  function wispSource() {
+    return [
+      '<!doctype html><html><head><meta charset="utf-8"></head><body><script>',
+      'var ready=false,jobs=[],started=false;',
+      'function send(m){try{parent.postMessage(m,"*")}catch(e){}}',
+      'function run(job){',
+      '  var headers={};try{headers=job.headers||{}}catch(e){}',
+      '  libcurl.fetch(job.url,{headers:headers}).then(function(res){',
+      '    var read=job.kind==="text"?res.text():res.arrayBuffer();',
+      '    return read.then(function(body){',
+      '      try{parent.postMessage({saleen:"wisp",type:"res",id:job.id,status:res.status,ok:res.ok,body:body},"*");}',
+      '      catch(e){parent.postMessage({saleen:"wisp",type:"res",id:job.id,error:"post failed"},"*");}',
+      '    });',
+      '  }).catch(function(e){send({saleen:"wisp",type:"res",id:job.id,error:String(e&&e.message||e)})});',
+      '}',
+      'window.addEventListener("message",function(e){',
+      '  var d=e.data;if(!d||d.saleen!=="wisp-req")return;',
+      '  var job={id:d.id,url:d.url,headers:d.headers,kind:d.kind};',
+      '  if(ready)run(job);else jobs.push(job);',
+      '});',
+      'function boot(){',
+      '  if(started)return;started=true;',
+      '  var s=document.createElement("script");',
+      '  s.src=' + JSON.stringify(LIBCURL_JS) + ';',
+      '  s.onload=function(){',
+      '    libcurl.load_wasm(' + JSON.stringify(LIBCURL_WASM) + ').then(function(){',
+      '      libcurl.set_websocket(' + JSON.stringify(WISP_WS) + ');',
+      '      ready=true;send({saleen:"wisp",type:"ready"});',
+      '      var q=jobs.slice();jobs=[];q.forEach(run);',
+      '    }).catch(function(e){send({saleen:"wisp",type:"error",text:String(e&&e.message||e)})});',
+      '  };',
+      '  s.onerror=function(){send({saleen:"wisp",type:"error",text:"libcurl blocked"})};',
+      '  document.body.appendChild(s);',
+      '}',
+      'boot();',
+      '<\/script></body></html>'
+    ].join('\n');
+  }
+
+  window.addEventListener('message', function (e) {
+    var d = e.data;
+    if (!d || d.saleen !== 'wisp') return;
+    if (d.type === 'ready' || d.type === 'error') {
+      var boot = wispBoot;
+      if (d.type === 'ready') {
+        if (boot && boot.__resolve) boot.__resolve(true);
+        return;
+      }
+      if (wispFrame && wispFrame.parentNode) wispFrame.parentNode.removeChild(wispFrame);
+      wispFrame = null;
+      wispBoot = null;
+      if (boot && boot.__reject) boot.__reject(new Error(d.text || 'wisp failed'));
+      return;
+    }
+    if (d.type !== 'res') return;
+    var job = wispPending[d.id];
+    if (!job) return;
+    delete wispPending[d.id];
+    window.clearTimeout(job.timer);
+    if (d.error) job.reject(new Error(d.error));
+    else job.resolve({ status: d.status, ok: d.ok, body: d.body });
+  });
 
   function bootWisp() {
     if (wispBoot) return wispBoot;
-    wispBoot = loadScriptOnce(LIBCURL_JS, 'libcurl').then(function () {
-      return libcurl.load_wasm(LIBCURL_WASM);
-    }).then(function () {
-      libcurl.set_websocket(WISP_WS);
-      return libcurl;
-    }).catch(function (err) {
-      wispBoot = null;
-      throw err;
+    var promise = new Promise(function (resolve, reject) {
+      var timer = window.setTimeout(function () {
+        wispBoot = null;
+        if (wispFrame && wispFrame.parentNode) wispFrame.parentNode.removeChild(wispFrame);
+        wispFrame = null;
+        reject(new Error('wisp boot timeout'));
+      }, 30000);
+      promise.__resolve = function () { window.clearTimeout(timer); resolve(true); };
+      promise.__reject = function (err) { window.clearTimeout(timer); reject(err); };
     });
+    wispBoot = promise;
+    promise.catch(function () {
+      if (wispFrame && wispFrame.parentNode) wispFrame.parentNode.removeChild(wispFrame);
+      wispFrame = null;
+      wispBoot = null;
+    });
+    var frame = document.createElement('iframe');
+    frame.setAttribute('sandbox', 'allow-scripts');
+    frame.setAttribute('aria-hidden', 'true');
+    frame.setAttribute('tabindex', '-1');
+    frame.style.cssText = 'position:fixed;left:-9999px;top:0;width:2px;height:2px;border:0;opacity:0;pointer-events:none';
+    frame.srcdoc = wispSource();
+    var mount = document.getElementById('saleen-root') || document.documentElement;
+    mount.appendChild(frame);
+    wispFrame = frame;
     return wispBoot;
   }
 
-  function wispFetchText(url, accept) {
-    return bootWisp().then(function (lc) {
-      return lc.fetch(url, {
-        headers: {
-          'user-agent': navigator.userAgent,
-          'accept-language': 'en-US,en;q=0.9',
-          accept: accept || 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+  function wispFetch(url, kind, headers) {
+    return bootWisp().then(function () {
+      return new Promise(function (resolve, reject) {
+        if (!wispFrame || !wispFrame.contentWindow) {
+          reject(new Error('wisp frame missing'));
+          return;
+        }
+        var id = ++wispSeq;
+        var job = { resolve: resolve, reject: reject, timer: null };
+        job.timer = window.setTimeout(function () {
+          delete wispPending[id];
+          reject(new Error('wisp timeout'));
+        }, 24000);
+        wispPending[id] = job;
+        try {
+          wispFrame.contentWindow.postMessage({
+            saleen: 'wisp-req', id: id, url: url, kind: kind,
+            headers: headers || {}
+          }, '*');
+        } catch (e) {
+          delete wispPending[id];
+          window.clearTimeout(job.timer);
+          reject(e);
         }
       });
+    });
+  }
+
+  function wispFetchText(url, accept) {
+    return wispFetch(url, 'text', {
+      'user-agent': navigator.userAgent,
+      'accept-language': 'en-US,en;q=0.9',
+      accept: accept || 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
     }).then(function (res) {
       if (!res.ok) throw new Error('wisp HTTP ' + res.status);
-      return res.text();
+      return res.body;
     });
   }
 
@@ -4044,38 +4150,31 @@ html,body{border:0;outline:0}
           }, context, null, stats);
         };
 
-        self.timer = window.setTimeout(function () { fail(new Error('wisp timeout')); }, 24000);
+        self.timer = window.setTimeout(function () { fail(new Error('wisp timeout')); }, 32000);
 
-        bootWisp().then(function (lc) {
-          if (self.aborted) return null;
-          return lc.fetch(url, {
-            headers: {
-              'user-agent': navigator.userAgent,
-              referer: 'https://vidrock.net/',
-              origin: 'https://vidrock.net',
-              accept: '*/*'
-            }
-          });
+        wispFetch(url, wantsText ? 'text' : 'array', {
+          'user-agent': navigator.userAgent,
+          referer: 'https://vidrock.net/',
+          origin: 'https://vidrock.net',
+          accept: '*/*'
         }).then(function (res) {
           if (!res || self.aborted) return null;
+          if (!res.ok) throw new Error('HTTP ' + res.status);
           if (stats.tfirst === 0) stats.tfirst = performance.now();
-          return (wantsText ? res.text() : res.arrayBuffer()).then(function (body) {
-            if (self.aborted) return;
-            window.clearTimeout(self.timer);
-            var data = body;
-            if (wantsText) {
-              var text = String(body);
-              /* hls.js asks for the master and every variant through here, so
-                 the English-only edit happens before it ever parses them. */
-              if (/^#EXTM3U/.test(text)) text = englishOnlyPlaylist(text);
-              data = text;
-            } else {
-              data = tsPayload(body);
-            }
-            stats.tload = performance.now();
-            stats.loaded = stats.total = data.byteLength || data.length || 0;
-            callbacks.onSuccess({ url: url, data: data }, stats, context, res);
-          });
+          window.clearTimeout(self.timer);
+          var data = res.body;
+          if (wantsText) {
+            var text = String(data);
+            /* hls.js asks for the master and every variant through here, so
+               the English-only edit happens before it ever parses them. */
+            if (/^#EXTM3U/.test(text)) text = englishOnlyPlaylist(text);
+            data = text;
+          } else {
+            data = tsPayload(data);
+          }
+          stats.tload = performance.now();
+          stats.loaded = stats.total = data.byteLength || data.length || 0;
+          callbacks.onSuccess({ url: url, data: data }, stats, context, res);
         }).catch(fail);
       }
       abort() {
