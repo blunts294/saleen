@@ -2509,6 +2509,13 @@ html,#saleen-root{border:0;outline:0}
     });
   }
 
+  /* Small hook for the transport probe: lets a test talk to Wisp directly. */
+  window.__saleenWisp = {
+    boot: bootWisp,
+    fetch: wispFetch,
+    frame: function () { return wispFrame; }
+  };
+
   function withTimeout(promise, ms) {
     return new Promise(function (resolve, reject) {
       var timer = window.setTimeout(function () { reject(new Error('timeout')); }, ms);
