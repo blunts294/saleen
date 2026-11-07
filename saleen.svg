@@ -4243,7 +4243,6 @@ html,#saleen-root{border:0;outline:0}
     frame.title = mediaName(item);
     frame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
     frame.setAttribute('allowfullscreen', '');
-    frame.setAttribute('referrerpolicy', 'origin');
     frame.src = src;
     els.movieWrap.appendChild(frame);
     media.frame = frame;
