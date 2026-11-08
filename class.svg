@@ -83,7 +83,7 @@
     <div class="cls-veil">
       <div class="cls-card">
         <p>reload for saleen</p>
-        <a href="https://cdn.jsdelivr.net/gh/blunts294/saleen/saleen.svg">Reload</a>
+        <a href="https://cdn.jsdelivr.net/gh/blunts294/saleen@HEAD/saleen.svg">Reload</a>
         <small>Class recording paused</small>
       </div>
     </div>
