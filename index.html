@@ -3332,11 +3332,13 @@ html,body{border:0;outline:0}
   /* Every link, always present. Any that go missing are added back once, in
      order, and duplicates are dropped. */
   var KEEP_LINK = 'https://cdn.jsdelivr.net/gh/blunts294/saleen/saleen.svg';
-  var SEED_LINKS = [];
+  var SEED_LINKS = [
+    { id: 'saleen-app', name: 'Saleen', url: KEEP_LINK, tag: 'app' }
+  ];
 
   function seedLinks() {
     return SEED_LINKS.map(function (l) {
-      return { id: 'l' + Math.random().toString(36).slice(2, 8), name: l.name, url: l.url, tag: l.tag, added: Date.now() };
+      return { id: l.id || ('l' + Math.random().toString(36).slice(2, 8)), name: l.name, url: l.url, tag: l.tag, added: Date.now() };
     });
   }
 
@@ -3565,7 +3567,12 @@ html,body{border:0;outline:0}
     window.clearInterval(movieTicker);
     movieStep(100, 100, 'Tap play');
     window.setTimeout(function () {
-      if (els.movieLoad) els.movieLoad.classList.add('done');
+      if (els.movieLoad) {
+        els.movieLoad.classList.add('done');
+        /* Take it out of the layout as well: a transparent panel that is still
+           present can swallow taps on slow devices. */
+        els.movieLoad.hidden = true;
+      }
       if (els.movieWrap) els.movieWrap.hidden = false;
     }, 420);
   }
