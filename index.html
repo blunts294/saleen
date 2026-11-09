@@ -375,7 +375,11 @@ button{cursor:pointer}
 .movie-shell{
   position:relative;flex:1 1 auto;min-height:0;
   border:1px solid var(--line-soft);border-radius:var(--r-lg);
-  overflow:hidden;background:#08080b;
+  overflow:hidden;background:#050507;
+}
+.movie-shell:has(#playerBar:not([hidden])){
+  border-color:rgba(255,255,255,.07);
+  background:radial-gradient(120% 90% at 50% 0%,#101017 0%,#050507 60%);
 }
 .movie-load{
   position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -405,15 +409,50 @@ button{cursor:pointer}
   backdrop-filter:blur(8px);transition:background .15s ease;
 }
 .movie-tap:hover{background:rgba(139,92,246,.30)}
-.movie-src{
-  position:absolute;right:11px;top:11px;z-index:6;
-  height:26px;padding:0 10px;
-  border:1px solid rgba(255,255,255,.18);border-radius:7px;
-  background:rgba(11,11,15,.72);color:#e8e8ee;
-  font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
-  backdrop-filter:blur(8px);transition:background .13s ease,border-color .13s ease;
+
+/* ---------- player chrome ---------- */
+.player-bar{
+  position:absolute;left:0;right:0;top:0;z-index:9;
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px 34px;
+  background:linear-gradient(180deg,rgba(4,4,7,.95) 0%,rgba(4,4,7,.68) 52%,rgba(4,4,7,0) 100%);
+  pointer-events:none;
 }
-.movie-src:hover{background:rgba(139,92,246,.28);border-color:rgba(167,139,250,.55)}
+.player-bar>*{pointer-events:auto}
+.player-back{
+  width:32px;height:32px;flex:0 0 auto;display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.15);border-radius:8px;
+  background:rgba(10,10,14,.55);color:#e9e9ef;
+  backdrop-filter:blur(10px);transition:background .13s ease,border-color .13s ease;
+}
+.player-back:hover{background:rgba(139,92,246,.26);border-color:rgba(167,139,250,.5)}
+.player-back svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.player-info{min-width:0;display:flex;flex-direction:column;gap:1px}
+.player-name{
+  margin:0;font-size:13px;font-weight:600;letter-spacing:-.01em;color:#f2f2f6;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.player-tags{
+  margin:0;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#a3a3b2;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.player-tools{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;min-width:0}
+.player-tools .media-select{background:rgba(12,12,17,.72);backdrop-filter:blur(10px)}
+.player-sources{
+  display:flex;align-items:center;gap:2px;padding:3px;
+  border:1px solid rgba(255,255,255,.14);border-radius:9px;
+  background:rgba(10,10,14,.66);backdrop-filter:blur(12px);
+}
+.player-src{
+  height:25px;padding:0 10px;border:0;border-radius:6px;
+  background:transparent;color:#a9a9b8;font-size:10.5px;font-weight:600;
+  letter-spacing:.05em;text-transform:uppercase;
+  transition:background .13s ease,color .13s ease;
+}
+.player-src:hover{color:#fff;background:rgba(255,255,255,.08)}
+.player-src[aria-pressed="true"]{background:var(--accent);color:#fff}
+.player-src[aria-pressed="true"]:hover{background:#7c3aed}
+
 
 /* ---------- buttons ---------- */
 .ghost-btn{
@@ -471,9 +510,22 @@ button{cursor:pointer}
   border:1px solid var(--line-soft);background:var(--panel-2);
   transition:border-color .15s ease,transform .15s ease;
 }
+.media-art::after{
+  content:"▶";position:absolute;left:50%;top:50%;
+  width:42px;height:42px;margin:-21px 0 0 -21px;
+  display:grid;place-items:center;border-radius:50%;
+  background:rgba(10,10,14,.64);border:1px solid rgba(255,255,255,.22);
+  color:#fff;font-size:13px;text-indent:2px;
+  opacity:0;transform:scale(.86);
+  transition:opacity .16s ease,transform .16s ease;
+  backdrop-filter:blur(4px);
+}
 .media-art img{width:100%;height:100%;object-fit:cover;display:block}
 .media-card:hover .media-art,.media-card:focus-visible .media-art{
   border-color:var(--accent-line);transform:translateY(-2px);
+}
+.media-card:hover .media-art::after,.media-card:focus-visible .media-art::after{
+  opacity:1;transform:scale(1);
 }
 .media-info{padding:9px 2px 0}
 .media-name{
@@ -636,6 +688,11 @@ body[data-mode="ai"] #toast{bottom:86px}
   .hero-app{width:70px}
   .view{padding-top:16px}
   .view-head h2{font-size:16px}
+  .player-bar{padding:8px 8px 26px;gap:6px}
+  .player-name{font-size:11.5px;max-width:36vw}
+  .player-tags{display:none}
+  .player-tools .media-select{max-width:104px;font-size:11px}
+  .player-src{height:23px;padding:0 7px;font-size:9.5px}
   .media-grid{grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:16px 10px}
   .game-grid{grid-template-columns:repeat(auto-fill,minmax(118px,1fr))}
   .game-search{width:150px}
@@ -859,8 +916,6 @@ body[data-mode="ai"] #toast{bottom:86px}
           </div>
           <div class="head-actions">
             <input id="mediaSearch" class="game-search" type="search" placeholder="Search movies" autocomplete="off" spellcheck="false" />
-            <select id="seasonSel" class="media-select" aria-label="Season" hidden></select>
-            <select id="episodeSel" class="media-select" aria-label="Episode" hidden></select>
             <button id="mediaBack" class="ghost-btn" type="button" hidden>Back</button>
           </div>
           <div class="view-tools">
@@ -883,6 +938,20 @@ body[data-mode="ai"] #toast{bottom:86px}
           </div>
         </header>
         <div class="movie-shell">
+          <div id="playerBar" class="player-bar" hidden>
+            <button id="playerBack" class="player-back" type="button" aria-label="Back to the list">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="player-info">
+              <p class="player-name" id="playerName"></p>
+              <p class="player-tags" id="playerTags"></p>
+            </div>
+            <div class="player-tools">
+              <select id="seasonSel" class="media-select" aria-label="Season" hidden></select>
+              <select id="episodeSel" class="media-select" aria-label="Episode" hidden></select>
+              <div id="playerSources" class="player-sources" role="group" aria-label="Streaming source"></div>
+            </div>
+          </div>
           <div id="movieLoad" class="movie-load">
             <p id="movieStatus" class="movie-status">Loading</p>
             <div class="movie-bar"><span id="movieFill"></span></div>
@@ -1004,6 +1073,12 @@ body[data-mode="ai"] #toast{bottom:86px}
     providerChips: Array.prototype.slice.call(document.querySelectorAll('#providerFilters .media-chip')),
     mediaSearch: $('#mediaSearch'),
     mediaBack: $('#mediaBack'),
+    viewHead: document.querySelector('#moviesView .view-head'),
+    playerBar: $('#playerBar'),
+    playerName: $('#playerName'),
+    playerTags: $('#playerTags'),
+    playerSources: $('#playerSources'),
+    playerBack: $('#playerBack'),
     seasonSel: $('#seasonSel'),
     episodeSel: $('#episodeSel'),
     linksBody: $('#linksBody'),
@@ -3129,7 +3204,7 @@ body[data-mode="ai"] #toast{bottom:86px}
     seasons: [],
     season: 1,
     episodeNum: 1,
-    source: 'vidrock',
+    source: 'cinemaos',
     frame: null,
     stepTimer: 0
   };
@@ -3220,6 +3295,8 @@ body[data-mode="ai"] #toast{bottom:86px}
     if (els.mediaFilters) els.mediaFilters.hidden = !grid;
     if (els.providerFilters) els.providerFilters.hidden = !grid;
     if (els.mediaSearch) els.mediaSearch.hidden = !grid;
+    if (els.viewHead) els.viewHead.hidden = !grid;
+    if (els.playerBar) els.playerBar.hidden = grid;
     /* Always leave a way out: from a movie it goes back to the list, from the
        list it goes back Home. */
     if (els.mediaBack) {
@@ -3427,14 +3504,14 @@ body[data-mode="ai"] #toast{bottom:86px}
     media.seasons = [];
     media.season = 1;
     if (els.mediaTitle) els.mediaTitle.textContent = mediaName(item);
-    if (els.mediaSub) {
-      var bits = [];
-      var year = mediaYear(item);
-      if (year) bits.push(year);
-      if (item.vote_average) bits.push(Number(item.vote_average).toFixed(1) + '/10');
-      bits.push('English');
-      els.mediaSub.textContent = bits.join(' · ');
-    }
+    var bits = [];
+    var year = mediaYear(item);
+    if (year) bits.push(year);
+    if (item.vote_average) bits.push(Number(item.vote_average).toFixed(1) + '/10');
+    bits.push('English');
+    if (els.mediaSub) els.mediaSub.textContent = bits.join(' · ');
+    if (els.playerName) els.playerName.textContent = mediaName(item);
+    if (els.playerTags) els.playerTags.textContent = bits.join('  ·  ');
     mediaChrome('player');
     if (media.kind === 'tv') loadSeasons(item);
     else playMedia(1, 1);
@@ -3828,17 +3905,17 @@ body[data-mode="ai"] #toast{bottom:86px}
     movieDone();
   }
 
-  /* Playback is handed to a provider's own player. Two providers are wired in:
-     Vidsrc is the default and Vidrock is the fallback, and the small chip in the
-     corner of the player switches between them without leaving the page. */
+  /* Playback is handed to a provider's own player. CinemaOS is the default:
+     it is reachable from school networks where the embed mirrors get filtered.
+     Vidrock and Vidsrc stay one click away in the player bar. */
   var MEDIA_SOURCES = [
     {
-      id: 'vidsrc',
-      label: 'Vidsrc',
+      id: 'cinemaos',
+      label: 'CinemaOS',
       src: function (item, kind, s, e) {
-        return 'https://vidsrc.sh/embed/' + (kind === 'tv'
-          ? 'tv/' + item.id + '/' + s + '/' + e + '/'
-          : 'movie/' + item.id + '/');
+        return kind === 'tv'
+          ? 'https://cinemaos.in/watch/tv/' + item.id + '?season=' + s + '&episode=' + e
+          : 'https://cinemaos.in/watch/movie/' + item.id;
       }
     },
     {
@@ -3848,6 +3925,15 @@ body[data-mode="ai"] #toast{bottom:86px}
         return 'https://vidrock.net/' + (kind === 'tv'
           ? 'tv/' + item.id + '/' + s + '/' + e
           : 'movie/' + item.id);
+      }
+    },
+    {
+      id: 'vidsrc',
+      label: 'Vidsrc',
+      src: function (item, kind, s, e) {
+        return 'https://vidsrc.sh/embed/' + (kind === 'tv'
+          ? 'tv/' + item.id + '/' + s + '/' + e + '/'
+          : 'movie/' + item.id + '/');
       }
     }
   ];
@@ -3859,6 +3945,20 @@ body[data-mode="ai"] #toast{bottom:86px}
     return MEDIA_SOURCES[0];
   }
 
+  function renderSourceButtons(activeId, onPick) {
+    if (!els.playerSources) return;
+    els.playerSources.textContent = '';
+    MEDIA_SOURCES.forEach(function (provider) {
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'player-src';
+      chip.textContent = provider.label;
+      chip.setAttribute('aria-pressed', provider.id === activeId ? 'true' : 'false');
+      chip.addEventListener('click', function () { onPick(provider.id); });
+      els.playerSources.appendChild(chip);
+    });
+  }
+
   function playMedia(season, episode, useSource) {
     if (!els.movieWrap || !media.item) return;
     var item = media.item;
@@ -3867,66 +3967,45 @@ body[data-mode="ai"] #toast{bottom:86px}
     if (useSource) media.source = useSource;
     media.season = s;
     media.episodeNum = e;
+    if (els.playerTags && media.kind === 'tv') {
+      var bits = [mediaYear(item), item.vote_average ? Number(item.vote_average).toFixed(1) + '/10' : '', 'S' + s + ' E' + e]
+        .filter(Boolean);
+      els.playerTags.textContent = bits.join('  ·  ');
+    }
 
     stopPlayer();
     els.movieWrap.textContent = '';
     els.movieWrap.hidden = false;
     movieReset('Starting the player');
 
-    var first = mediaSourceById(media.source);
-    var order = [first].concat(MEDIA_SOURCES.filter(function (p) { return p.id !== first.id; }));
-    var index = 0;
+    var provider = mediaSourceById(media.source);
+    media.source = provider.id;
+    renderSourceButtons(provider.id, function (id) { playMedia(s, e, id); });
 
-    function addSourceChip(provider) {
-      var chip = document.createElement('button');
-      chip.type = 'button';
-      chip.className = 'movie-src';
-      chip.title = 'Switch source';
-      chip.textContent = provider.label;
-      chip.addEventListener('click', function () {
-        var next = (index % order.length);
-        playMedia(s, e, order[next].id);
-      });
-      els.movieWrap.appendChild(chip);
-    }
+    var frame = document.createElement('iframe');
+    frame.title = mediaName(item);
+    frame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
+    frame.setAttribute('allowfullscreen', '');
+    frame.src = provider.src(item, media.kind, s, e);
+    els.movieWrap.appendChild(frame);
+    media.frame = frame;
+    media.video = null;
 
-    function mount() {
-      if (index >= order.length) {
-        movieStep(100, 100, 'Tap play');
-        movieDone();
-        return;
-      }
-      var provider = order[index++];
-      media.source = provider.id;
-      els.movieWrap.textContent = '';
+    var settled = false;
+    var giveUp = window.setTimeout(function () {
+      if (settled) return;
+      settled = true;
+      movieStep(100, 100, 'Playing');
+      movieDone();
+    }, 9000);
 
-      var frame = document.createElement('iframe');
-      frame.title = mediaName(item);
-      frame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
-      frame.setAttribute('allowfullscreen', '');
-      frame.src = provider.src(item, media.kind, s, e);
-      els.movieWrap.appendChild(frame);
-      media.frame = frame;
-      media.video = null;
-
-      var settled = false;
-      var fallback = window.setTimeout(function () {
-        if (settled) return;
-        settled = true;
-        mount();
-      }, 10000);
-
-      frame.addEventListener('load', function () {
-        window.clearTimeout(fallback);
-        if (settled) return;
-        settled = true;
-        movieStep(100, 100, 'Playing');
-        movieDone();
-        addSourceChip(provider);
-      });
-    }
-
-    mount();
+    frame.addEventListener('load', function () {
+      window.clearTimeout(giveUp);
+      if (settled) return;
+      settled = true;
+      movieStep(100, 100, 'Playing');
+      movieDone();
+    });
   }
 
   function closeMedia() {
@@ -4065,6 +4144,9 @@ body[data-mode="ai"] #toast{bottom:86px}
     if (els.mediaBack) els.mediaBack.addEventListener('click', function () {
       if (media.mode === 'player') closeMedia();
       else setMode('home');
+    });
+    if (els.playerBack) els.playerBack.addEventListener('click', function () {
+      closeMedia();
     });
 
     /* Infinite scroll: fetch the next catalogue page before the user hits the
