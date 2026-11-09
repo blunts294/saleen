@@ -374,6 +374,7 @@ button{cursor:pointer}
 
 .movie-shell{
   position:relative;flex:1 1 auto;min-height:0;
+  display:flex;flex-direction:column;
   border:1px solid var(--line-soft);border-radius:var(--r-lg);
   overflow:hidden;background:#050507;
 }
@@ -521,6 +522,11 @@ button{cursor:pointer}
   backdrop-filter:blur(4px);
 }
 .media-art img{width:100%;height:100%;object-fit:cover;display:block}
+.media-fallback{
+  position:absolute;inset:0;display:grid;place-items:center;
+  background:linear-gradient(145deg,var(--panel-3),var(--panel));
+  color:var(--dim);font-size:26px;font-weight:600;
+}
 .media-card:hover .media-art,.media-card:focus-visible .media-art{
   border-color:var(--accent-line);transform:translateY(-2px);
 }
@@ -3146,33 +3152,17 @@ body[data-mode="ai"] #toast{bottom:86px}
     movie: [550, 155, 27205, 157336, 603692, 872585, 693134, 533535, 1022789, 634649,
       76600, 361743, 414906, 346698, 447365, 502356, 808, 12, 862, 597]
   };
+  var CURATED_FALLBACK = {
+    movie: [{"id":550,"title":"Fight Club", "release_date":"1999-10-15", "first_air_date":"", "poster_path":"/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg", "vote_average":8.437},{"id":155,"title":"The Dark Knight", "release_date":"2008-07-16", "first_air_date":"", "poster_path":"/qJ2tW6WMUDux911r6m7haRef0WH.jpg", "vote_average":8.54},{"id":27205,"title":"Inception", "release_date":"2010-07-15", "first_air_date":"", "poster_path":"/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg", "vote_average":8.4},{"id":157336,"title":"Interstellar", "release_date":"2014-11-04", "first_air_date":"", "poster_path":"/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg", "vote_average":8.493},{"id":603692,"title":"John Wick: Chapter 4", "release_date":"2023-03-21", "first_air_date":"", "poster_path":"/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg", "vote_average":7.71},{"id":872585,"title":"Oppenheimer", "release_date":"2023-07-19", "first_air_date":"", "poster_path":"/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", "vote_average":8},{"id":693134,"title":"Dune: Part Two", "release_date":"2024-02-27", "first_air_date":"", "poster_path":"/6izwz7rsy95ARzTR3poZ8H6c5pp.jpg", "vote_average":8.1},{"id":533535,"title":"Deadpool & Wolverine", "release_date":"2024-07-24", "first_air_date":"", "poster_path":"/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", "vote_average":7.586},{"id":1022789,"title":"Inside Out 2", "release_date":"2024-06-11", "first_air_date":"", "poster_path":"/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", "vote_average":7.538},{"id":634649,"title":"Spider-Man: No Way Home", "release_date":"2021-12-15", "first_air_date":"", "poster_path":"/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg", "vote_average":7.9},{"id":76600,"title":"Avatar: The Way of Water", "release_date":"2022-12-14", "first_air_date":"", "poster_path":"/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg", "vote_average":7.6},{"id":361743,"title":"Top Gun: Maverick", "release_date":"2022-05-21", "first_air_date":"", "poster_path":"/n0YuM4f5lvGAP6MAW2kBIzugXnc.jpg", "vote_average":8.157},{"id":414906,"title":"The Batman", "release_date":"2022-03-01", "first_air_date":"", "poster_path":"/74xTEgt7R36Fpooo50r9T25onhq.jpg", "vote_average":7.676},{"id":346698,"title":"Barbie", "release_date":"2023-07-19", "first_air_date":"", "poster_path":"/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg", "vote_average":6.9},{"id":447365,"title":"Guardians of the Galaxy Vol. 3", "release_date":"2023-05-03", "first_air_date":"", "poster_path":"/r2J02Z2OpNTctfOSN1Ydgii51I3.jpg", "vote_average":7.93},{"id":502356,"title":"The Super Mario Bros. Movie", "release_date":"2023-04-05", "first_air_date":"", "poster_path":"/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg", "vote_average":7.585},{"id":808,"title":"Shrek", "release_date":"2001-05-18", "first_air_date":"", "poster_path":"/iB64vpL3dIObOtMZgX3RqdVdQDc.jpg", "vote_average":7.782},{"id":12,"title":"Finding Nemo", "release_date":"2003-05-30", "first_air_date":"", "poster_path":"/eHuGQ10FUzK1mdOY69wF5pGgEf5.jpg", "vote_average":7.822},{"id":862,"title":"Toy Story", "release_date":"1995-11-22", "first_air_date":"", "poster_path":"/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", "vote_average":8},{"id":597,"title":"Titanic", "release_date":"1997-12-18", "first_air_date":"", "poster_path":"/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg", "vote_average":7.901}],
+    tv: [{"id":1434,"title":"Family Guy","name":"Family Guy","release_date":"","first_air_date":"1999-01-31","poster_path":"/3PFsEuAiyLkWsP4GG6dIV37Q6gu.jpg","vote_average":7.415},{"id":456,"title":"The Simpsons","name":"The Simpsons","release_date":"","first_air_date":"1989-12-17","poster_path":"/tf0CUEynk6GfmrlHIQKQ5mfFP5P.jpg","vote_average":8.027},{"id":1396,"title":"Breaking Bad","name":"Breaking Bad","release_date":"","first_air_date":"2008-01-20","poster_path":"/anFx9aTOOYqgS3v7x3R84Kz67ly.jpg","vote_average":8.959},{"id":2316,"title":"The Office","name":"The Office","release_date":"","first_air_date":"2005-03-24","poster_path":"/7DJKHzAi83BmQrWLrYYOqcoKfhR.jpg","vote_average":8.584},{"id":66732,"title":"Stranger Things","name":"Stranger Things","release_date":"","first_air_date":"2016-07-15","poster_path":"/uOOtwVbSr4QDjAGIifLDwpb2Pdl.jpg","vote_average":8.543},{"id":60625,"title":"Rick and Morty","name":"Rick and Morty","release_date":"","first_air_date":"2013-12-02","poster_path":"/owhkU6KRqdXoUQpjV8uyZGPtX58.jpg","vote_average":8.7},{"id":2190,"title":"South Park","name":"South Park","release_date":"","first_air_date":"1997-08-13","poster_path":"/k7n2EVge7G77eMr3brztRGG1fFU.jpg","vote_average":8.333},{"id":1668,"title":"Friends","name":"Friends","release_date":"","first_air_date":"1994-09-22","poster_path":"/2koX1xLkpTQM4IZebYvKysFW1Nh.jpg","vote_average":8.406},{"id":1418,"title":"The Big Bang Theory","name":"The Big Bang Theory","release_date":"","first_air_date":"2007-09-24","poster_path":"/euKFiO5M125rpngFRBbSW83beeI.jpg","vote_average":7.93},{"id":48891,"title":"Brooklyn Nine-Nine","name":"Brooklyn Nine-Nine","release_date":"","first_air_date":"2013-09-17","poster_path":"/mpjlDzVjp7oyHUe2LaF9ltKe6f1.jpg","vote_average":8.206},{"id":1429,"title":"Attack on Titan","name":"Attack on Titan","release_date":"","first_air_date":"2013-04-07","poster_path":"/hTP1DtLGFamjfu8WqjnuQdP1n4i.jpg","vote_average":8.689},{"id":387,"title":"SpongeBob SquarePants","name":"SpongeBob SquarePants","release_date":"","first_air_date":"1999-05-01","poster_path":"/5h0EU2lqBb03dp5vtRuUHJwqzem.jpg","vote_average":7.7},{"id":246,"title":"Avatar: The Last Airbender","name":"Avatar: The Last Airbender","release_date":"","first_air_date":"2005-02-21","poster_path":"/yaGt4GIutpbXHsv48tWceWg6s56.jpg","vote_average":8.787},{"id":60574,"title":"Peaky Blinders","name":"Peaky Blinders","release_date":"","first_air_date":"2013-09-12","poster_path":"/vUUqzWa2LnHIVqkaKVlVGkVcZIW.jpg","vote_average":8.523},{"id":119051,"title":"Wednesday","name":"Wednesday","release_date":"","first_air_date":"2022-11-23","poster_path":"/9PFonBhy4cQy7Jz20NpMygczOkv.jpg","vote_average":8.325},{"id":76479,"title":"The Boys","name":"The Boys","release_date":"","first_air_date":"2019-07-25","poster_path":"/in1R2dDc421JxsoRWaIIAqVI2KE.jpg","vote_average":8.424},{"id":32726,"title":"Bob's Burgers","name":"Bob's Burgers","release_date":"","first_air_date":"2011-01-09","poster_path":"/iIHsQe3Qjs3NH62HdamyQEPeqTR.jpg","vote_average":7.8},{"id":1433,"title":"American Dad!","name":"American Dad!","release_date":"","first_air_date":"2005-02-06","poster_path":"/eb9sH2am9IUSQ8GhXTNAVoujk8W.jpg","vote_average":7.024},{"id":615,"title":"Futurama","name":"Futurama","release_date":"","first_air_date":"1999-03-28","poster_path":"/eM8bbTn8C8vUwwS6upzzm7gX31u.jpg","vote_average":8.363},{"id":2710,"title":"It's Always Sunny in Philadelphia","name":"It's Always Sunny in Philadelphia","release_date":"","first_air_date":"2005-08-04","poster_path":"/o0tMMK33JqmtpcWw0H41cEr9xQB.jpg","vote_average":8.251}]
+  };
+
   var CURATED_CACHE = {};
 
   function curatedFor(kind) {
-    var ids = CURATED_IDS[kind] || [];
-    if (CURATED_CACHE[kind]) return Promise.resolve(CURATED_CACHE[kind]);
-    var out = [];
-    var at = 0;
-
-    function batch() {
-      if (at >= ids.length) {
-        CURATED_CACHE[kind] = out;
-        return Promise.resolve(out);
-      }
-      var slice = ids.slice(at, at + 5);
-      at += 5;
-      return Promise.all(slice.map(function (id) {
-        return mediaFetch('/' + kind + '/' + id).then(function (data) {
-          if (!data || !data.id || !mediaPoster(data)) return null;
-          return data;
-        }).catch(function () { return null; });
-      })).then(function (items) {
-        items.forEach(function (item) { if (item) out.push(item); });
-        return batch();
-      });
-    }
-
-    return batch();
+    var list = CURATED_FALLBACK[kind] || [];
+    CURATED_CACHE[kind] = list;
+    return Promise.resolve(list);
   }
 
   function mergeCurated(extra, list) {
@@ -3341,7 +3331,13 @@ body[data-mode="ai"] #toast{bottom:86px}
         img.loading = 'lazy';
         img.decoding = 'async';
         img.src = src;
-        img.addEventListener('error', function () { img.remove(); });
+        img.addEventListener('error', function () {
+          img.remove();
+          var mark = document.createElement('span');
+          mark.className = 'media-fallback';
+          mark.textContent = (mediaName(item)[0] || '?').toUpperCase();
+          art.appendChild(mark);
+        });
         art.appendChild(img);
       }
 
@@ -3448,6 +3444,7 @@ body[data-mode="ai"] #toast{bottom:86px}
     }
 
     if (els.mediaGrid) els.mediaGrid.hidden = true;
+    var fallback = CURATED_FALLBACK[kind] || [];
     return mediaFetch(MEDIA_FILTERS[kind][filter]).then(function (data) {
       var list = mediaParse(data, 1);
       if (!list.length) throw new Error('empty list');
@@ -3458,6 +3455,16 @@ body[data-mode="ai"] #toast{bottom:86px}
         mediaSettled();
       });
     }).catch(function () {
+      /* The catalogue API can be filtered even when the player is not. Keep the
+         saved popular picks on screen so Movies/TV never comes up empty. */
+      if (fallback.length) {
+        media.items = fallback;
+        mediaRemember();
+        renderMediaGrid(media.items);
+        mediaSettled();
+        if (els.mediaSub) els.mediaSub.textContent = 'Saved picks · ' + fallback.length + ' titles';
+        return;
+      }
       window.clearInterval(movieTicker);
       if (els.movieStatus) els.movieStatus.textContent = 'Could not load the list. Try another tab.';
       if (els.movieFill) els.movieFill.style.width = '0%';
@@ -3905,9 +3912,10 @@ body[data-mode="ai"] #toast{bottom:86px}
     movieDone();
   }
 
-  /* Playback is handed to a provider's own player. CinemaOS is the default:
-     it is reachable from school networks where the embed mirrors get filtered.
-     Vidrock and Vidsrc stay one click away in the player bar. */
+  /* Playback is handed to CinemaOS's own player. It is the one provider in the
+     list because it is reachable from school networks and its player carries no
+     ad frames or pop-up redirects; the other mirrors injected both, and a
+     cross-origin player cannot be edited from here. */
   var MEDIA_SOURCES = [
     {
       id: 'cinemaos',
@@ -3916,24 +3924,6 @@ body[data-mode="ai"] #toast{bottom:86px}
         return kind === 'tv'
           ? 'https://cinemaos.in/watch/tv/' + item.id + '?season=' + s + '&episode=' + e
           : 'https://cinemaos.in/watch/movie/' + item.id;
-      }
-    },
-    {
-      id: 'vidrock',
-      label: 'Vidrock',
-      src: function (item, kind, s, e) {
-        return 'https://vidrock.net/' + (kind === 'tv'
-          ? 'tv/' + item.id + '/' + s + '/' + e
-          : 'movie/' + item.id);
-      }
-    },
-    {
-      id: 'vidsrc',
-      label: 'Vidsrc',
-      src: function (item, kind, s, e) {
-        return 'https://vidsrc.sh/embed/' + (kind === 'tv'
-          ? 'tv/' + item.id + '/' + s + '/' + e + '/'
-          : 'movie/' + item.id + '/');
       }
     }
   ];
@@ -4036,6 +4026,18 @@ body[data-mode="ai"] #toast{bottom:86px}
       mediaSettled();
       if (!list.length && els.mediaSub) els.mediaSub.textContent = 'No matches';
     }).catch(function () {
+      /* Offline catalogue: match the saved picks instead of showing an error. */
+      var ql = q.toLowerCase();
+      var local = (CURATED_FALLBACK[media.kind] || []).filter(function (item) {
+        return String(item.title || item.name || '').toLowerCase().indexOf(ql) >= 0;
+      });
+      if (local.length) {
+        media.items = local;
+        renderMediaGrid(local);
+        mediaSettled();
+        if (els.mediaSub) els.mediaSub.textContent = 'Saved picks · ' + local.length + ' matches';
+        return;
+      }
       window.clearInterval(movieTicker);
       if (els.movieStatus) els.movieStatus.textContent = 'Search failed. Try again.';
     });
