@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: saleen-wisp
+    runtime: node
+    rootDir: wisp-server
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.mjs
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "20"

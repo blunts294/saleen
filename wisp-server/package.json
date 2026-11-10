@@ -1,0 +1,16 @@
+{
+  "name": "saleen-wisp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Private Wisp relay for Saleen's web browser tab",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@mercuryworkshop/wisp-js": "^0.5.3"
+  }
+}
