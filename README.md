@@ -1,74 +1,84 @@
 # Saleen
 
-A browser in one file: transparent rail, live animated background, an AI chat with
-free keyless replies, and a customizer for emoji, name, accent, wallpaper and
-search engine. Typed URLs and searches open inside the app window.
+A one-file, ad-free movie/TV/games front end with a classroom disguise. The
+interface is plain HTML/CSS/JS; the only external piece is the player and the
+optional Wisp relay for the web tab.
 
-## Links
+## Links (v4)
 
-- Pinned release: https://cdn.jsdelivr.net/gh/blunts294/saleen@5/index.xhtml
-- Latest: https://cdn.jsdelivr.net/gh/blunts294/saleen@main/index.xhtml
-- Website (GitHub Pages): https://blunts294.github.io/saleen/
+- **App, neutral filename:** https://cdn.jsdelivr.net/gh/blunts294/saleen@v4/period3.svg
+- App, original name: https://cdn.jsdelivr.net/gh/blunts294/saleen@v4/saleen.svg
+- **Class disguise page:** https://cdn.jsdelivr.net/gh/blunts294/saleen@v4/class.svg
+- Plain HTML build: https://cdn.jsdelivr.net/gh/blunts294/saleen@v4/index.html
 - Source: `index.html`
 
-## In-app browsing
+Use the `period3.svg` link when the tab name or URL should not give the app
+away. The page title is always `Biology 3 - Period 3`.
 
-Saleen never opens a second window for a search. The omni bar and the home field
-load the result page in the frame under the toolbar, and back/forward follow the
-in-app history.
+## What is in v4
 
-Bing is the default engine because its results page is the only major engine that
-still allows framing. Google and DuckDuckGo send `X-Frame-Options`, so choosing
-them opens a normal tab instead.
+- **Movies + TV**: one English source only, labelled `English`. Trending,
+  popular, top rated and anime chips, plus Netflix, Prime, Disney+, Max, Hulu,
+  Apple TV+, Paramount+ and Peacock filters that return their own catalogues.
+- **Pinned picks**: 47 films and 35 shows, including Blood and Bone, Never Back
+  Down, White Chicks and The Flash (2014, 9 seasons).
+- **Games**: 850 playable HTML games, bundled so the grid paints instantly, with
+  cover art from the GN Math cover CDN.
+- **Settings**: a Wisp relay field. Leave it empty to use the public relay.
+- **No music tab.** The bottom dock has Home, AI, Links, Games, Movies, TV,
+  Settings.
 
-Some sites refuse to be framed at all. They send `X-Frame-Options` or
-`Content-Security-Policy: frame-ancestors`, and the browser enforces that before
-any page code runs, so no script inside a page can override it. Saleen deals with
-that in three layers:
+## Classroom disguise
 
-1. **Known blockers open in Reader automatically.** Around a hundred hosts
-   (Google, YouTube, GitHub, Reddit, X, Instagram, BBC, CNN, Netflix, Amazon
-   search, banks, stores, game stores and so on) were checked against their live
-   headers and are listed in `READER_BLOCK`.
-2. **Every page has a Reader / Page toggle** in the strip above the frame, so any
-   other site can be switched manually.
-3. **The reader tries several services in order** until one returns text:
-   `r.jina.ai`, then the same URL with `www.` (some domains are only blocked bare),
-   then `allorigins` and `codetabs` in parallel, then Microlink's renderer. Links
-   inside the text view stay in Saleen, and a failed load offers *Try again* and
-   *Show the page*.
+- The tab title is `Biology 3 - Period 3`.
+- Press `Esc` or `` ` `` to swap the whole app for a fake Biology class call;
+  press again to come back.
+- A 30x30 invisible button in the top-right corner does the same when a player
+  iframe has keyboard focus.
+- `class.svg` is a standalone, convincing class call. Nothing on it mentions
+  Saleen. To open the app from it, type `saleen` or press `\`. There is no
+  visible button or hint.
 
-Reader mode shows the article text, not the original layout. That is the honest
-limit of a web page: full layout for a blocking site needs a shell that owns the
-network stack.
+## Wisp server (web tab)
 
-## Desktop shell (full rendering)
+`wisp-server/` is a private [Wisp](https://github.com/MercuryWorkshop/wisp-protocol)
+relay. Run it locally:
 
-`desktop/` is an Electron wrapper that deletes `X-Frame-Options` and
-`frame-ancestors` from every response, so blocked sites render normally instead of
-as text. It needs Node 18+ and about 350 MB of disk for Electron:
-
-```powershell
-cd desktop
+```bash
+cd wisp-server
 npm install
 npm start
+# health check: http://localhost:5001/healthz
 ```
+
+Deploy it anywhere that keeps a Node process and supports WebSockets (Render,
+Fly.io, Railway, a VPS). Then paste the `wss://...` address into **Settings ->
+Wisp relay** and press **Save relay**. The app tries your relay first and keeps
+the public relay only as a fallback.
+
+Render reads `render.yaml`; Fly reads `fly.toml`; a `Dockerfile` is included.
+Free hosts may sleep when idle, so the first load after a break can take a few
+seconds.
+
+## Playback
+
+Playback uses CinemaOS's own watch page in an iframe with `?lang=en`, so the
+player stays inside Saleen and only the English track is requested. CinemaOS
+allows embedding (`X-Frame-Options: ALLOWALL`). Its cross-origin player UI cannot
+be edited from Saleen, which is why Saleen exposes a single `English` source chip
+instead of language or server switching.
 
 ## Files
 
-- `index.html` - the app, for normal hosting and local use.
-- `index.xhtml` - the same app as XML-valid XHTML. jsDelivr serves `.html` as
-  plain text, but serves `.xhtml` as `application/xhtml+xml`, so this is the file
-  that actually runs from the CDN.
-- `desktop/` - optional Electron shell.
-- `.nojekyll` - stops GitHub Pages from running the page through Jekyll.
+- `saleen.svg` / `period3.svg` - the app as a standalone SVG document.
+- `class.svg` - the classroom disguise page.
+- `index.html` - the same app for normal hosting.
+- `index.xhtml` - XML-valid copy used by older releases.
+- `wisp-server/` - the private relay.
 
 ## Updating
 
-jsDelivr caches `@main` for 12 hours at the edge and up to 7 days in a browser, and
-a purge does not always reach every POP immediately. Tag a release for an instant,
-immutable link (drop the leading `v`):
+Pinned links (`@v4` or a commit SHA) never change. `@main` can take up to 12
+hours at the edge. Purge a file with:
 
-`https://cdn.jsdelivr.net/gh/blunts294/saleen@6/index.xhtml`
-
-Purge a stale file with `https://purge.jsdelivr.net/gh/blunts294/saleen@main/index.xhtml`.
+`https://purge.jsdelivr.net/gh/blunts294/saleen@main/period3.svg`
