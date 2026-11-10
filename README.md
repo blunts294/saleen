@@ -4,18 +4,18 @@ A one-file, ad-free movie/TV/games front end with a classroom disguise. The
 interface is plain HTML/CSS/JS; the only external piece is the player and the
 optional Wisp relay for the web tab.
 
-## Links (v4)
+## Links (v5)
 
-- **App, neutral filename:** https://cdn.jsdelivr.net/gh/blunts294/saleen@v4/period3.svg
-- App, original name: https://cdn.jsdelivr.net/gh/blunts294/saleen@v4/saleen.svg
-- **Class disguise page:** https://cdn.jsdelivr.net/gh/blunts294/saleen@v4/class.svg
-- Plain HTML build: https://cdn.jsdelivr.net/gh/blunts294/saleen@v4/index.html
+- **App, neutral filename:** https://cdn.jsdelivr.net/gh/blunts294/saleen@v5/period3.svg
+- App, original name: https://cdn.jsdelivr.net/gh/blunts294/saleen@v5/saleen.svg
+- **Class disguise page:** https://cdn.jsdelivr.net/gh/blunts294/saleen@v5/class.svg
+- Plain HTML build: https://cdn.jsdelivr.net/gh/blunts294/saleen@v5/index.html
 - Source: `index.html`
 
 Use the `period3.svg` link when the tab name or URL should not give the app
 away. The page title is always `Biology 3 - Period 3`.
 
-## What is in v4
+## What is in v5
 
 - **Movies + TV**: one English source only, labelled `English`. Trending,
   popular, top rated and anime chips, plus Netflix, Prime, Disney+, Max, Hulu,
@@ -78,7 +78,7 @@ instead of language or server switching.
 
 ## Updating
 
-Pinned links (`@v4` or a commit SHA) never change. `@main` can take up to 12
+Pinned links (`@v5` or a commit SHA) never change. `@main` can take up to 12
 hours at the edge. Purge a file with:
 
 `https://purge.jsdelivr.net/gh/blunts294/saleen@main/period3.svg`
