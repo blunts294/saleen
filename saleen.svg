@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xhtml="http://www.w3.org/1999/xhtml" width="100%" height="100%" style="background:#07030f">
-<title>about:blank</title>
+<title>Biology 3 - Period 3</title>
 <foreignObject x="0" y="0" width="100%" height="100%">
 <div xmlns="http://www.w3.org/1999/xhtml" id="saleen-root" data-wall="plain">
 <style>
@@ -87,15 +87,20 @@ button{cursor:pointer}
   color:inherit;text-align:left;text-decoration:none;
 }
 .brand-mark{
-  width:28px;height:28px;flex:0 0 auto;
-  display:grid;place-items:center;border-radius:8px;
-  background:var(--accent);color:#fff;
-  font-size:14px;font-weight:650;letter-spacing:-.02em;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+  width:24px;height:24px;flex:0 0 auto;
+  display:grid;place-items:center;border-radius:5px;
+  border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.035);
+  color:#e3e6ec;
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  line-height:1;padding-bottom:1px;
 }
 .brand-mark svg{width:17px;height:17px;display:block}
-.brand-mark svg [stroke]{stroke:#fff}
-.brand-name{font-size:13.5px;font-weight:600;letter-spacing:-.015em}
+.brand-mark svg [stroke]{stroke:currentColor}
+.brand-name{
+  font-size:12px;font-weight:600;letter-spacing:.18em;
+  text-transform:lowercase;color:#cdd2dc;
+}
 
 .rail-clock{
   order:9;display:flex;flex-direction:row;align-items:baseline;gap:6px;
@@ -666,6 +671,45 @@ button{cursor:pointer}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.13);border-radius:99px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2)}
 
+/* ---------- panic / classroom disguise ---------- */
+#panicView{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;flex-direction:column;overflow:hidden;
+  background:#0f1115;color:#e8eaed;
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+}
+#panicView[hidden]{display:none}
+#panicHot{position:fixed;top:0;right:0;width:30px;height:30px;z-index:9998;border:0;background:transparent;opacity:0;cursor:default;padding:0}
+.panic-top{display:flex;align-items:center;gap:12px;padding:10px 18px;background:#171a1f;border-bottom:1px solid #262a31;flex:0 0 auto}
+.panic-logo{width:32px;height:32px;border-radius:8px;background:#1a73e8;display:grid;place-items:center;font-weight:700;font-size:14px;color:#fff}
+.panic-top b{display:block;font-size:14px;font-weight:600}
+.panic-top small{font-size:11.5px;color:#9aa0a6}
+.panic-live{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:12px;color:#9aa0a6}
+.panic-live i{width:7px;height:7px;border-radius:50%;background:#ea4335}
+.panic-main{flex:1 1 auto;position:relative;display:grid;place-items:center;padding:24px;background:radial-gradient(80% 80% at 50% 40%,#1b1f26,#0f1115);min-height:0}
+.panic-slide{width:min(760px,86%);aspect-ratio:16/9;background:#fbfbfb;border-radius:10px;box-shadow:0 18px 50px rgba(0,0,0,.55);color:#202124;padding:30px 38px;display:flex;flex-direction:column;justify-content:center}
+.panic-slide h1{font-size:clamp(18px,2.2vw,30px);margin:0 0 6px;font-weight:700;color:#1a1a1a}
+.panic-slide h2{font-size:clamp(11px,1.15vw,16px);margin:0 0 20px;font-weight:500;color:#5f6368}
+.panic-slide ul{margin:0;padding-left:20px;color:#3c4043;font-size:clamp(10px,1.05vw,14px);line-height:1.8}
+.panic-slide li::marker{color:#1a73e8}
+.panic-tiles{position:absolute;right:18px;top:18px;display:grid;grid-template-columns:repeat(2,86px);gap:8px}
+.panic-tiles span{height:58px;border-radius:8px;background:#20242b;border:1px solid #2c313a;display:grid;place-items:center;font-size:12px;font-weight:600;color:#bdc1c6}
+.panic-tiles span.me{background:#243447;border-color:#3b6ea8}
+.panic-bar{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;background:#171a1f;border-top:1px solid #262a31;flex:0 0 auto}
+.panic-bar i{width:40px;height:40px;border-radius:50%;background:#2b2f36;display:block}
+.panic-bar b{width:56px;height:40px;border-radius:20px;background:#ea4335;display:block}
+@media (max-width:760px){.panic-tiles{display:none}.panic-slide{width:94%}}
+
+/* ---------- settings ---------- */
+.settings-body{padding:2px;max-width:560px}
+.settings-row{display:block;margin:0 0 10px}
+.settings-row span{display:block;margin:0 0 6px;font-size:12px;color:var(--muted)}
+.settings-input{
+  width:100%;height:38px;padding:0 12px;border-radius:8px;
+  border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:13px;
+}
+.settings-hint{margin:10px 0 0;font-size:12px;color:var(--dim);line-height:1.5}
+
 /* ---------- responsive ---------- */
 @media (max-width:1050px){
   .brand-name,.rail-clock{display:none}
@@ -710,8 +754,8 @@ button{cursor:pointer}
 <div id="app">
   <aside id="rail" aria-label="Saleen">
     <div class="brand">
-      <span class="brand-mark" aria-hidden="true">S</span>
-      <span class="brand-name">Saleen</span>
+      <span class="brand-mark" aria-hidden="true">s</span>
+      <span class="brand-name">saleen</span>
     </div>
 
     <div class="rail-clock" aria-label="Current time">
@@ -738,8 +782,8 @@ button{cursor:pointer}
       <button id="navTV" class="nav-item" type="button" data-mode="tv">
         <span class="nav-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="12.5" rx="2.5"/><path d="M8.4 3.6L12 7l3.6-3.4"/></svg></span><span class="nav-label">TV</span>
       </button>
-      <button id="navMusic" class="nav-item" type="button" data-mode="music">
-        <span class="nav-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="7.4" cy="17.4" r="2.8"/><circle cx="17.6" cy="15.6" r="2.8"/><path d="M10.2 17.4V7.2l10.2-2.2v10.6"/></svg></span><span class="nav-label">Music</span>
+      <button id="navSettings" class="nav-item" type="button" data-mode="settings">
+        <span class="nav-ico" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3.4v2M12 18.6v2M3.4 12h2M18.6 12h2M5.9 5.9l1.4 1.4M16.7 16.7l1.4 1.4M18.1 5.9l-1.4 1.4M7.3 16.7l-1.4 1.4"/></svg></span><span class="nav-label">Settings</span>
       </button>
     </nav>
 
@@ -924,6 +968,7 @@ button{cursor:pointer}
               <button class="media-chip" type="button" data-filter="trending" aria-pressed="true">Trending</button>
               <button class="media-chip" type="button" data-filter="popular" aria-pressed="false">Popular</button>
               <button class="media-chip" type="button" data-filter="top" aria-pressed="false">Top rated</button>
+              <button class="media-chip" type="button" data-filter="anime" aria-pressed="false">Anime</button>
             </div>
             <div id="providerFilters" class="media-filters media-providers" aria-label="Streaming provider">
               <button class="media-chip" type="button" data-provider="" aria-pressed="true">All</button>
@@ -962,11 +1007,51 @@ button{cursor:pointer}
         </div>
       </section>
 
+      <section id="settingsView" class="view" hidden="hidden">
+        <header class="view-head">
+          <div>
+            <h2>Settings</h2>
+          </div>
+        </header>
+        <div class="settings-body">
+          <label class="settings-row" for="wispInput">
+            <span>Wisp relay</span>
+            <input id="wispInput" class="settings-input" type="url" placeholder="wss://your-relay.example/" spellcheck="false" autocomplete="off" />
+          </label>
+          <button id="wispSave" class="ghost-btn" type="button">Save relay</button>
+          <p class="settings-hint">Used by the web browser tab. Leave empty to use the public relay.</p>
+        </div>
+      </section>
+
     </div>
   </main>
 </div>
 
 <div id="toast" role="status" aria-live="polite"></div>
+
+<button id="panicHot" type="button" tabindex="-1" aria-label="Class view"></button>
+
+<div id="panicView" hidden="hidden" aria-hidden="true">
+  <div class="panic-top">
+    <span class="panic-logo">B</span>
+    <span><b>Biology 3 – Cellular Respiration</b><small>Period 3 · Mr. Alvarez · Room 214</small></span>
+    <span class="panic-live"><i></i>Live · 00:32:07</span>
+  </div>
+  <div class="panic-main">
+    <div class="panic-slide">
+      <h1>Cellular Respiration</h1>
+      <h2>Unit 4 · How cells release energy from glucose</h2>
+      <ul>
+        <li>Glycolysis — cytoplasm, 2 ATP net</li>
+        <li>Krebs cycle — mitochondrial matrix</li>
+        <li>Electron transport chain — inner membrane</li>
+        <li>Total yield: ~30–32 ATP per glucose</li>
+      </ul>
+    </div>
+    <div class="panic-tiles"><span>JT</span><span>MR</span><span>AK</span><span class="me">EA</span></div>
+  </div>
+  <div class="panic-bar"><i></i><i></i><i></i><b></b></div>
+</div>
 
 <script>
 //<![CDATA[
@@ -996,7 +1081,7 @@ button{cursor:pointer}
     { id: 'abyss', label: '🌌 Deep' },
     { id: 'plain', label: '◻ Plain' }
   ];
-  var MODE_TITLES = { home: 'Home', browser: 'Home', ai: 'AI', links: 'Links', games: 'Games', movies: 'Movies', tv: 'TV', music: 'Music' };
+  var MODE_TITLES = { home: 'Home', browser: 'Home', ai: 'AI', links: 'Links', games: 'Games', movies: 'Movies', tv: 'TV', settings: 'Settings' };
   var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var DESKTOP = /[?&]desktop=1/.test(window.location.search);
   var $ = function (sel) { return document.querySelector(sel); };
@@ -1067,6 +1152,11 @@ button{cursor:pointer}
     linksView: $('#linksView'),
     gamesView: $('#gamesView'),
     moviesView: $('#moviesView'),
+    settingsView: $('#settingsView'),
+    panicView: $('#panicView'),
+    panicHot: $('#panicHot'),
+    wispInput: $('#wispInput'),
+    wispSave: $('#wispSave'),
     mediaTitle: $('#mediaTitle'),
     mediaSub: $('#mediaSub'),
     mediaGrid: $('#mediaGrid'),
@@ -1157,7 +1247,8 @@ button{cursor:pointer}
 
   var TYPED_LINES = [
     '- Made by 762.',
-    '- saleen still in progress, might be blocked but wtv \uD83D\uDC94'
+    '- saleen still in progress, might be blocked but wtv \uD83D\uDC94',
+    "- don't worry this isn't the finished product be patient \uD83D\uDC94\u270C\uFE0F"
   ];
   var typeIndex = -1;
   var typePos = 0;
@@ -1219,9 +1310,11 @@ button{cursor:pointer}
     typeTimer = window.setTimeout(typeStep, 500);
   }
 
+  var DISGUISE_TITLE = 'Biology 3 - Period 3';
+
   function updateTitle() {
-    /* The dashboard/disguise tab name: never shows what is really loaded. */
-    document.title = 'about:blank';
+    /* The disguise tab name: never shows what is really loaded. */
+    document.title = DISGUISE_TITLE;
   }
 
   function apply() {
@@ -1943,7 +2036,7 @@ button{cursor:pointer}
   /* Deploy wisp-server/ (see its README), then put the wss:// URL first here or
      set localStorage 'saleen.wisp'. The public relay is only a fallback. */
   var OWN_WISP = '';
-  var WISP_SERVERS = (function () {
+  function wispList() {
     var list = [];
     try {
       var saved = window.localStorage.getItem('saleen.wisp');
@@ -1952,7 +2045,8 @@ button{cursor:pointer}
     if (OWN_WISP) list.push(OWN_WISP);
     list.push('wss://wisp.mercurywork.shop/');
     return list;
-  })();
+  }
+  var WISP_SERVERS = wispList();
   var LIBCURL_JS = 'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/libcurl.js';
   var LIBCURL_WASM = 'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/libcurl.wasm';
   var wispBoot = null;
@@ -2789,8 +2883,9 @@ button{cursor:pointer}
     els.aiView.hidden = mode !== 'ai';
     els.linksView.hidden = mode !== 'links';
     els.gamesView.hidden = mode !== 'games';
-    var isMedia = mode === 'movies' || mode === 'tv' || mode === 'music';
+    var isMedia = mode === 'movies' || mode === 'tv';
     els.moviesView.hidden = !isMedia;
+    els.settingsView.hidden = mode !== 'settings';
     if (isMedia && els.mediaTitle) els.mediaTitle.textContent = MODE_TITLES[mode];
 
     navItems.forEach(function (item) {
@@ -2824,7 +2919,7 @@ button{cursor:pointer}
   }
 
   function setMode(next) {
-    if (['home', 'ai', 'links', 'games', 'movies', 'tv', 'music', 'browser'].indexOf(next) < 0) next = 'home';
+    if (['home', 'ai', 'links', 'games', 'movies', 'tv', 'settings', 'browser'].indexOf(next) < 0) next = 'home';
     var changed = next !== mode;
     /* Leaving the player stops the stream instead of letting it keep pulling
        segments behind the other tabs. */
@@ -2832,7 +2927,7 @@ button{cursor:pointer}
     mode = next;
     renderView();
     if (next === 'home') startTyping();
-    if (next === 'movies' || next === 'tv' || next === 'music') startMovies(next);
+    if (next === 'movies' || next === 'tv') startMovies(next);
     if (next === 'games') startGames();
     if (changed) document.dispatchEvent(new CustomEvent('saleen:mode', { detail: mode }));
   }
@@ -3122,12 +3217,14 @@ button{cursor:pointer}
     movie: {
       trending: '/trending/movie/day',
       popular: '/movie/popular',
-      top: '/movie/top_rated'
+      top: '/movie/top_rated',
+      anime: '/discover/movie?with_genres=16&with_original_language=ja&sort_by=popularity.desc&vote_count.gte=50&include_adult=false'
     },
     tv: {
       trending: '/trending/tv/day',
       popular: '/tv/popular',
-      top: '/tv/top_rated'
+      top: '/tv/top_rated',
+      anime: '/discover/tv?with_genres=16&with_original_language=ja&sort_by=popularity.desc&vote_count.gte=50&include_adult=false'
     }
   };
   var MEDIA_CACHE = {};
@@ -3138,13 +3235,18 @@ button{cursor:pointer}
      TMDB ids, so the poster/title/date come from the same source as the rest. */
   var CURATED_IDS = {
     tv: [1434, 456, 1396, 2316, 66732, 60625, 2190, 1668, 1418, 48891,
-      1429, 387, 246, 60574, 119051, 76479, 32726, 1433, 615, 2710],
+      1429, 387, 246, 60574, 119051, 76479, 32726, 1433, 615, 2710,
+      60735, 1399, 94605, 71446, 63174, 82856, 84958, 85271,
+      85937, 95479, 31910, 30984, 65930, 62715, 46260],
     movie: [550, 155, 27205, 157336, 603692, 872585, 693134, 533535, 1022789, 634649,
-      76600, 361743, 414906, 346698, 447365, 502356, 808, 12, 862, 597]
+      76600, 361743, 414906, 346698, 447365, 502356, 808, 12, 862, 597,
+      22164, 8456, 12153, 238, 680, 603, 769, 278, 13, 98,
+      299534, 324857, 106646, 68718, 1422, 18785, 12133, 64688, 8363, 72105,
+      129, 372058, 635302, 1311031, 378064, 592350, 317442]
   };
   var CURATED_FALLBACK = {
-    movie: [{"id":550,"title":"Fight Club", "release_date":"1999-10-15", "first_air_date":"", "poster_path":"/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg", "vote_average":8.437},{"id":155,"title":"The Dark Knight", "release_date":"2008-07-16", "first_air_date":"", "poster_path":"/qJ2tW6WMUDux911r6m7haRef0WH.jpg", "vote_average":8.54},{"id":27205,"title":"Inception", "release_date":"2010-07-15", "first_air_date":"", "poster_path":"/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg", "vote_average":8.4},{"id":157336,"title":"Interstellar", "release_date":"2014-11-04", "first_air_date":"", "poster_path":"/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg", "vote_average":8.493},{"id":603692,"title":"John Wick: Chapter 4", "release_date":"2023-03-21", "first_air_date":"", "poster_path":"/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg", "vote_average":7.71},{"id":872585,"title":"Oppenheimer", "release_date":"2023-07-19", "first_air_date":"", "poster_path":"/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", "vote_average":8},{"id":693134,"title":"Dune: Part Two", "release_date":"2024-02-27", "first_air_date":"", "poster_path":"/6izwz7rsy95ARzTR3poZ8H6c5pp.jpg", "vote_average":8.1},{"id":533535,"title":"Deadpool & Wolverine", "release_date":"2024-07-24", "first_air_date":"", "poster_path":"/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", "vote_average":7.586},{"id":1022789,"title":"Inside Out 2", "release_date":"2024-06-11", "first_air_date":"", "poster_path":"/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", "vote_average":7.538},{"id":634649,"title":"Spider-Man: No Way Home", "release_date":"2021-12-15", "first_air_date":"", "poster_path":"/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg", "vote_average":7.9},{"id":76600,"title":"Avatar: The Way of Water", "release_date":"2022-12-14", "first_air_date":"", "poster_path":"/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg", "vote_average":7.6},{"id":361743,"title":"Top Gun: Maverick", "release_date":"2022-05-21", "first_air_date":"", "poster_path":"/n0YuM4f5lvGAP6MAW2kBIzugXnc.jpg", "vote_average":8.157},{"id":414906,"title":"The Batman", "release_date":"2022-03-01", "first_air_date":"", "poster_path":"/74xTEgt7R36Fpooo50r9T25onhq.jpg", "vote_average":7.676},{"id":346698,"title":"Barbie", "release_date":"2023-07-19", "first_air_date":"", "poster_path":"/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg", "vote_average":6.9},{"id":447365,"title":"Guardians of the Galaxy Vol. 3", "release_date":"2023-05-03", "first_air_date":"", "poster_path":"/r2J02Z2OpNTctfOSN1Ydgii51I3.jpg", "vote_average":7.93},{"id":502356,"title":"The Super Mario Bros. Movie", "release_date":"2023-04-05", "first_air_date":"", "poster_path":"/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg", "vote_average":7.585},{"id":808,"title":"Shrek", "release_date":"2001-05-18", "first_air_date":"", "poster_path":"/iB64vpL3dIObOtMZgX3RqdVdQDc.jpg", "vote_average":7.782},{"id":12,"title":"Finding Nemo", "release_date":"2003-05-30", "first_air_date":"", "poster_path":"/eHuGQ10FUzK1mdOY69wF5pGgEf5.jpg", "vote_average":7.822},{"id":862,"title":"Toy Story", "release_date":"1995-11-22", "first_air_date":"", "poster_path":"/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", "vote_average":8},{"id":597,"title":"Titanic", "release_date":"1997-12-18", "first_air_date":"", "poster_path":"/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg", "vote_average":7.901}],
-    tv: [{"id":1434,"title":"Family Guy","name":"Family Guy","release_date":"","first_air_date":"1999-01-31","poster_path":"/3PFsEuAiyLkWsP4GG6dIV37Q6gu.jpg","vote_average":7.415},{"id":456,"title":"The Simpsons","name":"The Simpsons","release_date":"","first_air_date":"1989-12-17","poster_path":"/tf0CUEynk6GfmrlHIQKQ5mfFP5P.jpg","vote_average":8.027},{"id":1396,"title":"Breaking Bad","name":"Breaking Bad","release_date":"","first_air_date":"2008-01-20","poster_path":"/anFx9aTOOYqgS3v7x3R84Kz67ly.jpg","vote_average":8.959},{"id":2316,"title":"The Office","name":"The Office","release_date":"","first_air_date":"2005-03-24","poster_path":"/7DJKHzAi83BmQrWLrYYOqcoKfhR.jpg","vote_average":8.584},{"id":66732,"title":"Stranger Things","name":"Stranger Things","release_date":"","first_air_date":"2016-07-15","poster_path":"/uOOtwVbSr4QDjAGIifLDwpb2Pdl.jpg","vote_average":8.543},{"id":60625,"title":"Rick and Morty","name":"Rick and Morty","release_date":"","first_air_date":"2013-12-02","poster_path":"/owhkU6KRqdXoUQpjV8uyZGPtX58.jpg","vote_average":8.7},{"id":2190,"title":"South Park","name":"South Park","release_date":"","first_air_date":"1997-08-13","poster_path":"/k7n2EVge7G77eMr3brztRGG1fFU.jpg","vote_average":8.333},{"id":1668,"title":"Friends","name":"Friends","release_date":"","first_air_date":"1994-09-22","poster_path":"/2koX1xLkpTQM4IZebYvKysFW1Nh.jpg","vote_average":8.406},{"id":1418,"title":"The Big Bang Theory","name":"The Big Bang Theory","release_date":"","first_air_date":"2007-09-24","poster_path":"/euKFiO5M125rpngFRBbSW83beeI.jpg","vote_average":7.93},{"id":48891,"title":"Brooklyn Nine-Nine","name":"Brooklyn Nine-Nine","release_date":"","first_air_date":"2013-09-17","poster_path":"/mpjlDzVjp7oyHUe2LaF9ltKe6f1.jpg","vote_average":8.206},{"id":1429,"title":"Attack on Titan","name":"Attack on Titan","release_date":"","first_air_date":"2013-04-07","poster_path":"/hTP1DtLGFamjfu8WqjnuQdP1n4i.jpg","vote_average":8.689},{"id":387,"title":"SpongeBob SquarePants","name":"SpongeBob SquarePants","release_date":"","first_air_date":"1999-05-01","poster_path":"/5h0EU2lqBb03dp5vtRuUHJwqzem.jpg","vote_average":7.7},{"id":246,"title":"Avatar: The Last Airbender","name":"Avatar: The Last Airbender","release_date":"","first_air_date":"2005-02-21","poster_path":"/yaGt4GIutpbXHsv48tWceWg6s56.jpg","vote_average":8.787},{"id":60574,"title":"Peaky Blinders","name":"Peaky Blinders","release_date":"","first_air_date":"2013-09-12","poster_path":"/vUUqzWa2LnHIVqkaKVlVGkVcZIW.jpg","vote_average":8.523},{"id":119051,"title":"Wednesday","name":"Wednesday","release_date":"","first_air_date":"2022-11-23","poster_path":"/9PFonBhy4cQy7Jz20NpMygczOkv.jpg","vote_average":8.325},{"id":76479,"title":"The Boys","name":"The Boys","release_date":"","first_air_date":"2019-07-25","poster_path":"/in1R2dDc421JxsoRWaIIAqVI2KE.jpg","vote_average":8.424},{"id":32726,"title":"Bob's Burgers","name":"Bob's Burgers","release_date":"","first_air_date":"2011-01-09","poster_path":"/iIHsQe3Qjs3NH62HdamyQEPeqTR.jpg","vote_average":7.8},{"id":1433,"title":"American Dad!","name":"American Dad!","release_date":"","first_air_date":"2005-02-06","poster_path":"/eb9sH2am9IUSQ8GhXTNAVoujk8W.jpg","vote_average":7.024},{"id":615,"title":"Futurama","name":"Futurama","release_date":"","first_air_date":"1999-03-28","poster_path":"/eM8bbTn8C8vUwwS6upzzm7gX31u.jpg","vote_average":8.363},{"id":2710,"title":"It's Always Sunny in Philadelphia","name":"It's Always Sunny in Philadelphia","release_date":"","first_air_date":"2005-08-04","poster_path":"/o0tMMK33JqmtpcWw0H41cEr9xQB.jpg","vote_average":8.251}]
+    movie: [{"id":550,"title":"Fight Club", "release_date":"1999-10-15", "first_air_date":"", "poster_path":"/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg", "vote_average":8.4},{"id":155,"title":"The Dark Knight", "release_date":"2008-07-16", "first_air_date":"", "poster_path":"/qJ2tW6WMUDux911r6m7haRef0WH.jpg", "vote_average":8.54},{"id":27205,"title":"Inception", "release_date":"2010-07-15", "first_air_date":"", "poster_path":"/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg", "vote_average":8.373},{"id":157336,"title":"Interstellar", "release_date":"2014-11-04", "first_air_date":"", "poster_path":"/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg", "vote_average":8.493},{"id":603692,"title":"John Wick: Chapter 4", "release_date":"2023-03-21", "first_air_date":"", "poster_path":"/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg", "vote_average":7.71},{"id":872585,"title":"Oppenheimer", "release_date":"2023-07-19", "first_air_date":"", "poster_path":"/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", "vote_average":8.023},{"id":693134,"title":"Dune: Part Two", "release_date":"2024-02-27", "first_air_date":"", "poster_path":"/6izwz7rsy95ARzTR3poZ8H6c5pp.jpg", "vote_average":8.144},{"id":533535,"title":"Deadpool & Wolverine", "release_date":"2024-07-24", "first_air_date":"", "poster_path":"/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", "vote_average":7.587},{"id":1022789,"title":"Inside Out 2", "release_date":"2024-06-11", "first_air_date":"", "poster_path":"/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg", "vote_average":7.5},{"id":634649,"title":"Spider-Man: No Way Home", "release_date":"2021-12-15", "first_air_date":"", "poster_path":"/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg", "vote_average":7.946},{"id":76600,"title":"Avatar: The Way of Water", "release_date":"2022-12-14", "first_air_date":"", "poster_path":"/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg", "vote_average":7.6},{"id":361743,"title":"Top Gun: Maverick", "release_date":"2022-05-21", "first_air_date":"", "poster_path":"/n0YuM4f5lvGAP6MAW2kBIzugXnc.jpg", "vote_average":8.2},{"id":414906,"title":"The Batman", "release_date":"2022-03-01", "first_air_date":"", "poster_path":"/74xTEgt7R36Fpooo50r9T25onhq.jpg", "vote_average":7.676},{"id":346698,"title":"Barbie", "release_date":"2023-07-19", "first_air_date":"", "poster_path":"/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg", "vote_average":6.905},{"id":447365,"title":"Guardians of the Galaxy Vol. 3", "release_date":"2023-05-03", "first_air_date":"", "poster_path":"/r2J02Z2OpNTctfOSN1Ydgii51I3.jpg", "vote_average":7.931},{"id":502356,"title":"The Super Mario Bros. Movie", "release_date":"2023-04-05", "first_air_date":"", "poster_path":"/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg", "vote_average":7.585},{"id":808,"title":"Shrek", "release_date":"2001-05-18", "first_air_date":"", "poster_path":"/iB64vpL3dIObOtMZgX3RqdVdQDc.jpg", "vote_average":7.781},{"id":12,"title":"Finding Nemo", "release_date":"2003-05-30", "first_air_date":"", "poster_path":"/eHuGQ10FUzK1mdOY69wF5pGgEf5.jpg", "vote_average":7.822},{"id":862,"title":"Toy Story", "release_date":"1995-11-22", "first_air_date":"", "poster_path":"/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg", "vote_average":7.99},{"id":597,"title":"Titanic", "release_date":"1997-12-18", "first_air_date":"", "poster_path":"/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg", "vote_average":7.9},{"id":22164,"title":"Blood and Bone", "release_date":"2009-02-07", "first_air_date":"", "poster_path":"/4XoqjwKhqN3GlGt0fQtcY2OhkZq.jpg", "vote_average":7.4},{"id":8456,"title":"Never Back Down", "release_date":"2008-03-04", "first_air_date":"", "poster_path":"/8oRUTyP1QAtGDMvRpKZyuyFPG0U.jpg", "vote_average":6.777},{"id":12153,"title":"White Chicks", "release_date":"2004-06-23", "first_air_date":"", "poster_path":"/aHTUpo45qy9QYIOnVITGGqLoVcA.jpg", "vote_average":6.967},{"id":238,"title":"The Godfather", "release_date":"1972-03-14", "first_air_date":"", "poster_path":"/3bhkrj58Vtu7enYsRolD1fZdja1.jpg", "vote_average":8.7},{"id":680,"title":"Pulp Fiction", "release_date":"1994-09-10", "first_air_date":"", "poster_path":"/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg", "vote_average":8.48},{"id":603,"title":"The Matrix", "release_date":"1999-03-31", "first_air_date":"", "poster_path":"/dXNAPwY7VrqMAo51EKhhCJfaGb5.jpg", "vote_average":8.263},{"id":769,"title":"GoodFellas", "release_date":"1990-09-12", "first_air_date":"", "poster_path":"/9OkCLM73MIU2CrKZbqiT8Ln1wY2.jpg", "vote_average":8.451},{"id":278,"title":"The Shawshank Redemption", "release_date":"1994-09-23", "first_air_date":"", "poster_path":"/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg", "vote_average":8.7},{"id":13,"title":"Forrest Gump", "release_date":"1994-06-23", "first_air_date":"", "poster_path":"/saHP97rTPS5eLmrLQEcANmKrsFl.jpg", "vote_average":8.461},{"id":98,"title":"Gladiator", "release_date":"2000-05-04", "first_air_date":"", "poster_path":"/aDb548BOkFfI4nFm0kx8A3Ezh7H.jpg", "vote_average":8.233},{"id":299534,"title":"Avengers: Endgame", "release_date":"2019-04-24", "first_air_date":"", "poster_path":"/jtDv3lCnST0fZRvdYFwR5CVwK2x.jpg", "vote_average":8.247},{"id":324857,"title":"Spider-Man: Into the Spider-Verse", "release_date":"2018-12-06", "first_air_date":"", "poster_path":"/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg", "vote_average":8.403},{"id":106646,"title":"The Wolf of Wall Street", "release_date":"2013-12-25", "first_air_date":"", "poster_path":"/kW9LmvYHAaS9iA0tHmZVq8hQYoq.jpg", "vote_average":8.027},{"id":68718,"title":"Django Unchained", "release_date":"2012-12-25", "first_air_date":"", "poster_path":"/7oWY8VDWW7thTzWh3OKYRkWUlD5.jpg", "vote_average":8.194},{"id":1422,"title":"The Departed", "release_date":"2006-10-04", "first_air_date":"", "poster_path":"/nT97ifVT2J1yMQmeq20Qblg61T.jpg", "vote_average":8.16},{"id":18785,"title":"The Hangover", "release_date":"2009-06-02", "first_air_date":"", "poster_path":"/A0uS9rHR56FeBtpjVki16M5xxSW.jpg", "vote_average":7.339},{"id":12133,"title":"Step Brothers", "release_date":"2008-07-25", "first_air_date":"", "poster_path":"/nvggBbEraUTAVR6ffP3AaBUWSHs.jpg", "vote_average":6.6},{"id":64688,"title":"21 Jump Street", "release_date":"2012-03-14", "first_air_date":"", "poster_path":"/8v3Sqv9UcIUC4ebmpKWROqPBINZ.jpg", "vote_average":6.9},{"id":8363,"title":"Superbad", "release_date":"2007-08-17", "first_air_date":"", "poster_path":"/ek8e8txUyUwd2BNqj6lFEerJfbq.jpg", "vote_average":7.275},{"id":72105,"title":"Ted", "release_date":"2012-06-29", "first_air_date":"", "poster_path":"/1QVZXQQHCEIj8lyUhdBYd2qOYtq.jpg", "vote_average":6.457},{"id":129,"title":"Spirited Away", "release_date":"2001-07-20", "first_air_date":"", "poster_path":"/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg", "vote_average":8.536},{"id":372058,"title":"Your Name.", "release_date":"2016-07-01", "first_air_date":"", "poster_path":"/vfJFJPepRKapMd5G2ro7klIRysq.jpg", "vote_average":8.5},{"id":635302,"title":"Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train", "release_date":"2020-10-16", "first_air_date":"", "poster_path":"/h8Rb9gBr48ODIwYUttZNYeMWeUU.jpg", "vote_average":8.233},{"id":1311031,"title":"Demon Slayer: Kimetsu no Yaiba Infinity Castle", "release_date":"2025-07-18", "first_air_date":"", "poster_path":"/fWVSwgjpT2D78VUh6X8UBd2rorW.jpg", "vote_average":8.802},{"id":378064,"title":"A Silent Voice: The Movie", "release_date":"2016-09-17", "first_air_date":"", "poster_path":"/tuFaWiqX0TXoWu7DGNcmX3UW7sT.jpg", "vote_average":8.4},{"id":592350,"title":"My Hero Academia: Heroes Rising", "release_date":"2019-12-20", "first_air_date":"", "poster_path":"/kpWsIkfXrnQ1pmR79qAHHq7DPxc.jpg", "vote_average":8.13},{"id":317442,"title":"The Last: Naruto the Movie", "release_date":"2014-12-06", "first_air_date":"", "poster_path":"/bAQ8O5Uw6FedtlCbJTutenzPVKd.jpg", "vote_average":7.479}],
+    tv: [{"id":1434,"title":"Family Guy","name":"Family Guy","release_date":"","first_air_date":"1999-01-31","poster_path":"/3PFsEuAiyLkWsP4GG6dIV37Q6gu.jpg","vote_average":7.414},{"id":456,"title":"The Simpsons","name":"The Simpsons","release_date":"","first_air_date":"1989-12-17","poster_path":"/tf0CUEynk6GfmrlHIQKQ5mfFP5P.jpg","vote_average":8.028},{"id":1396,"title":"Breaking Bad","name":"Breaking Bad","release_date":"","first_air_date":"2008-01-20","poster_path":"/anFx9aTOOYqgS3v7x3R84Kz67ly.jpg","vote_average":8.959},{"id":2316,"title":"The Office","name":"The Office","release_date":"","first_air_date":"2005-03-24","poster_path":"/7DJKHzAi83BmQrWLrYYOqcoKfhR.jpg","vote_average":8.583},{"id":66732,"title":"Stranger Things","name":"Stranger Things","release_date":"","first_air_date":"2016-07-15","poster_path":"/uOOtwVbSr4QDjAGIifLDwpb2Pdl.jpg","vote_average":8.543},{"id":60625,"title":"Rick and Morty","name":"Rick and Morty","release_date":"","first_air_date":"2013-12-02","poster_path":"/owhkU6KRqdXoUQpjV8uyZGPtX58.jpg","vote_average":8.678},{"id":2190,"title":"South Park","name":"South Park","release_date":"","first_air_date":"1997-08-13","poster_path":"/k7n2EVge7G77eMr3brztRGG1fFU.jpg","vote_average":8.3},{"id":1668,"title":"Friends","name":"Friends","release_date":"","first_air_date":"1994-09-22","poster_path":"/2koX1xLkpTQM4IZebYvKysFW1Nh.jpg","vote_average":8.405},{"id":1418,"title":"The Big Bang Theory","name":"The Big Bang Theory","release_date":"","first_air_date":"2007-09-24","poster_path":"/euKFiO5M125rpngFRBbSW83beeI.jpg","vote_average":7.93},{"id":48891,"title":"Brooklyn Nine-Nine","name":"Brooklyn Nine-Nine","release_date":"","first_air_date":"2013-09-17","poster_path":"/mpjlDzVjp7oyHUe2LaF9ltKe6f1.jpg","vote_average":8.206},{"id":1429,"title":"Attack on Titan","name":"Attack on Titan","release_date":"","first_air_date":"2013-04-07","poster_path":"/hTP1DtLGFamjfu8WqjnuQdP1n4i.jpg","vote_average":8.69},{"id":387,"title":"SpongeBob SquarePants","name":"SpongeBob SquarePants","release_date":"","first_air_date":"1999-05-01","poster_path":"/5h0EU2lqBb03dp5vtRuUHJwqzem.jpg","vote_average":7.7},{"id":246,"title":"Avatar: The Last Airbender","name":"Avatar: The Last Airbender","release_date":"","first_air_date":"2005-02-21","poster_path":"/yaGt4GIutpbXHsv48tWceWg6s56.jpg","vote_average":8.786},{"id":60574,"title":"Peaky Blinders","name":"Peaky Blinders","release_date":"","first_air_date":"2013-09-12","poster_path":"/vUUqzWa2LnHIVqkaKVlVGkVcZIW.jpg","vote_average":8.522},{"id":119051,"title":"Wednesday","name":"Wednesday","release_date":"","first_air_date":"2022-11-23","poster_path":"/9PFonBhy4cQy7Jz20NpMygczOkv.jpg","vote_average":8.325},{"id":76479,"title":"The Boys","name":"The Boys","release_date":"","first_air_date":"2019-07-25","poster_path":"/in1R2dDc421JxsoRWaIIAqVI2KE.jpg","vote_average":8.424},{"id":32726,"title":"Bob's Burgers","name":"Bob's Burgers","release_date":"","first_air_date":"2011-01-09","poster_path":"/iIHsQe3Qjs3NH62HdamyQEPeqTR.jpg","vote_average":7.837},{"id":1433,"title":"American Dad!","name":"American Dad!","release_date":"","first_air_date":"2005-02-06","poster_path":"/eb9sH2am9IUSQ8GhXTNAVoujk8W.jpg","vote_average":7.023},{"id":615,"title":"Futurama","name":"Futurama","release_date":"","first_air_date":"1999-03-28","poster_path":"/eM8bbTn8C8vUwwS6upzzm7gX31u.jpg","vote_average":8.4},{"id":2710,"title":"It's Always Sunny in Philadelphia","name":"It's Always Sunny in Philadelphia","release_date":"","first_air_date":"2005-08-04","poster_path":"/o0tMMK33JqmtpcWw0H41cEr9xQB.jpg","vote_average":8.3},{"id":60735,"title":"The Flash","name":"The Flash","release_date":"","first_air_date":"2014-10-07","poster_path":"/yZevl2vHQgmosfwUdVNzviIfaWS.jpg","vote_average":7.738},{"id":1399,"title":"Game of Thrones","name":"Game of Thrones","release_date":"","first_air_date":"2011-04-17","poster_path":"/1XS1oqL89opfnbLl8WnZY1O1uJx.jpg","vote_average":8.475},{"id":94605,"title":"Arcane","name":"Arcane","release_date":"","first_air_date":"2021-11-06","poster_path":"/87C0wecB8bHb1PsrKBI4kJiEkgV.jpg","vote_average":8.747},{"id":71446,"title":"Money Heist","name":"Money Heist","release_date":"","first_air_date":"2017-05-02","poster_path":"/reEMJA1uzscCbkpeRJeTT2bjqUp.jpg","vote_average":8.229},{"id":63174,"title":"Lucifer","name":"Lucifer","release_date":"","first_air_date":"2016-01-25","poster_path":"/ekZobS8isE6mA53RAiGDG93hBxL.jpg","vote_average":8.428},{"id":82856,"title":"The Mandalorian","name":"The Mandalorian","release_date":"","first_air_date":"2019-11-12","poster_path":"/sWgBv7LV2PRoQgkxwlibdGXKz1S.jpg","vote_average":8.398},{"id":84958,"title":"Loki","name":"Loki","release_date":"","first_air_date":"2021-06-09","poster_path":"/kEl2t3OhXc3Zb9FBh1AuYzRTgZp.jpg","vote_average":8.181},{"id":85271,"title":"WandaVision","name":"WandaVision","release_date":"","first_air_date":"2021-01-15","poster_path":"/ijWWwINc8h71NQ8j1LTJMFSj5wr.jpg","vote_average":8.179},{"id":85937,"title":"Demon Slayer: Kimetsu no Yaiba","name":"Demon Slayer: Kimetsu no Yaiba","release_date":"","first_air_date":"2019-04-06","poster_path":"/xUfRZu2mi8jH6SzQEJGP6tjBuYj.jpg","vote_average":8.636},{"id":95479,"title":"JUJUTSU KAISEN","name":"JUJUTSU KAISEN","release_date":"","first_air_date":"2020-10-03","poster_path":"/6qQzMJG27XOJsyAEEIisoJB45j2.jpg","vote_average":8.574},{"id":31910,"title":"Naruto Shippūden","name":"Naruto Shippūden","release_date":"","first_air_date":"2007-02-15","poster_path":"/kV27j3Nz4d5z8u6mN3EJw9RiLg2.jpg","vote_average":8.529},{"id":30984,"title":"Bleach","name":"Bleach","release_date":"","first_air_date":"2004-10-05","poster_path":"/2EewmxXe72ogD0EaWM8gqa0ccIw.jpg","vote_average":8.351},{"id":65930,"title":"My Hero Academia","name":"My Hero Academia","release_date":"","first_air_date":"2016-04-03","poster_path":"/phuYuzqWW9ru8EA3HVjE9W2Rr3M.jpg","vote_average":8.601},{"id":62715,"title":"Dragon Ball Super","name":"Dragon Ball Super","release_date":"","first_air_date":"2015-07-05","poster_path":"/qEUrbXJ2qt4Rg84Btlx4STOhgte.jpg","vote_average":8.206},{"id":46260,"title":"Naruto","name":"Naruto","release_date":"","first_air_date":"2002-10-03","poster_path":"/xppeysfvDKVx775MFuH8Z9BlpMk.jpg","vote_average":8.362}]
   };
 
   var CURATED_CACHE = {};
@@ -3189,7 +3291,6 @@ button{cursor:pointer}
     stepTimer: 0
   };
   var mediaSearchTimer = null;
-  var musicFrame = null;
   var movieProgress = 0;
   var movieTarget = 0;
   var movieTicker = null;
@@ -3414,7 +3515,7 @@ button{cursor:pointer}
   function mediaLoad(filter, force) {
     if (!els.mediaGrid) return Promise.resolve();
     var kind = media.kind;
-    var key = kind + ':' + filter;
+    var key = kind + ':' + (media.query ? 'q:' + media.query : (media.provider ? 'p:' + media.provider : filter));
     media.filter = filter;
     media.query = '';
     media.page = 1;
@@ -3433,13 +3534,23 @@ button{cursor:pointer}
       return Promise.resolve();
     }
 
-    if (els.mediaGrid) els.mediaGrid.hidden = true;
     var fallback = CURATED_FALLBACK[kind] || [];
-    return mediaFetch(MEDIA_FILTERS[kind][filter]).then(function (data) {
+    /* Only the default Trending grid pins the hand-picked titles. A provider,
+       anime or search request must show exactly what it asked for, otherwise
+       every chip looks like it returns the same list. */
+    var pinCurated = !media.provider && filter === 'trending';
+    if (pinCurated && fallback.length) {
+      media.items = fallback;
+      renderMediaGrid(media.items);
+      mediaSettled();
+    } else if (els.mediaGrid) {
+      els.mediaGrid.hidden = true;
+    }
+    return mediaFetch(mediaPagePath(1)).then(function (data) {
       var list = mediaParse(data, 1);
       if (!list.length) throw new Error('empty list');
       return curatedFor(kind).then(function (extra) {
-        media.items = mergeCurated(extra, list);
+        media.items = pinCurated ? mergeCurated(extra, list) : list;
         mediaRemember();
         renderMediaGrid(media.items);
         mediaSettled();
@@ -3902,18 +4013,16 @@ button{cursor:pointer}
     movieDone();
   }
 
-  /* Playback is handed to CinemaOS's own player. It is the one provider in the
-     list because it is reachable from school networks and its player carries no
-     ad frames or pop-up redirects; the other mirrors injected both, and a
-     cross-origin player cannot be edited from here. */
+  /* One source only. CinemaOS is the provider and its English track is the
+     default; the UI no longer offers language or server switching. */
   var MEDIA_SOURCES = [
     {
-      id: 'cinemaos',
-      label: 'CinemaOS',
+      id: 'english',
+      label: 'English',
       src: function (item, kind, s, e) {
         return kind === 'tv'
-          ? 'https://cinemaos.in/watch/tv/' + item.id + '?season=' + s + '&episode=' + e
-          : 'https://cinemaos.in/watch/movie/' + item.id;
+          ? 'https://cinemaos.in/watch/tv/' + item.id + '?season=' + s + '&episode=' + e + '&lang=en'
+          : 'https://cinemaos.in/watch/movie/' + item.id + '?lang=en';
       }
     }
   ];
@@ -4033,46 +4142,8 @@ button{cursor:pointer}
     });
   }
 
-  function startMusic() {
-    if (!els.movieWrap || !els.movieLoad) return;
-    if (media.frame && media.frame.parentNode) media.frame.parentNode.removeChild(media.frame);
-    media.frame = null;
-    media.item = null;
-    mediaChrome('player');
-    if (els.mediaFilters) els.mediaFilters.hidden = true;
-    if (els.mediaSearch) els.mediaSearch.hidden = true;
-    if (els.mediaBack) els.mediaBack.hidden = true;
-    if (els.mediaGrid) els.mediaGrid.hidden = true;
-    if (els.mediaTitle) els.mediaTitle.textContent = 'Music';
-    if (els.mediaSub) els.mediaSub.textContent = '';
-    if (musicFrame && musicFrame.parentNode) return;
-
-    els.movieWrap.textContent = '';
-    els.movieWrap.hidden = false;
-    movieReset('Loading music');
-    movieStep(30, 82, 'Loading music');
-
-    musicFrame = document.createElement('iframe');
-    musicFrame.title = 'Music';
-    musicFrame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
-    musicFrame.setAttribute('allowfullscreen', '');
-    els.movieWrap.appendChild(musicFrame);
-    musicFrame.addEventListener('load', function () {
-      movieStep(92, 100, 'Ready');
-      window.setTimeout(movieDone, 300);
-    });
-    window.setTimeout(movieDone, 15000);
-    musicFrame.src = 'https://cinemaos.in/music';
-  }
-
   function startMovies(kind) {
-    if (kind === 'music') { startMusic(); return; }
     if (!els.mediaGrid || !els.movieWrap) return;
-
-    if (musicFrame) {
-      if (musicFrame.parentNode) musicFrame.parentNode.removeChild(musicFrame);
-      musicFrame = null;
-    }
 
     var next = kind === 'tv' ? 'tv' : 'movie';
     if (media.kind !== next) {
@@ -4163,6 +4234,51 @@ button{cursor:pointer}
     }
   }
 
+  function initSettings() {
+    if (!els.wispInput) return;
+    try { els.wispInput.value = window.localStorage.getItem('saleen.wisp') || ''; } catch (e) {}
+    if (!els.wispSave) return;
+    els.wispSave.addEventListener('click', function () {
+      var value = els.wispInput.value.trim();
+      if (value && !/^wss?:\/\//i.test(value)) { toast('Use a wss:// address'); return; }
+      try {
+        if (value) window.localStorage.setItem('saleen.wisp', value);
+        else window.localStorage.removeItem('saleen.wisp');
+      } catch (e) {}
+      WISP_SERVERS = wispList();
+      cleanupWisp();
+      wispStart = null;
+      wispReady = false;
+      wispBoot = null;
+      toast(value ? 'Relay saved' : 'Relay cleared');
+    });
+  }
+
+  /* Teacher walks past? One key swaps the whole app for a class meeting. */
+  function setPanic(on) {
+    if (!els.panicView) return;
+    els.panicView.hidden = !on;
+    document.title = on ? 'Period 3 - Biology (Live)' : DISGUISE_TITLE;
+  }
+
+  function panicKey(e) {
+    if (e.key !== 'Escape' && e.key !== '`') return;
+    var tag = String((e.target && e.target.tagName) || '').toLowerCase();
+    if (e.key === '`' && /input|textarea|select/.test(tag)) return;
+    e.preventDefault();
+    setPanic(!!els.panicView && els.panicView.hidden);
+  }
+
+  /* A keypress is missed while a cross-origin player has focus, so a small
+     invisible corner target does the same job with one click. */
+  if (els.panicHot) {
+    els.panicHot.addEventListener('click', function () {
+      setPanic(!!els.panicView && els.panicView.hidden);
+    });
+  }
+
+  initSettings();
+  document.addEventListener('keydown', panicKey);
   mediaInit();
 
   /* ---------------- games (GN Math catalogue, without the blocked host) ---------------- */
@@ -4171,6 +4287,8 @@ button{cursor:pointer}
      blocked, so the catalogue and the game files are pulled from places that
      stay reachable: raw GitHub (plus a proxy fallback), the npm mirror, and
      an image resizer for the covers. */
+var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,"OvO 2","2-fix3.html"],[3,"OvO 3 Dimensions","3-fix3.html"],[4,"Gladihoppers","4-fix3.html"],[5,"Ice Dodo","5-fix2.html"],[6,"Block Blast","6-fix3.html"],[7,"Jetpack Joyride","7-fix3.html"],[8,"Friday Night Funkin","8-fix2.html"],[9,"Sprunki","9-fix2.html"],[11,"Stickman Hook","11-fix2.html"],[13,"Attack Hole","13-fix2.html"],[14,"Bridge Race","14-fix2.html"],[15,"Color Water Sort 3D","15-fix2.html"],[16,"Hide N Seek","16-fix2.html"],[17,"Magic Tiles 3","17-fix2.html"],[18,"Stacky Dash","18-fix2.html"],[19,"Supreme Duelist","19-fix2.html"],[20,"Tall Man Run","20-fix4.html"],[21,"Turbo Stars","21-fix2.html"],[22,"Mob Control HTML5","22-fix2.html"],[23,"Pou","23-fix2.html"],[24,"Crossy Road","24-fix2.html"],[25,"Basket Battle","25-fix2.html"],[26,"Amaze","26-fix2.html"],[27,"Geometry Dash Lite (REMAKE)","27-fix2.html"],[28,"Basketball Frvr","28-fix2.html"],[29,"Bazooka Boy","29-fix2.html"],[30,"Bottle Jump 3D","30-fix2.html"],[31,"Color Match","31-fix2.html"],[32,"Dig Deep","32-fix2.html"],[33,"Retro Bowl","33-fix2.html"],[34,"Retro Bowl College","34-fix2.html"],[36,"Monster Tracks","36-fix3.html"],[37,"Gobble","37-fix3.html"],[38,"Five Nights at Freddy's","38-fix2.html"],[39,"Five Nights at Freddy's 2","39-fix2.html"],[40,"Five Nights at Freddy's 3","40-fix2.html"],[41,"Five Nights at Freddy's 4","41-fix2.html"],[42,"Road of Fury","42-fix2.html"],[43,"Driven Wild","43-fix2.html"],[44,"Ragdoll Hit","44-fix2.html"],[45,"Vex 1","45-fix2.html"],[46,"Vex 2","46-fix2.html"],[47,"Vex 3","47-fix2.html"],[48,"Vex 3 XMAS","48-fix2.html"],[49,"Vex 4","49-fix2.html"],[50,"Vex 5","50-fix2.html"],[51,"Vex 6","51-fix2.html"],[52,"Vex 7","52-fix2.html"],[53,"Vex 8","53-fix2.html"],[54,"Vex Challenges","54-fix2.html"],[55,"Vex X3M","55-fix2.html"],[56,"Vex X3M 2","56-fix2.html"],[58,"1v1.LoL","58-fix2.html"],[59,"A Dance of Fire and Ice","59-fix2.html"],[60,"Achievement Unlocked","60-fix.html"],[61,"Achievement Unlocked 2","61-fix.html"],[62,"Achievement Unlocked 3","62-fix.html"],[63,"Angry Birds","63-fix2.html"],[64,"Backrooms","64-fix4.html"],[65,"Baldi's Basics","65-fix2.html"],[66,"Basket Random","66-fix2.html"],[67,"Big Tower Tiny Square","67-fix2.html"],[68,"Big NEON Tower Tiny Square","68-fix2.html"],[69,"Big ICE Tower Tiny Square","69-fix.html"],[70,"BitLife","70-fix2.html"],[71,"Bloons TD","71-fix2.html"],[72,"Bloons TD 2","72-fix.html"],[73,"Bloons TD 3","73-fix2.html"],[74,"Bloons TD 4","74-fix.html"],[75,"Bloons TD 5","75-fix3.html"],[76,"Bob The Robber 2","76-fix3.html"],[77,"Boxing Random","77-fix2.html"],[78,"Burrito Bison: Launcha Libre","78-fix2.html"],[79,"Cannon Basketball","79-fix.html"],[80,"Cannon Basketball 2","80-fix.html"],[81,"Cluster Rush","81-fix.html"],[82,"Cookie Clicker","82-a.html"],[83,"Coreball","83-fix2.html"],[84,"Cubefield","84-fix.html"],[85,"Cut the Rope","85-fix2.html"],[86,"Draw Climber","86-fix3.html"],[87,"Emulator.JS","87-fix2.html"],[88,"Fireboy and Watergirl 2","88-fix.html"],[89,"Fireboy and Watergirl 3","89-fix.html"],[90,"Granny","90-fix3.html"],[91,"Gunspin","91-fix2.html"],[92,"Highway Racer 2","92-fix.html"],[93,"Johnny Trigger","93-fix2.html"],[94,"Journey Downhill","94-fix2.html"],[95,"Line Rider","95-fix.html"],[96,"Moto X3M","96-fix.html"],[97,"Moto X3M 2","97-fix2.html"],[98,"Moto X3M 3","98-fix2.html"],[99,"Moto X3M Spooky","99-fix.html"],[100,"Moto X3M Winter","100-fix2.html"],[101,"Ninja vs EvilCorp","101-fix.html"],[102,"Paper.io 2","102-fix.html"],[103,"The World's Hardest Game","103-fix2.html"],[104,"The World's Hardest Game 3","104-fix2.html"],[105,"The World's Hardest Game 4","105-fix.html"],[106,"This Is The Only Level","106-fix.html"],[107,"This Is The Only Level 2","107-fix2.html"],[108,"Tiny Fishing","108-fix2.html"],[109,"Tomb Of The Mask","109-fix.html"],[110,"Toss The Turtle","110-fix2.html"],[111,"Tube Jumpers","111-fix2.html"],[112,"Wordle","112-fix3.html"],[113,"Ruffle","113-fix.html"],[114,"2048","114-fix2.html"],[115,"8 Ball Pool","115-fix.html"],[116,"Offroad Mountain Bike","116-fix.html"],[117,"Space Waves","117-fix2.html"],[118,"Solar Smash","118-fix2.html"],[119,"Snow Rider 3D","119-fix2.html"],[120,"Fortzone Battle Royale","120-fix2.html"],[121,"Brawl Guys.io","121-fix.html"],[122,"Survival Race","122-fix2.html"],[123,"Poly Track","123-fix2.html"],[124,"Moto X3M Pool Party","124-fix.html"],[125,"Granny 2","125-fix2.html"],[127,"Fashion Battle","127-fix2.html"],[128,"Slice it All","128-fix2.html"],[129,"Flappy Bird","129-fix.html"],[130,"osu!","130-fix2.html"],[146,"8 Ball Classic","146-fix2.html"],[147,"Angry Birds Showdown","147-fix2.html"],[148,"Archery World Tour","148-fix2.html"],[149,"Ball Blast","149-fix2.html"],[150,"Cannon Balls 3D","150-fix2.html"],[151,"Chess Classic","151-fix2.html"],[152,"Draw the Line","152-fix2.html"],[153,"Flappy Dunk","153-fix2.html"],[154,"Fork n Sausage","154-fix2.html"],[155,"Guess Their Answer","155-fix2.html"],[156,"Harvest.io","156-fix2.html"],[157,"Hill Climb Racing Lite","157-fix2.html"],[158,"Pac-Man Superfast","158-fix2.html"],[159,"Parking Rush","159-fix2.html"],[160,"Race Master 3D","160-fix2.html"],[161,"State.io","161-fix2.html"],[162,"Tower Crash 3D","162-fix2.html"],[163,"Trivia Crack","163-fix2.html"],[164,"Crazy Cattle 3D","164-fix3.html"],[165,"Cheese Chompers 3D","165-fix2.html"],[166,"Bad Parenting 1","166-fix2.html"],[167,"Blade Ball","167-fix.html"],[168,"Blocky Snakes","168-fix2.html"],[169,"Bloxorz","169-fix.html"],[170,"Big Tower Tiny Square 2","170-fix2.html"],[171,"Candy Crush","171-fix.html"],[172,"Melon Playground","172-fix2.html"],[173,"Drift Hunters","173-fix2.html"],[174,"World Box","174-fix.html"],[175,"Run 1","175-fix.html"],[176,"Run 2","176-fix.html"],[177,"Run 3","177-fix.html"],[178,"Swords and Souls","178-fix.html"],[179,"Soundboard","179-a3.html"],[180,"n-gon","180-fix2.html"],[181,"Minecraft 1.8.8","181-fix.html"],[182,"Minecraft 1.12.2","182-f.html"],[183,"Minecraft 1.21.4","183.html"],[185,"Five Nights at Freddy's: Sister Location","185-fix2.html"],[186,"Ragdoll Archers","186-fix.html"],[187,"Papers, Please","187-fix.html"],[188,"Scrap Metal 3","188-fix2.html"],[190,"Five Nights at Freddy's: World","190-fix2.html"],[191,"Five Nights at Freddy's: Pizza Simulator","191-fix2.html"],[192,"Five Nights at Freddy's: Ultimate Custom Night","192-fix2.html"],[193,"Do NOT Take This Cat Home","193-fix2.html"],[194,"People Playground","194-fix2.html"],[195,"R.E.P.O","195-fix2.html"],[196,"ULTRAKILL","196-fix2.html"],[197,"Elastic Man","197-fix.html"],[199,"Time Shooter 1","199-fix.html"],[200,"Time Shooter 2","200-fix.html"],[201,"Time Shooter 3: SWAT","201-fix2.html"],[202,"Carrom Clash","202-fix2.html"],[203,"DOOM","203-fix2.html"],[204,"Five Nights at Winston's","204-fix2.html"],[205,"Buckshot Roulette","205-fix2.html"],[206,"Tunnel Rush","206-fix2.html"],[207,"Snowbattle.io","207-fix3.html"],[208,"Rolly Vortex","208-fix2.html"],[209,"Draw the Hill","209-fix3.html"],[210,"Dragon vs Bricks","210-fix2.html"],[211,"Death Run 3D","211-fix3.html"],[212,"Cut the Rope","212-fix2.html"],[213,"Cut the Rope: Time Travel","213-fix2.html"],[214,"Cut the Rope: Holiday Gift","214-fix2.html"],[215,"Bendy and the Ink Machine","215-fix2.html"],[216,"That's Not My Neighbor","216-fix2.html"],[217,"Hotline Miami","217-fix2.html"],[218,"Papa's Bakeria","218-fix.html"],[219,"Papa's Burgeria","219-fix2.html"],[220,"Papa's Cheeseria","220-fix2.html"],[221,"Papa's Cupcakeria","221-fix2.html"],[222,"Papa's Donuteria","222-fix.html"],[223,"Papa's Freezeria","223-fix.html"],[224,"Papa's Hot Doggeria","224-fix2.html"],[225,"Papa's Pancakeria","225-fix2.html"],[226,"Papa's Pastaria","226-fix2.html"],[227,"Papa's Pizeria","227-fix.html"],[228,"Papa's Scooperia","228-fix2.html"],[229,"Papa's Sushiria","229-fix2.html"],[230,"Papa's Taco Mia","230-fix2.html"],[231,"Papa's Wingeria","231-fix2.html"],[232,"Plants vs Zombies","232-fix2.html"],[233,"Superhot","233-fix.html"],[234,"Duck Life","234-fix2.html"],[235,"Duck Life 2","235-fix2.html"],[236,"Duck Life 3","236-fix2.html"],[237,"Duck Life 4","237-fix2.html"],[238,"Duck Life 5","238-fix.html"],[239,"Red Ball","239-fix2.html"],[240,"Red Ball 2","240-fix2.html"],[241,"Red Ball 3","241-fix.html"],[242,"Red Ball 4","242-fix2.html"],[243,"Red Ball 4 Vol. 2","243-fix.html"],[244,"Red Ball 4 Vol. 3","244-fix.html"],[245,"Wheely","245-fix.html"],[246,"Wheely 2","246-fix.html"],[247,"Wheely 3","247-fix.html"],[248,"Wheely 4","248-fix.html"],[249,"Wheely 5","249-fix.html"],[250,"Wheely 6","250-fix.html"],[251,"Wheely 7","251-fix.html"],[252,"Wheely 8","252-fix.html"],[253,"Chat Bot AI (A.I GPT)","253-update2.html"],[255,"Crazy Chicken 3D","255-fix2.html"],[256,"Crazy Kitty 3D","256-fix.html"],[257,"Google Baseball","257-fix2.html"],[258,"A Bite at Freddy's","258-fix.html"],[259,"Class of '09","259-fix2.html"],[260,"RE:RUN","260-fix.html"],[261,"Fruit Ninja","261-fix.html"],[262,"Half Life","262-fix.html"],[263,"Quake III Arena","263-fix3.html"],[264,"Escape Road","264-fix.html"],[265,"Escape Road 2","265-fix4.html"],[266,"Speed Stars","266-fix2.html"],[267,"Pizza Tower","267-fix2.html"],[268,"Bacon May Die","268-fix2.html"],[269,"Bad Ice Cream","269-fix2.html"],[270,"Bad Ice Cream 2","270-fix2.html"],[271,"Bad Ice Cream 3","271-fix2.html"],[272,"Basketball Stars","272-ff.html"],[273,"BlockPost","273-fix.html"],[274,"CircloO","274-fix2.html"],[275,"CircloO 2","275-fix.html"],[276,"Drift Boss","276-fix2.html"],[277,"Evil Glitch","277-fix2.html"],[278,"Madalin Stunt Cars 2","278-fix.html"],[279,"Madalin Stunt Cars 3","279-fix.html"],[280,"Papery Planes","280-fix.html"],[281,"Pixel Gun Survival","281-fix.html"],[282,"Protektor","282-fix2.html"],[283,"Rooftop Snipers","283-fix2.html"],[284,"War The Knights","284-fix2.html"],[285,"Basket Bros","285-fix2.html"],[286,"Endoparasitic","286-fix.html"],[287,"Riddle School","287-fix2.html"],[288,"Riddle School 2","288-fix2.html"],[289,"Riddle School 3","289-fix2.html"],[290,"Riddle School 4","290-fix2.html"],[291,"Riddle School 5","291-fix2.html"],[292,"Riddle Transfer","292-fix2.html"],[293,"Riddle Transfer 2","293-fix2.html"],[294,"Idle Dice","294-fix.html"],[295,"12 Mini Battles","295-fix.html"],[297,"Minecraft 1.5.2","297-f.html"],[298,"Minecraft Alpha 1.2.6","298-fix.html"],[299,"Minecraft Beta 1.3","299-fix.html"],[300,"Minecraft Beta 1.7.3","300-fix.html"],[301,"Minecraft Indev","301-fix.html"],[302,"Little Runmo","302-fix.html"],[303,"Territorial.io","303-fix2.html"],[304,"Alien Hominid","304-fix.html"],[305,"Tanuki Sunset","305-fix2.html"],[306,"Shipo.io","306-fix.html"],[307,"Rainbow Obby","307-fix.html"],[308,"Nazi Zombies: Portable","308-fix.html"],[309,"Sandboxels","309-fix.html"],[310,"Dreadhead Parkour","310-fix.html"],[311,"Sandtris","311-fix.html"],[312,"BlackJack","312-fix.html"],[313,"Minesweeper Mania","313-fix.html"],[314,"Super Mario 63","314-fix2.html"],[315,"Jelly Mario","315-fix.html"],[316,"Angry Birds Chrome","316-fix.html"],[317,"sandspiel","317-fix.html"],[318,"Side Effects","318-fix.html"],[319,"Build a Queen","319-fix2.html"],[320,"3D Bowling","320-fix2.html"],[321,"Room Sort","321-fix2.html"],[322,"Sushi Roll","322-fix2.html"],[323,"Find the Alien","323-fix2.html"],[324,"Maze Speedrun","324-fix2.html"],[325,"Kitchen Bazar","325-fix2.html"],[326,"Pokey Ball","326-fix2.html"],[327,"Slime.io","327-fix.html"],[328,"Om Nom Run","328-fix2.html"],[329,"TileTopia","329-fix2.html"],[330,"BitPlanes","330-fix2.html"],[331,"Crazy Cars","331-fix.html"],[333,"Fancy Pants Adventure","333-fix2.html"],[334,"Fancy Pants Adventure 2","334-fix.html"],[335,"Fancy Pants Adventure 3","335-fix.html"],[336,"Fancy Pants Adventure 4 Part 1","336-fix2.html"],[337,"Fancy Pants Adventure 4 Part 2","337-fix.html"],[338,"Getaway Shootout","338-fix2.html"],[339,"House of Hazards","339-fix2.html"],[340,"Learn to Fly","340-fix.html"],[341,"Learn to Fly 2","341-fix2.html"],[342,"Learn to Fly 3","342-fix.html"],[343,"Learn to Fly Idle","343-fix.html"],[344,"Raft Wars","344-fix2.html"],[345,"Raft Wars 2","345-fix.html"],[346,"Sort the Court","346-fix.html"],[347,"SpiderDoll","347-fix.html"],[348,"They Are Coming","348-fix2.html"],[349,"Spiral Roll","349-fix.html"],[350,"Binding of Issac: Wrath of the Lamb","350-fix.html"],[351,"Happy Sheepies","351-fix.html"],[352,"DON'T YOU LECTURE ME","352-fix.html"],[353,"Blumgi Rocket","353-fix2.html"],[354,"Adventure Capatalist","354-fix2.html"],[355,"Dadish 2","355-fix.html"],[356,"Dadish 3","356-fix.html"],[357,"Dadish","357-fix.html"],[358,"Dadish 3D","358-fix.html"],[359,"Daily Dadish","359-fix.html"],[360,"EvoWars.io","360-fix.html"],[361,"Google Feud","361-fix.html"],[362,"Idle Breakout","362-fix.html"],[363,"Idle Lumber Inc","363-fix.html"],[364,"Idle Mining Empire","364-fix.html"],[365,"JustFall.lol","365-fix.html"],[366,"Merge Harvest","366-fix.html"],[367,"Parking Fury 3D","367-fix2.html"],[369,"Slowroads","369-fix.html"],[370,"Smash Karts","370-fix2.html"],[371,"Stickman Fight Ragdoll","371-fix2.html"],[372,"Stickman Boost","372-fix.html"],[373,"Stickman Climb","373-fix.html"],[374,"Stickman Golf","374-fix2.html"],[375,"2048 Merge Run","375-fix2.html"],[376,"Build a Big Army","376-fix.html"],[377,"Build a Plane","377-fix.html"],[378,"Camouflage and Sniper","378-fix.html"],[379,"Car Survival 3D","379-fix.html"],[380,"City Defense","380-fix.html"],[381,"Clothing Shop 3D","381-fix2.html"],[382,"Cool Cars Run 3D","382-fix.html"],[383,"Crush Cars 3D","383-fix.html"],[384,"Destiny Run 3D","384-fix.html"],[385,"Destroy The Car 3D","385-fix2.html"],[386,"Diamond Seeker","386-fix.html"],[387,"Draw Joust","387-fix2.html"],[388,"Evolving Bombs 3D","388-fix2.html"],[389,"Fire and Frost Master","389-fix2.html"],[390,"Fitness Empire","390-fix2.html"],[391,"Flick Goal","391-fix.html"],[392,"Flip Master","392-fix.html"],[393,"Giant Wanted","393-fix.html"],[394,"Gun Clone","394-fix.html"],[395,"Gun Runner","395-fix2.html"],[396,"Kaji Run","396-fix2.html"],[397,"Make a SuperBoat","397-fix.html"],[398,"Makeover Run","398-fix.html"],[399,"Mega Car Jumps","399-fix.html"],[400,"Money Rush","400-fix3.html"],[401,"Monster Box 3D","401-fix.html"],[402,"Office Fight","402-fix2.html"],[403,"Robot Invasion","403-fix.html"],[404,"Seat Jam 3D","404-fix.html"],[405,"Shooting Master","405-fix.html"],[406,"Supermarket 3D","406-fix2.html"],[407,"Survive to Victory","407-fix2.html"],[408,"Telekinesis Attack","408-fix2.html"],[409,"Telekinesis Car","409-fix.html"],[410,"Telekinesis Drive","410-fix.html"],[411,"Telekinesis","411-fix.html"],[413,"Tug of War with Cars","413-fix.html"],[414,"Twerk Race 3D","414-fix.html"],[415,"Twisted Rope 3D","415-fix.html"],[416,"Wall Crawler","416-fix2.html"],[417,"War Regions","417-fix.html"],[418,"Weapon Craft Run","418-fix.html"],[419,"Weapon Upgrade Rush","419-fix2.html"],[420,"Weapon Scale","420-fix.html"],[421,"Rich Run 3D","421-fix2.html"],[422,"High Heels","422-fix2.html"],[423,"WebFishing","423-fix2.html"],[426,"Andy's Apple Farm","426-fix2.html"],[427,"OMORI","427-fix2.html"],[428,"Five Nights at Freddy's 4: Halloween","428-fix2.html"],[429,"Code Editor","429-ff.html"],[430,"10 Minutes Till Dawn","430-fix2.html"],[431,"99 Balls","431-fix2.html"],[432,"Abandoned","432-fix.html"],[433,"Yume Nikki","433-fix2.html"],[434,"God's Flesh","434-fix.html"],[435,"A Small World Cup","435-fix.html"],[436,"Awesome Tanks","436-fix.html"],[437,"Bouncemasters","437-fix2.html"],[438,"Awesome Tanks 2","438-fix.html"],[439,"Bank Robbery 2","439-fix.html"],[440,"Celeste PICO","440-fix.html"],[441,"Kitty Toy","441-fix.html"],[442,"Infinimoes","442-fix.html"],[443,"Adventure Drivers","443-fix2.html"],[444,"Ages of Conflict","444-fix.html"],[445,"Kindergarten","445-fix2.html"],[446,"Kindergarten 2","446-fix2.html"],[447,"Nijika's Ahoge","447-fix2.html"],[448,"Aquapark.io","448-fix2.html"],[449,"City Smash","449-fix2.html"],[450,"Amanda the Adventurer","450-fix2.html"],[451,"Slender: The 8 Pages","451-fix2.html"],[452,"Station 141","452-fix.html"],[453,"Station Saturn","453-fix2.html"],[454,"BLOODMONEY!","454-fix2.html"],[455,"BERGENTRUCK 201x","455-fix2.html"],[456,"Undertale Yellow","456-fix2.html"],[457,"Raft","457-fix2.html"],[458,"The Deadseat","458-fix2.html"],[459,"The Man In The Window","459-fix2.html"],[460,"Fears to Fathom: Home Alone","460-fix2.html"],[461,"Slither.io","461-fix.html"],[462,"DEAD PLATE","462-fix2.html"],[463,"Lacey's Flash Games","463-fix2.html"],[464,"Choppy Orc","464-fix.html"],[465,"Cuphead","465-fix2.html"],[466,"Baldi's Basics Classic Remastered","466-fix2.html"],[467,"Baldi's Basics Plus","467-fix2.html"],[468,"Hollow Knight","468-fix2.html"],[469,"sandstone","469-fix.html"],[470,"Doodle Jump","470-fix.html"],[471,"Madness Combat: Project Nexus (classic)","471-fix.html"],[472,"Bad Time Simulator","472-fix2.html"],[473,"Spacebar Clicker","473-fix.html"],[474,"Friday Night Funkin': V.S. Whitty","474-fix.html"],[475,"Friday Night Funkin': B-Sides","475-fix.html"],[476,"Friday Night Funkin': Vs. Hex","476-fix.html"],[477,"Friday Night Funkin': Vs. Hatsune Miku","477-fix.html"],[478,"Friday Night Funkin': Neo","478-fix.html"],[479,"Steal A Brainrot","479-fix.html"],[480,"Friday Night Funkin': Sarvente's Mid-Fight Masses","480-fix.html"],[481,"Friday Night Funkin': vs. Tricky","481-fix.html"],[482,"Human Expenditure Program","482-fix2.html"],[483,"Friday Night Funkin': Hit Single Real","483-fix.html"],[484,"Friday Night Funkin': Creepypasta JP","484-fix.html"],[485,"Friday Night Funkin': vs. Garcello","485-fix.html"],[486,"Friday Night Funkin': Sonic Legacy","486-fix.html"],[487,"Friday Night Funkin': vs. QT","487-fix.html"],[488,"Friday Night Funkin': Mistful Crimson Morning Reboot","488-fix.html"],[489,"Friday Night Funkin': Indie Cross","489-fix.html"],[490,"Rooftop Snipers 2","490-fix.html"],[491,"I woke up next to you again.","491-fix.html"],[492,"UNDERWHEELS","492-fix.html"],[493,"RigBMX","493-fix.html"],[494,"RigBMX 2","494-fix.html"],[495,"groon groon, babey!","495-fix.html"],[496,"Friday Night Funkin': Jeffy's Endless Aethos","496-fix.html"],[497,"Friday Night Funkin': vs. BOPCITY","497-fix.html"],[498,"Friday Night Funkin': 17 Bucks: Floor 1","498-fix.html"],[499,"Friday Night Funkin': FIRE IN THE HOLE: Lobotomy Dash Funkin'","499-fix.html"],[500,"Friday Night Funkin': TWIDDLEFINGER","500-fix.html"],[501,"Kindergarten 3","501-fix.html"],[502,"Stick With It","502-fix2.html"],[503,"Five Nights at Candy's","503-fix.html"],[504,"Five Nights at Candy's 2","504-fix.html"],[505,"Pokemon Red","505-fix2.html"],[506,"Pokemon Emerald","506-fix2.html"],[507,"The Impossible Quiz","507-fix2.html"],[508,"Super Mario Bros","508-fix2.html"],[509,"Friday Night Funkin’ Soft","509-fix.html"],[510,"Tomodachi Collection","510-fix2.html"],[511,"Doge Miner","511-fix.html"],[512,"Final Earth 2","512-fix.html"],[513,"Swordfight!!","513-fix2.html"],[514,"PortaBoy+","514-fix2.html"],[515,"PacMan (Horror)","515-fix2.html"],[516,"Oshi Oshi Punch!","516-fix2.html"],[517,"Nubby's Number Factory","517-fix2.html"],[518,"Touhou: Luminous Strike","518-fix2.html"],[519,"Generic Fighter Maybe","519-fix2.html"],[520,"Dan The Man","520-fix4.html"],[521,"Bust a Loop","521-fix2.html"],[522,"Bad Monday Simulator","522-fix2.html"],[523,"Touhou Mother","523-fix2.html"],[524,"Parappa The Rapper","524-fix2.html"],[525,"Friday Night Funkin': Darkness Takeover","525-fix.html"],[526,"SpongeBob SquarePants: Land Ho!","526-fix.html"],[527,"SpongeBob SquarePants: SpongeBob Run","527-fix.html"],[528,"SpongeBob SquarePants: Squidward's Sizzlin' Scare","528-fix.html"],[529,"SpongeBob SquarePants: Sandy's Sponge Stacker","529-fix.html"],[530,"SpongeBob SquarePants: Tasty Pastry Party","530-fix.html"],[531,"SpongeBob SquarePants: The Kah-Ray-Tay Squid","531-fix.html"],[532,"SpongeBob SquarePants: WereSquirrel","532-fix.html"],[533,"SpongeBob SquarePants: Krabby Katch","533-fix.html"],[534,"Teen Titans GO!: Jump Jousts","534-fix.html"],[535,"Teen Titans GO!: Jump Jousts 2","535-fix.html"],[536,"Cat Connection","536-fix.html"],[537,"Cat Gunner: Super Zombie Shoot","537-fix.html"],[538,"Love Letters","538-fix.html"],[539,"Chiikawa Puzzle","539-fix.html"],[540,"myTeardrop","540-fix.html"],[541,"Friday Night Funkin': Pibby: Apocalypse","541-fix.html"],[542,"Karlson","542-fix2.html"],[543,"Jelly Drift","543-fix2.html"],[544,"Plinko","544-fix.html"],[545,"Clash Of Vikings","545-fix.html"],[546,"Recoil","546-fix.html"],[547,"Baseball Bros","547-fix.html"],[548,"Football Bros","548-fix.html"],[549,"Sonic the Hedgehog 2: Community's Cut","549-fix.html"],[550,"Sonic the Hedgehog 3: Angel Island Remastered","550-fix.html"],[551,"Hypper Sandbox","551-fix.html"],[552,"Aviamasters","552-fix2.html"],[553,"Rolling Sky","553-fix2.html"],[554,"Yandere Simulator","554-fix2.html"],[555,"Friday Night Funkin VS. KAPI","555-fix.html"],[556,"Friday Night Funkin VS. Sky","556-fix.html"],[557,"Getting Over It with Bennett Foddy","557-fix2.html"],[558,"Friday Night Funkin Vs. Cyber Sensation","558-fix.html"],[559,"Friday Night Funkin vs Shaggy","559-fix.html"],[560,"Deltatraveler","560-fix2.html"],[561,"BitGun.io","561-fix2.html"],[562,"Boom Slingers: Reboom","562-fix2.html"],[563,"CG FC 25","563-fix2.html"],[564,"Count Masters: Stickman Games","564-fix2.html"],[565,"Dalgona Candy Honeycomb Cookie","565-fix2.html"],[567,"Highway Racer","567-fix2.html"],[568,"Highway Racer 2 REMASTERED","568-fix2.html"],[569,"Hula Hoop Race","569-fix2.html"],[570,"Jelly Restaurant","570-fix2.html"],[571,"Layers Roll","571-fix2.html"],[572,"Lazy Jumper","572-fix2.html"],[573,"Man Runner 2048","573-fix2.html"],[574,"Pottery Master","574-fix2.html"],[575,"Shovel 3D","575-fix2.html"],[576,"Sky Riders","576-fix2.html"],[577,"Steal Brainrot Online","577-fix2.html"],[578,"Stickman and Guns","578-fix2.html"],[579,"Super Star Car","579-fix2.html"],[580,"Traffic Rider","580-fix2.html"],[581,"BuildNow.gg","581-fix2.html"],[582,"Friday Night Funkin': Mario's Madness","582-fix.html"],[583,"Friday Night Funkin' vs Hypno Lullaby","583-fix.html"],[584,"Stone Grass Mowing Simulator","584-fix.html"],[585,"Fallout","585-fix.html"],[586,"The Oregon Trail","586-fix.html"],[587,"Newgrounds Rumble","587-fix2.html"],[588,"Super Mario 64","588-fix.html"],[589,"Sonic CD","589-fix3.html"],[590,"Sonic Mania","590-fix3.html"],[591,"Slime Rancher","591-fix2.html"],[592,"Pac Man World","592-fix3.html"],[593,"Pac Man World 2","593-fix2.html"],[594,"Waterworks!","594-fix2.html"],[595,"Shapez.io","595-fix2.html"],[596,"[!] COMMENTS","596-fix2.html"],[597,"Plants vs. Zombies 2 Gardenless","597-fix2.html"],[598,"Sonic.EXE","598-fix2.html"],[599,"Metal Gear Solid","599-fix3.html"],[600,"FNF Vs. Hypno's Lullaby v2","600-fix.html"],[601,"FNF Vs. Sonic.EXE 3.0/4.0","601-fix.html"],[602,"Doom 2","602-fix.html"],[603,"Growden.io","603-fix2.html"],[604,"Minesweeper Plus","604-fix2.html"],[605,"Schoolboy Runaway","605-fix2.html"],[606,"Sonic.EXE (ORIGINAL)","606-fix2.html"],[607,"Tattletail","607-fix2.html"],[608,"Friday Night Funkin VS Impostor v4","608-fix.html"],[609,"Friday Night Funkin vs Sunday Remastered HD","609-fix2.html"],[610,"Friday Night Funkin vs Carol V2","610-fix.html"],[611,"The Legend of Zelda Ocarina of Time","611-fix2.html"],[612,"The Legend of Zelda Majora's Mask","612-fix2.html"],[613,"Friday Night Funkin' Drop and Roll, but Playable","613-fix.html"],[614,"Toy Rider","614-fix.html"],[616,"Friday Night Funkin’ Wednesday's Infidelity","616-fix.html"],[617,"Postal","617-fix2.html"],[618,"FNF vs Bob v2.0 (Bob’s Onslaught)","618-fix.html"],[619,"Friday Night Funkin': Rev-Mixed","619-fix.html"],[620,"Three Goblets","620-fix2.html"],[621,"Friday Night Funkin': Gumballs","621-fix.html"],[622,"Oneshot (LEGACY)","622-fix.html"],[623,"Celeste","623-fix2.html"],[624,"Happy Wheels","624-fix.html"],[625,"Get Yoked","625-fix.html"],[626,"Doom 3","626-fix2.html"],[627,"Tag","627-fix3.html"],[628,"Pizza Tower: Scoutdigo","628-fix2.html"],[629,"Off","629-fix.html"],[630,"Space Funeral","630-fix.html"],[631,"Endroll","631-fix2.html"],[632,"Cave Story","632-fix2.html"],[633,"Friday Night Funkin': VS. Impostor: Alternated","633-fix.html"],[634,"Friday Night Funkin': Chaos Nightmare - Sonic Vs. Fleetway","634-fix.html"],[635,"Spelunky Classic HD","635-fix.html"],[636,"Friday Night Funkin' D-Sides","636-fix.html"],[637,"BFDIA 5b","637-fix3.html"],[638,"BFDIA 5b: 5*30","638-fix2.html"],[639,"Friday Night Funkin' VS Impostor B-Sides","639-fix.html"],[640,"Mutilate a Doll 2","640-fix.html"],[641,"Godzilla Daikaiju Battle Royale","641-fix.html"],[642,"Friday Night Funkin' Sunday Night Suicide: Rookies Edition","642-fix.html"],[643,"Rio Rex","643-fix.html"],[644,"Friday Night Funkin vs Nonsense","644-fix.html"],[645,"Arthur's Nightmare","645-fix2.html"],[646,"Buster Jam","646-fix2.html"],[647,"Super Smash Flash","647-fix2.html"],[648,"Mindwave","648-fix2.html"],[649,"Look Outside","649-fix.html"],[650,"Milk Inside a Bag of Milk Inside a Bag of Milk","650-fix2.html"],[651,"Milk Outside A Bag Of Milk Outside A Bag Of Milk","651-fix.html"],[653,"1 Date Danger","653-fix2.html"],[654,"Final Fantasy VII","654-fix3.html"],[655,"Goblin Goopmaxxing","655-fix.html"],[656,"Rogue Sergeant The Final Operation","656-fix.html"],[657,"Friday Night Funkin vs Undertale","657-fix.html"],[658,"Midnight Shift","658-fix.html"],[659,"Orange Roulette","659-fix.html"],[660,"Please Dont Touch Anything","660-fix.html"],[661,"Royal Towers: Medieval TD","661-fix2.html"],[662,"Going Balls","662-fix2.html"],[663,"3D Bolt Master","663-fix2.html"],[664,"Tall.io","664-fix2.html"],[665,"Match Triple 3D","665-fix2.html"],[666,"Stick War: Legacy","666-fix2.html"],[667,"In Stars and Time","667-fix2.html"],[668,"Gorilla Tag","668-fix3.html"],[669,"Terraria","669-fix.html"],[670,"Raldi's Crackhouse","670-fix.html"],[671,"We Become What We Behold","671-fix2.html"],[672,"A Difficult Game About Climbing","672-fix2.html"],[673,"Hobo 1","673-fix.html"],[674,"Hobo 2","674-fix.html"],[675,"Hobo 3","675-fix.html"],[676,"Hobo 4","676-fix.html"],[677,"Hobo 5","677-fix.html"],[678,"Hobo 6","678-fix.html"],[679,"Hobo 7","679-fix.html"],[680,"Kirby Super Star Ultra","680-fix3.html"],[681,"Cooking Mama","681-fix2.html"],[682,"Cooking Mama 2","682-fix2.html"],[683,"Cooking Mama 3","683-fix2.html"],[684,"Kirby Squeak Squad","684-fix3.html"],[685,"FIFA 11","685-fix2.html"],[686,"FIFA 10","686-fix2.html"],[687,"Pico's School (1999)","687-fix.html"],[688,"Peggle","688-fix.html"],[689,"Meatboy","689-fix.html"],[690,"Friday Night Funkin': AKAGE","690-fix.html"],[691,"Friday Night Funkin': Heartbreak Havoc [Vs. Sky: REDUX]","691-fix.html"],[692,"Kirby ~ Soft & Wet","692-fix.html"],[693,"Half Life: Opposing Force","693-fix.html"],[694,"Pokemon Firered","694-fix2.html"],[695,"Duck Life 8","695-fix.html"],[696,"Pokemon HeartGold","696-fix3.html"],[697,"Bank Robbery","697-fix2.html"],[698,"Bank Robbery 3","698-fix2.html"],[699,"Stickman Destruction","699-fix.html"],[700,"FNF vs Pibby Corrupted","700-fix.html"],[701,"Real Flight Simulator","701-fix.html"],[702,"JavascriptPS1","702-fix.html"],[703,"VS Rewrite: ROUND 2","703-fix.html"],[704,"Five Nights at Freddy's: World Refreshed","704-fix2.html"],[705,"Iron Lung","705-fix2.html"],[706,"Fear & Hunger","706-fix2.html"],[707,"Traffic Racer","707-fix2.html"],[708,"Needy Streamer Overload","708-fix2.html"],[709,"Survivor.io","709-fix2.html"],[710,"Five Nights at Epstein's","710-fix2.html"],[711,"Antonblast","711-fix.html"],[712,"Jumbo Mario","712-fix2.html"],[713,"Silent Hill","713-fix2.html"],[714,"Friday Night Funkin vs Tabi","714-fix.html"],[715,"Friday Night Funkin vs Zardy","715-fix.html"],[716,"Clover Pit","716-fix3.html"],[717,"Peaks of Yore","717-fix3.html"],[718,"Untitled Goose Game","718-fix.html"],[719,"A Game About Feeding A Black Hole","719-fix2.html"],[720,"Roulette Hero","720-fix.html"],[721,"Shift at Midnight","721-fix.html"],[722,"Fused 240","722-fix2.html"],[723,"Brotato","723-fix.html"],[724,"Endoparasitic 2","724-fix.html"],[725,"ShredSauce","725-fix2.html"],[726,"Breath of the Wild NDS","726-fix2.html"],[727,"Dimension Incident","727-fix.html"],[728,"Fear Assessment","728-fix.html"],[729,"game inside a game inside a game inside a game inside a game inside a game","729-fix.html"],[730,"Cell Machine","730-fix2.html"],[731,"Undertale: Last Breath","731-fix.html"],[732,"64 in 1 NES","732-fix.html"],[733,"Tetris","733-fix2.html"],[734,"Christmas Massacre","734-fix.html"],[735,"Famidash","735-fix2.html"],[736,"Super Mario Bros. Remastered","736-fix.html"],[737,"Saihate Station (さいはて駅)","737-fix.html"],[738,"Dumb Ways to Die","738-fix3.html"],[739,"Soccer Random","739-fix2.html"],[740,"Bart Blast","740-fix2.html"],[741,"Resident Evil","741-fix3.html"],[742,"Resident Evil 2","742-fix2.html"],[743,"Power Hover","743-fix.html"],[744,"Escape Road City 2","744-fix2.html"],[745,"Tetris","745-fix2.html"],[746,"Fundamental Paper Novel","746-fix.html"],[747,"Worst Time Simulator","747-fix.html"],[748,"Undertale Last Breath PHASE THREE","748-fix.html"],[749,"Super Monkey Ball 1&2","749-fix.html"],[750,"Five Nights at Last Breath","750-fix2.html"],[751,"Jeffrey Epstein Basics In Education And Kidnapping","751-fix.html"],[752,"Bad Piggies","752-fix.html"],[753,"Breaklock","753-fix.html"],[754,"Minecraft Pocket Edition","754-fix2.html"],[755,"Brawl Simulator 3D","755-fix2.html"],[756,"Witch's Heart","756-fix2.html"],[757,"Ultrapool","757-fix2.html"],[758,"CaseOh's Basics in Eating and Fast Food","758-fix2.html"],[759,"Dice a Million","759-fix.html"],[760,"Overburden","760-fix2.html"],[761,"FISH","761-fix.html"],[762,"Cheese Rolling","762-fix.html"],[763,"Flying Gorilla 3D","763-fix.html"],[764,"Five Night's at Shrek's Hotel","764-fix.html"],[765,"Scary Shawarma Kiosk: the ANOMALY","765-fix.html"],[766,"Suika Game","766-fix2.html"],[767,"Stick Slasher","767-fix.html"],[768,"Stickman Kombat 2D","768-fix2.html"],[769,"Stickman Duel","769-fix2.html"],[770,"Sonic Robo Blast 2","770-fix2.html"],[771,"Hollow Knight: Silksong","771-fix2.html"],[772,"Sam & Max Hit the Road","772-fix.html"],[773,"Command & Conquer","773-fix.html"],[774,"Mountain Bike Racer","774-fix2.html"],[775,"Bart Bash","775-fix.html"],[776,"Your Only Move Is HUSTLE","776-fix.html"],[777,"Outhold","777-fix2.html"],[778,"Serial Experiments Lain","778-fix.html"],[779,"I Have No Mouth, and I Must Scream","779-fix.html"],[780,"Thing-Thing Arena 3","780-fix.html"],[781,"Scratch Inc","781-fix.html"],[782,"Um Jammer Lammy","782-fix3.html"],[783,"Apes vs Helium","783-fix.html"],[784,"Gabriel's Awesome Schoolhouse (GASH)","784-fix.html"],[785,"Web Dashers","785-upd3.html"],[786,"Volley Random","786-fix2.html"],[787,"BeatBlock","787-fix.html"],[788,"Vib-Ribbon","788-fix2.html"],[789,"Stardew Valley","789-fix2.html"],[790,"Helltaker","790-fix.html"],[791,"Who's Your Daddy","791-fix2.html"],[792,"Escape Road 3","792-fix2.html"],[793,"Lethal Ape","793-fix.html"],[794,"Fear & Hunger 2: Termina","794-fix2.html"],[795,"UvuvwevwevweOnyetenvewveUgwemubwemOssas","795-fix.html"],[796,"Slendytubbies 1","796-fix.html"],[797,"Fih","797-fix.html"],[798,"Hungry Lamu","798-fix2.html"],[799,"Hungry Lamu 2","799-fix3.html"],[800,"Rocket Goal.io","800-fix2.html"],[801,"Trees Hate You","801-fix3.html"],[802,"Scampton The Great","802-fix.html"],[803,"Bendy and the Ink Machine: ALL CHAPTERS","803-fix2.html"],[804,"Vampire Survivors","804-fix.html"],[805,"Plague Inc","805-fix.html"],[806,"Slendytubbies 2","806-fix.html"],[807,"Slendytubbies 2D","807-fix.html"],[808,"Spaceflight Simulator","808-fix.html"],[809,"Rhythm Heaven","809-f.html"],[810,"Need For Speed: Carbon","810-fix2.html"],[811,"Need For Speed: Most Wanted","811-f.html"],[812,"Need For Speed: Underground 2","812-f.html"],[813,"Five Nights at Frickbear's 3","813-f3.html"],[814,"MiSide","814.html"],[815,"Baldi's Basics The Ultra Decompile","815.html"],[816,"-3","816.html"],[817,"-b","817-f.html"],[818,"t³ (T cubed)","818.html"],[819,"20 Minutes Till Dawn","819-fix2.html"],[820,"Phoenix Wright - Ace Attorney","820-fix2.html"],[821,"Apollo Justice - Ace Attorney","821-fix2.html"],[822,"Phoenix Wright - Ace Attorney - Justice for All","822-fix.html"],[823,"Ace Attorney Investigations - Miles Edgeworth","823-fix2.html"],[824,"Phoenix Wright - Ace Attorney - Trials and Tribulations","824-fix.html"],[825,"Cruelty Squad","825.html"],[826,"Just Shapes & Beats","826-f.html"],[827,"Totally Accurate Battle Simulator (TABS)","827-f.html"],[828,"Animal Crossing (GAMECUBE)","828.html"],[829,"Touhou 1 Touhou-Reiiden","829.html"],[830,"Touhou 2 Touhou-Fuumaroku","830.html"],[831,"Touhou 3 Touhou-Yumejikuu","831.html"],[832,"Touhou 4 Touhou-Gensokyou","832.html"],[833,"Touhou 5 Touhou-Kaikidan","833.html"],[834,"I Wanna Be The Guy","834.html"],[835,"YoHoHo.io","835-fix.html"],[836,"Friday Night Funkin vs Shucks v2","836.html"],[837,"Into Space 2","837-fix2.html"],[838,"Vena","838.html"],[839,"s.p.l.i.t","839.html"],[840,"My Talking Baby Hippo","840-fix2.html"],[841,"WarioWare: Touched!","841-f.html"],[842,"Plants vs. Zombies GOTY Edition","842.html"],[843,"La Madriguera (Lazy Bear Game)","843.html"],[844,"Hammer 2: Reloaded","844-f.html"],[845,"Swords and Sandals 2","845-fix2.html"],[846,"One Shot: World Machine edition","846.html"],[847,"PEAK","847.html"],[848,"ClusterTruck","848.html"],[849,"Azahar (Emulator)","849.html"],[850,"Lobotomy Corporation","850.html"],[851,"Grand Theft Auto 3","851.html"],[852,"Granny 3","852.html"],[853,"SCP: Containment Breach","853.html"],[854,"Ravenfield","854.html"],[855,"Trombone Champion","855.html"],[856,"PikuNiku","856.html"],[857,"Inscryption","857.html"],[858,"60 Seconds! Reatomized","858.html"],[859,"JoJo's Bizarre Adventure: Heritage for the Future","859-f.html"],[860,"Endacopia","860.html"],[861,"Friday Night Funkin': VS. Mario Ultra Rebooted","861.html"],[862,"Friday Night Funkin': VS. Henry Stickmin V4","862.html"],[863,"Friday Night Funkin': VS. Super Mario Bros. Funk Mix DX","863.html"],[864,"Friday Night Funkin': VS. Seek's Cool Deltarune","864-fix.html"],[865,"Lethal Company","865.html"],[866,"Team Fortress 2","866.html"],[867,"Gang Beasts","867.html"],[868,"Geometry Dash","868-F3.html"],[869,"Five Nights at Freddy's: Into The Pit","869.html"],[870,"Sally Face","870.html"],[871,"Gamble With Friends","871.html"],[872,"The One Fish","872.html"],[873,"Chain-Chillas","873.html"],[874,"Wolfenstein 3D","874.html"],[875,"ROAM0120.EXE","875-f3.html"],[876,"Sugary Spire Exhibition Night: Pizzano's Awesome Night Mod","876.html"],[877,"Pet The Cat","877.html"],[878,"Garten of Banban 1","878-f.html"],[879,"The Joy of Creation: Story Mode","879.html"],[880,"Castle Crashers","880.html"],[881,"Feed and Grow Fish","881.html"],[882,"Minecraft: Story Mode","882.html"]];
+
   var GAMES_HTML_BASE = 'https://raw.githubusercontent.com/gn-math/html/main/';
   var GAMES_NPM_BASE = 'https://cdn.jsdelivr.net/npm/gn-math.github.io-main@1.0.5/html-main/';
   var GAMES_COVER_BASE = 'https://raw.githubusercontent.com/gn-math/covers/main/';
@@ -4423,29 +4541,32 @@ button{cursor:pointer}
     gameCountLabel(shown);
   }
 
+  function fallbackGames() {
+    return GAMES_FALLBACK.map(function (g) {
+      return { id: g[0], name: g[1], url: GAMES_HTML_BASE + g[2] };
+    });
+  }
+
   function startGames() {
     if (!els.gameGrid || !els.gameWrap) return;
-    if (gameCatalog) return;
-    if (els.gameLoad) {
-      els.gameLoad.hidden = false;
-      els.gameLoad.classList.remove('done');
-    }
-    if (els.gameStatus) els.gameStatus.textContent = 'Loading games';
-    if (els.gameFill) els.gameFill.style.width = '12%';
+    if (gameCatalog) { renderGameGrid(gameCatalog); return; }
+
+    /* Paint the bundled catalogue immediately so the tab is never empty,
+       then quietly swap in the live one when the network allows it. */
+    var cached = readGameCache();
+    gameCatalog = cached || fallbackGames();
+    if (els.gameLoad) els.gameLoad.classList.remove('done');
+    if (els.gameStatus) els.gameStatus.textContent = '';
+    if (els.gameFill) els.gameFill.style.width = '100%';
+    renderGameGrid(gameCatalog);
+    if (els.gameLoad) els.gameLoad.classList.add('done');
+    if (cached) return;
 
     loadGameCatalog().then(function (list) {
+      if (!list || !list.length || !els.gameGrid || !els.gameGrid.hidden) return;
       gameCatalog = list;
-      if (els.gameFill) els.gameFill.style.width = '100%';
       renderGameGrid(list);
-      if (els.gameLoad) els.gameLoad.classList.add('done');
-    }).catch(function () {
-      if (els.gameStatus) els.gameStatus.textContent = 'Games could not load. Tap Games again to retry.';
-      if (els.gameFill) els.gameFill.style.width = '0%';
-      if (els.gameLoad) {
-        els.gameLoad.hidden = false;
-        els.gameLoad.classList.remove('done');
-      }
-    });
+    }).catch(function () {});
   }
 
   /* ---------------- live sync ---------------- */
@@ -4541,7 +4662,7 @@ button{cursor:pointer}
   mode = deepTab && MODE_TITLES[deepTab] ? deepTab : 'home';
   renderView();
   if (mode === 'games') startGames();
-  if (mode === 'movies' || mode === 'tv' || mode === 'music') startMovies(mode);
+  if (mode === 'movies' || mode === 'tv') startMovies(mode);
   readMyLinks();
   renderLinks();
   readGames();
