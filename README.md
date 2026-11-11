@@ -9,7 +9,7 @@ external piece is the Wisp relay used to reach stream hosts.
 - **App, neutral filename:** https://cdn.jsdelivr.net/gh/blunts294/saleen@v6/period3.svg
 - App, original name: https://cdn.jsdelivr.net/gh/blunts294/saleen@v6/saleen.svg
 - **Class disguise page:** https://cdn.jsdelivr.net/gh/blunts294/saleen@v6/class.svg
-- Plain HTML build: https://cdn.jsdelivr.net/gh/blunts294/saleen@v6/index.html
+- Plain HTML build: https://cdn.jsdelivr.net/gh/blunts294/saleen@v6/saleen.html
 - Source: `index.html`
 
 Use the `period3.svg` link when the tab name or URL should not give the app
