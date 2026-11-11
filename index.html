@@ -394,6 +394,13 @@ button{cursor:pointer}
 }
 .movie-load.done{opacity:0;pointer-events:none}
 .movie-status{margin:0;font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.movie-retry{
+  margin:0;padding:8px 16px;border-radius:99px;border:1px solid rgba(124,58,237,.55);
+  background:rgba(124,58,237,.16);color:#fff;font:inherit;font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+}
+.movie-retry:hover{background:rgba(124,58,237,.3)}
+.movie-retry[hidden]{display:none}
 .movie-bar{width:min(260px,66%);height:2px;border-radius:99px;background:var(--line);overflow:hidden}
 .movie-bar span{display:block;height:100%;width:0;border-radius:99px;background:var(--accent);transition:width .25s ease}
 .movie-wrap{position:absolute;inset:0}
@@ -1006,6 +1013,7 @@ body[data-mode="ai"] #toast{bottom:86px}
           <div id="movieLoad" class="movie-load">
             <p id="movieStatus" class="movie-status">Loading</p>
             <div class="movie-bar"><span id="movieFill"></span></div>
+            <button id="movieRetry" class="movie-retry" type="button" hidden>Try again</button>
           </div>
           <div id="mediaGrid" class="media-grid" hidden></div>
           <div id="movieWrap" class="movie-wrap" hidden></div>
@@ -1024,7 +1032,7 @@ body[data-mode="ai"] #toast{bottom:86px}
             <input id="wispInput" class="settings-input" type="url" placeholder="wss://your-relay.example/" spellcheck="false" autocomplete="off">
           </label>
           <button id="wispSave" class="ghost-btn" type="button">Save relay</button>
-          <p class="settings-hint">Used by the web browser tab. Leave empty to use the public relay.</p>
+          <p class="settings-hint">Start <b>wisp-server/start-wisp.cmd</b> and open the link it prints; the relay is saved automatically. Leave empty to use the public relay.</p>
         </div>
       </section>
 
@@ -1146,6 +1154,7 @@ body[data-mode="ai"] #toast{bottom:86px}
     movieLoad: $('#movieLoad'),
     movieStatus: $('#movieStatus'),
     movieFill: $('#movieFill'),
+    movieRetry: $('#movieRetry'),
     movieWrap: $('#movieWrap'),
     readerBtn: $('#readerBtn'),
     readerPane: $('#webReader'),
@@ -2042,6 +2051,14 @@ body[data-mode="ai"] #toast{bottom:86px}
   function wispList() {
     var list = [];
     try {
+      var q = /[?&]wisp=([^&#]+)/i.exec(location.search || '');
+      var h = /[#&]wisp=([^&#]+)/i.exec(location.hash || '');
+      var fromUrl = decodeURIComponent((q && q[1]) || (h && h[1]) || '');
+      if (/^wss?:\/\//i.test(fromUrl)) {
+        try { window.localStorage.setItem('saleen.wisp', fromUrl); } catch (e) {}
+      }
+    } catch (e) {}
+    try {
       var saved = window.localStorage.getItem('saleen.wisp');
       if (saved && /^wss?:\/\//.test(saved)) list.push(saved);
     } catch (e) {}
@@ -2058,6 +2075,20 @@ body[data-mode="ai"] #toast{bottom:86px}
   var wispFrame = null;
   var wispSeq = 0;
   var wispPending = {};
+  var wispFails = 0;
+  var wispIndex = 0;
+
+  /* A relay can drop after the first handshake. Three failed jobs in a row is
+     enough to retire it and let the next boot pick the following server. */
+  function wispTrouble() {
+    wispFails += 1;
+    if (wispFails < 3) return;
+    wispFails = 0;
+    wispReady = false;
+    wispStart = null;
+    cleanupWisp();
+    if (WISP_SERVERS.length > 1) wispIndex = (wispIndex + 1) % WISP_SERVERS.length;
+  }
 
   function wispSource(wsUrl) {
     return [
@@ -2119,8 +2150,13 @@ body[data-mode="ai"] #toast{bottom:86px}
     if (!job) return;
     delete wispPending[d.id];
     window.clearTimeout(job.timer);
-    if (d.error) job.reject(new Error(d.error));
-    else job.resolve({ status: d.status, ok: d.ok, body: d.body });
+    if (d.error) {
+      wispTrouble();
+      job.reject(new Error(d.error));
+    } else {
+      wispFails = 0;
+      job.resolve({ status: d.status, ok: d.ok, body: d.body });
+    }
   });
 
   function cleanupWisp() {
@@ -2150,7 +2186,10 @@ body[data-mode="ai"] #toast{bottom:86px}
 
   function tryWispServer(i) {
     if (i >= WISP_SERVERS.length) return Promise.reject(new Error('no wisp server'));
-    return bootOne(WISP_SERVERS[i]).catch(function () {
+    return bootOne(WISP_SERVERS[i]).then(function (ok) {
+      wispIndex = i;
+      return ok;
+    }).catch(function () {
       cleanupWisp();
       return tryWispServer(i + 1);
     });
@@ -2159,7 +2198,8 @@ body[data-mode="ai"] #toast{bottom:86px}
   function bootWisp() {
     if (wispReady && wispFrame) return Promise.resolve(true);
     if (wispStart) return wispStart;
-    wispStart = tryWispServer(0).then(function (ok) {
+    if (wispIndex >= WISP_SERVERS.length) wispIndex = 0;
+    wispStart = tryWispServer(wispIndex).then(function (ok) {
       wispReady = true;
       return ok;
     }).catch(function (err) {
@@ -2181,6 +2221,7 @@ body[data-mode="ai"] #toast{bottom:86px}
         var job = { resolve: resolve, reject: reject, timer: null };
         job.timer = window.setTimeout(function () {
           delete wispPending[id];
+          wispTrouble();
           reject(new Error('wisp timeout'));
         }, 24000);
         wispPending[id] = job;
@@ -3340,6 +3381,7 @@ body[data-mode="ai"] #toast{bottom:86px}
     movieProgress = 0;
     movieTarget = 0;
     if (els.movieFill) els.movieFill.style.width = '0%';
+    if (els.movieRetry) els.movieRetry.hidden = true;
     if (els.movieLoad) {
       els.movieLoad.hidden = false;
       els.movieLoad.classList.remove('done');
@@ -3710,6 +3752,7 @@ body[data-mode="ai"] #toast{bottom:86px}
   var hlsPlayer = null;
   var hlsBlob = null;
   var playerVideo = null;
+  var playSeq = 0;
   var VIX_CACHE = {};
 
   function loadHls() {
@@ -3938,10 +3981,14 @@ body[data-mode="ai"] #toast{bottom:86px}
         var wantsText = context.type === 'manifest' || context.type === 'level' ||
           context.type === 'audioTrack' || context.type === 'subtitleTrack' ||
           /\.m3u8(?:[?#]|$)/i.test(url);
-        var stats = self.stats = {
-          trequest: performance.now(), tfirst: 0, tload: 0,
-          loaded: 0, total: 0, bwEstimate: 0, aborted: false
-        };
+        var stats = self.stats;
+        stats.trequest = performance.now();
+        stats.tfirst = 0;
+        stats.tload = 0;
+        stats.loaded = 0;
+        stats.total = 0;
+        stats.bwEstimate = 0;
+        stats.aborted = false;
 
         self.aborted = false;
         self.callbacks = callbacks;
@@ -4058,6 +4105,101 @@ body[data-mode="ai"] #toast{bottom:86px}
     });
   }
 
+  /* Mirrors rot: a dead host or a dropped relay often works on a second try,
+     so every mirror gets two passes before the title is called unplayable. */
+  var goodMirror = {};
+
+  function playNativeHls(sources, Hls, video, token) {
+    var key = media.kind + ':' + (media.item ? media.item.id : '');
+    var preferred = goodMirror[key];
+    var order = sources.slice();
+    if (preferred) {
+      order = order.filter(function (s) { return s.name === preferred; })
+        .concat(order.filter(function (s) { return s.name !== preferred; }));
+    }
+    var queue = order.slice();
+    var pass = 0;
+
+    function attempt() {
+      if (token !== playSeq) return Promise.reject(new Error('cancelled'));
+      if (!queue.length) {
+        pass += 1;
+        if (pass >= 2) return Promise.reject(new Error('no english stream'));
+        queue = order.slice();
+      }
+      var source = queue.shift();
+      return new Promise(function (resolve, reject) {
+        var hls = new Hls({
+          loader: wispLoader(Hls),
+          enableWorker: false,
+          lowLatencyMode: false,
+          backBufferLength: 30,
+          maxBufferLength: 30
+        });
+        var settled = false;
+        var fail = function (err) {
+          if (settled) return;
+          settled = true;
+          try { hls.destroy(); } catch (e) { }
+          if (hlsPlayer === hls) hlsPlayer = null;
+          reject(err || new Error('stream failed'));
+        };
+        hls.on(Hls.Events.ERROR, function (ev, data) {
+          if (data && data.fatal) {
+            fail(new Error((data.type || 'hls') + ': ' + (data.details || 'stream error')));
+          }
+        });
+        /* Resolve only after the first media fragment arrives, not just the
+           manifest: a dead mirror fails here and the next one gets a turn. */
+        hls.on(Hls.Events.FRAG_LOADED, function () {
+          if (settled) return;
+          settled = true;
+          goodMirror[key] = source.name;
+          resolve(hls);
+        });
+        hlsPlayer = hls;
+        hls.loadSource(source.url);
+        hls.attachMedia(video);
+      }).catch(function (err) {
+        if (token !== playSeq) throw err;
+        return new Promise(function (resolve) {
+          window.setTimeout(resolve, 260);
+        }).then(attempt);
+      });
+    }
+
+    return attempt();
+  }
+
+  function playNative(s, e, token) {
+    var item = media.item;
+    if (!item) return Promise.reject(new Error('no item'));
+    return loadHls().then(function (Hls) {
+      return vidrockStream(media.kind, item.id, s, e).then(function (sources) {
+        if (token !== playSeq) throw new Error('cancelled');
+        var video = document.createElement('video');
+        video.className = 'player-video';
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('controlslist', 'nodownload');
+        els.movieWrap.appendChild(video);
+        playerVideo = video;
+        media.video = video;
+        return playNativeHls(sources, Hls, video, token);
+      });
+    }).then(function () {
+      if (token !== playSeq) return;
+      movieStep(100, 100, 'English');
+      movieDone();
+      if (playerVideo) {
+        var p = playerVideo.play();
+        if (p && p.catch) p.catch(function () { });
+      }
+    });
+  }
+
   function playMedia(season, episode, useSource) {
     if (!els.movieWrap || !media.item) return;
     var item = media.item;
@@ -4075,35 +4217,27 @@ body[data-mode="ai"] #toast{bottom:86px}
     stopPlayer();
     els.movieWrap.textContent = '';
     els.movieWrap.hidden = false;
-    movieReset('Starting the player');
+    movieReset('Finding the English stream');
 
     var provider = mediaSourceById(media.source);
     media.source = provider.id;
     renderSourceButtons(provider.id, function (id) { playMedia(s, e, id); });
 
-    var frame = document.createElement('iframe');
-    frame.title = mediaName(item);
-    frame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
-    frame.setAttribute('allowfullscreen', '');
-    frame.src = provider.src(item, media.kind, s, e);
-    els.movieWrap.appendChild(frame);
-    media.frame = frame;
-    media.video = null;
-
-    var settled = false;
-    var giveUp = window.setTimeout(function () {
-      if (settled) return;
-      settled = true;
-      movieStep(100, 100, 'Playing');
-      movieDone();
-    }, 9000);
-
-    frame.addEventListener('load', function () {
-      window.clearTimeout(giveUp);
-      if (settled) return;
-      settled = true;
-      movieStep(100, 100, 'Playing');
-      movieDone();
+    var token = ++playSeq;
+    playNative(s, e, token).catch(function (err) {
+      if (token !== playSeq) return;
+      /* There is no English stream for this title. Do not fall back to a
+         provider player: those panels list every language, which is exactly
+         what this build removes. */
+      stopPlayer();
+      window.clearInterval(movieTicker);
+      if (els.movieFill) els.movieFill.style.width = '0%';
+      if (els.movieStatus) els.movieStatus.textContent = 'No English stream for this title yet. Try another.';
+      if (els.movieRetry) els.movieRetry.hidden = false;
+      if (els.movieLoad) {
+        els.movieLoad.hidden = false;
+        els.movieLoad.classList.remove('done');
+      }
     });
   }
 
@@ -4221,6 +4355,9 @@ body[data-mode="ai"] #toast{bottom:86px}
     if (els.playerBack) els.playerBack.addEventListener('click', function () {
       closeMedia();
     });
+    if (els.movieRetry) els.movieRetry.addEventListener('click', function () {
+      if (media.item) playMedia(media.season, media.episodeNum);
+    });
 
     /* Infinite scroll: fetch the next catalogue page before the user hits the
        bottom, so the grid keeps growing instead of stopping at 20 titles. */
@@ -4256,6 +4393,7 @@ body[data-mode="ai"] #toast{bottom:86px}
         else window.localStorage.removeItem('saleen.wisp');
       } catch (e) {}
       WISP_SERVERS = wispList();
+      wispIndex = 0;
       cleanupWisp();
       wispStart = null;
       wispReady = false;
