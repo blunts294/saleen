@@ -3887,22 +3887,38 @@ body[data-mode="ai"] #toast{bottom:86px}
 
   /* Keeps only the English audio rendition and drops every subtitle track, so
      the player has nothing to switch to. */
+  /* Audio groups come tagged as eng, en, English or ENGLISH depending on the
+     host. Dropping all of them leaves #EXT-X-STREAM-INF pointing at a group
+     that no longer exists, which some shows fail on, so one English track is
+     always kept and an unlabelled one is used as a last resort. */
   function englishOnlyPlaylist(text) {
     var audio = '';
+    var spare = '';
     var out = [];
     String(text || '').split(/\r?\n/).forEach(function (line) {
       if (/^#EXT-X-MEDIA:TYPE=SUBTITLES/i.test(line)) return;
       if (/^#EXT-X-MEDIA:TYPE=AUDIO/i.test(line)) {
-        if (!audio && /LANGUAGE="eng"/i.test(line)) audio = line;
+        var lang = (/LANGUAGE="([^"]*)"/i.exec(line) || [])[1] || '';
+        if (!audio && /^(en|eng|english)$/i.test(lang)) audio = line;
+        if (!spare && !lang) spare = line;
         return;
       }
       if (/^#EXT-X-STREAM-INF/i.test(line)) line = line.replace(/,SUBTITLES="[^"]*"/i, '');
       out.push(line);
     });
+    audio = audio || spare;
     if (audio) {
       var at = 0;
       while (at < out.length && !/^#EXT-X-STREAM-INF/i.test(out[at])) at += 1;
       out.splice(at, 0, audio);
+    }
+    /* An episode playlist without ENDLIST is read as live, so hls.js starts
+       near the end and chases segments that may not exist yet. These are VOD
+       episodes, so tell the player where the episode really starts. */
+    if (/#EXT-X-STREAM-INF/i.test(text) === false &&
+      !/#EXT-X-ENDLIST/i.test(text) &&
+      (text.match(/#EXTINF/g) || []).length > 4) {
+      out.push('#EXT-X-ENDLIST');
     }
     return out.join('\n');
   }
@@ -4109,7 +4125,31 @@ body[data-mode="ai"] #toast{bottom:86px}
           return;
         }
 
-        self.timer = window.setTimeout(function () { fail(new Error('wisp timeout')); }, wantsText ? 9000 : 16000);
+        /* The first segment was already downloaded during the probe. Hand it
+           over instead of asking the relay for the same bytes again. */
+        if (!wantsText) {
+          var seg = segmentCache[url];
+          if (seg && Date.now() - seg.at < 60000) {
+            delete segmentCache[url];
+            Promise.resolve().then(function () {
+              if (self.aborted) return;
+              finish(tsPayload(seg.data));
+            });
+            return;
+          }
+          if (segmentInflight[url]) {
+            segmentInflight[url].then(function (keep) {
+              if (self.aborted) return;
+              delete segmentCache[url];
+              finish(tsPayload(keep.data));
+            }, function (err) {
+              fail(err);
+            });
+            return;
+          }
+        }
+
+        self.timer = window.setTimeout(function () { fail(new Error('wisp timeout')); }, wantsText ? 9000 : 20000);
 
         wispFetch(url, wantsText ? 'text' : 'array', streamHeaders()).then(function (res) {
           if (!res || self.aborted) return null;
@@ -4244,13 +4284,6 @@ body[data-mode="ai"] #toast{bottom:86px}
     return job;
   }
 
-  function probePlaylist(source) {
-    return manifestText(source.url).then(function (text) {
-      if (!/#EXT-X-STREAM-INF|#EXTINF/.test(text)) throw new Error('empty playlist');
-      return { source: source, text: text };
-    });
-  }
-
   function playlistVariants(text, base) {
     var lines = String(text || '').split(/\r?\n/);
     var out = [];
@@ -4263,37 +4296,97 @@ body[data-mode="ai"] #toast{bottom:86px}
     return out;
   }
 
-  function prefetchPlaylist(url) {
-    manifestText(url).catch(function () { });
+  /* First media segment of a playlist. Used to prove a mirror really serves
+     video before the player commits to it. */
+  function firstMediaUrl(text, base) {
+    var lines = String(text || '').split(/\r?\n/);
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      if (!line || line.charAt(0) === '#') continue;
+      try { return new URL(line, base).href; } catch (e) { return ''; }
+    }
+    return '';
+  }
+
+  /* The first segment of the winning mirror is downloaded while the player is
+     still being built, so the picture appears without another relay round
+     trip. It also means a mirror that returns a playlist but no video is
+     dropped before the viewer ever sees it. */
+  var segmentCache = {};
+  var segmentInflight = {};
+
+  function fetchSegment(url) {
+    var hit = segmentCache[url];
+    if (hit && Date.now() - hit.at < 60000) return Promise.resolve(hit);
+    if (segmentInflight[url]) return segmentInflight[url];
+    var job = withTimeout(wispFetch(url, 'array', streamHeaders()), 16000).then(function (res) {
+      if (!res || !res.ok) throw new Error('segment HTTP ' + (res && res.status));
+      var data = res.body;
+      if (!data || !data.byteLength || data.byteLength < 4096) throw new Error('empty segment');
+      var keep = { at: Date.now(), data: data };
+      segmentCache[url] = keep;
+      var keys = Object.keys(segmentCache);
+      while (keys.length > 3) delete segmentCache[keys.shift()];
+      delete segmentInflight[url];
+      return keep;
+    }, function (err) {
+      delete segmentInflight[url];
+      throw err;
+    });
+    segmentInflight[url] = job;
+    return job;
+  }
+
+  function probePlaylist(source, validate) {
+    return manifestText(source.url).then(function (text) {
+      if (!/#EXT-X-STREAM-INF|#EXTINF/.test(text)) throw new Error('empty playlist');
+      if (validate === false) return { source: source, text: text };
+      var isMedia = !/#EXT-X-STREAM-INF/i.test(text);
+      if (isMedia) {
+        var first = firstMediaUrl(text, source.url);
+        if (!first) return { source: source, text: text };
+        return fetchSegment(first).then(function () {
+          return { source: source, text: text };
+        });
+      }
+      var variant = playlistVariants(text, source.url)[0];
+      if (!variant) return { source: source, text: text };
+      /* Master playlist: warm the first variant, then its first segment. A
+         failure here is only a warning, the player can still try the mirror. */
+      return manifestText(variant).then(function (vtext) {
+        var seg = firstMediaUrl(vtext, variant);
+        if (!seg) return { source: source, text: text };
+        return fetchSegment(seg).then(function () {
+          return { source: source, text: text };
+        });
+      }).catch(function () {
+        return { source: source, text: text };
+      });
+    });
   }
 
   /* Every mirror is asked at the same time and the fastest answer wins, so one
      dead host no longer costs the viewer six seconds. Late answers wait in a
-     queue as fallbacks instead of being thrown away. */
-  function probeBag(order) {
+     queue as fallbacks instead of being thrown away. The counter is settled in
+     a catch as well, so one odd failure cannot leave the player waiting. */
+  function probeBag(order, validate) {
     var ready = [];
     var waiters = [];
     var left = order.length;
-    var warmed = false;
 
     function push(item) {
-      /* Warm the winner's first variant once, not once per mirror. */
-      if (item && !warmed) {
-        warmed = true;
-        var variants = playlistVariants(item.text, item.source.url);
-        if (variants.length) prefetchPlaylist(variants[0]);
-      }
       if (waiters.length) waiters.shift()(item);
       else ready.push(item);
     }
 
+    function settle() {
+      left -= 1;
+      if (left > 0) return;
+      while (waiters.length) waiters.shift()(null);
+    }
+
     order.forEach(function (source) {
-      probePlaylist(source).then(push, function () { }).then(function () {
-        left -= 1;
-        if (!left) {
-          while (waiters.length) waiters.shift()(null);
-        }
-      });
+      probePlaylist(source, validate).then(push).catch(function () { }).then(settle);
     });
 
     return function next() {
@@ -4311,7 +4404,7 @@ body[data-mode="ai"] #toast{bottom:86px}
       order = order.filter(function (s) { return s.name === preferred; })
         .concat(order.filter(function (s) { return s.name !== preferred; }));
     }
-    var next = probeBag(order);
+    var next = probeBag(order, true);
     var pass = 0;
 
     function attempt() {
@@ -4321,7 +4414,9 @@ body[data-mode="ai"] #toast{bottom:86px}
         if (!winner) {
           if (pass >= 1) throw new Error('no english stream');
           pass += 1;
-          next = probeBag(order);
+          /* Second sweep without the segment check: a mirror whose first
+             segment hiccuped still gets one honest attempt. */
+          next = probeBag(order, false);
           return attempt();
         }
         movieStep(56, 76, 'Buffering');
@@ -4330,12 +4425,12 @@ body[data-mode="ai"] #toast{bottom:86px}
             loader: wispLoader(Hls),
             enableWorker: false,
             lowLatencyMode: false,
-            /* A deep buffer keeps playback smooth over a slow relay; ABR holds
-               the current quality a little longer before dropping down. */
+            /* A deep buffer keeps playback smooth over a slow relay, but not so
+               deep that three 2 MB episode segments are queued at once. */
             backBufferLength: 30,
-            maxBufferLength: 60,
-            maxMaxBufferLength: 120,
-            maxBufferSize: 120 * 1000 * 1000,
+            maxBufferLength: 45,
+            maxMaxBufferLength: 90,
+            maxBufferSize: 90 * 1000 * 1000,
             maxStarvationDelay: 4,
             maxLoadingDelay: 6,
             abrBandWidthFactor: 0.85,
@@ -4345,13 +4440,15 @@ body[data-mode="ai"] #toast{bottom:86px}
                sooner; ABR moves up once playback is running. */
             startLevel: 0,
             testBandwidth: false,
-            manifestLoadingTimeOut: 9000,
-            levelLoadingTimeOut: 9000,
-            fragLoadingTimeOut: 14000,
-            manifestLoadingMaxRetry: 0,
+            /* Episodes come as ~2 MB segments over the relay, so a single slow
+               segment must not be mistaken for a dead mirror. */
+            manifestLoadingTimeOut: 10000,
+            levelLoadingTimeOut: 12000,
+            fragLoadingTimeOut: 18000,
+            manifestLoadingMaxRetry: 1,
             levelLoadingMaxRetry: 1,
             fragLoadingMaxRetry: 2,
-            fragLoadingRetryDelay: 300
+            fragLoadingRetryDelay: 400
           });
           var settled = false;
           var stall = null;
@@ -4363,11 +4460,12 @@ body[data-mode="ai"] #toast{bottom:86px}
             if (hlsPlayer === hls) hlsPlayer = null;
             reject(err || new Error('stream failed'));
           };
-          /* A mirror that accepts the playlist but never sends a fragment
-             should not hold the spinner forever. */
+          /* Generous watchdog: a manifest round trip plus one big segment can
+             take 15-20s on a busy relay. It only catches a mirror that never
+             sends anything at all. */
           stall = window.setTimeout(function () {
             fail(new Error('buffer timeout'));
-          }, 11000);
+          }, 32000);
           hls.on(Hls.Events.ERROR, function (ev, data) {
             if (data && data.fatal) {
               fail(new Error((data.type || 'hls') + ': ' + (data.details || 'stream error')));

@@ -53,11 +53,13 @@ account needed) and starts a quick tunnel to the relay on port 5001.
 
 ## What is in v7
 
-- **Faster players**: opening Movies or TV preloads hls.js and boots the relay
-  before you tap a title. Every English mirror is probed at the same time and
-  the fastest one wins, so a dead host no longer costs seconds. The winning
-  playlist is reused instead of downloaded twice, resolved mirrors are cached
-  for ten minutes, and timeouts dropped from 32s to 8-16s.
+- **Faster, steadier players**: opening Movies or TV preloads hls.js and boots
+  the relay before you tap a title. Every English mirror is probed at the same
+  time and the fastest one that actually delivers video wins, so a mirror that
+  returns a playlist but no picture is dropped before you see it. That first
+  segment is reused instead of downloaded twice, resolved mirrors are cached
+  for ten minutes, and each episode gets a patient 32s window on a slow relay
+  before another mirror is tried.
 - **Faster games**: the five mirrors are raced instead of tried one by one;
   HTML for the last 12 games is kept in memory, so reopening a game is instant.
   Search filters on the next animation frame with a prebuilt card list, and a
