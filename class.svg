@@ -108,7 +108,7 @@
   }
 
   /* Secret entrance: type "saleen" or press \\ . Nothing on the page hints at it. */
-  var app = 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v6/period3.svg';
+  var app = 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v7/period3.svg';
   var typed = '';
   document.addEventListener('keydown', function (e) {
     if (e.key === '\\') { window.location.href = app; return; }

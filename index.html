@@ -952,6 +952,7 @@ body[data-mode="ai"] #toast{bottom:86px}
           </div>
           <div class="head-actions">
             <input id="gameSearch" class="game-search" type="search" placeholder="Search games" autocomplete="off" spellcheck="false" />
+            <button id="gameRandom" class="ghost-btn" type="button">Random</button>
             <button id="gameBack" class="ghost-btn" type="button" hidden>Back</button>
           </div>
         </header>
@@ -1198,6 +1199,7 @@ body[data-mode="ai"] #toast{bottom:86px}
     gameFill: $('#gameFill'),
     gameGrid: $('#gameGrid'),
     gameSearch: $('#gameSearch'),
+    gameRandom: $('#gameRandom'),
     gameBack: $('#gameBack'),
     toast: $('#toast')
   };
@@ -1450,9 +1452,14 @@ body[data-mode="ai"] #toast{bottom:86px}
     if (!bubbles.length) sizeScene();
     if (sceneRunning) return;
     sceneRunning = true;
-    var tick = function () {
+    var last = 0;
+    var tick = function (ts) {
       if (!sceneRunning) return;
-      paintScene();
+      /* 30fps is plenty for a background; it halves the CPU cost. */
+      if (!ts || ts - last > 32) {
+        paintScene();
+        last = ts || 0;
+      }
       window.requestAnimationFrame(tick);
     };
     window.requestAnimationFrame(tick);
@@ -2067,8 +2074,17 @@ body[data-mode="ai"] #toast{bottom:86px}
     return list;
   }
   var WISP_SERVERS = wispList();
-  var LIBCURL_JS = 'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/libcurl.js';
-  var LIBCURL_WASM = 'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/libcurl.wasm';
+  /* Two npm CDNs and an ESM build; the relay frame walks them in order. */
+  var LIBCURL_JS = [
+    'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/libcurl.js',
+    'https://unpkg.com/libcurl.js@0.7.5/libcurl.js',
+    'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/dist/libcurl.js'
+  ];
+  var LIBCURL_WASM = [
+    'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/libcurl.wasm',
+    'https://unpkg.com/libcurl.js@0.7.5/libcurl.wasm',
+    'https://cdn.jsdelivr.net/npm/libcurl.js@0.7.5/dist/libcurl.wasm'
+  ];
   var wispBoot = null;
   var wispStart = null;
   var wispReady = false;
@@ -2112,17 +2128,28 @@ body[data-mode="ai"] #toast{bottom:86px}
       '});',
       'function boot(){',
       '  if(started)return;started=true;',
-      '  var s=document.createElement("script");',
-      '  s.src=' + JSON.stringify(LIBCURL_JS) + ';',
-      '  s.onload=function(){',
-      '    libcurl.load_wasm(' + JSON.stringify(LIBCURL_WASM) + ').then(function(){',
-      '      libcurl.set_websocket(' + JSON.stringify(wsUrl) + ');',
-      '      ready=true;send({saleen:"wisp",type:"ready"});',
-      '      var q=jobs.slice();jobs=[];q.forEach(run);',
-      '    }).catch(function(e){send({saleen:"wisp",type:"error",text:String(e&&e.message||e)})});',
-      '  };',
-      '  s.onerror=function(){send({saleen:"wisp",type:"error",text:"libcurl blocked"})};',
-      '  document.body.appendChild(s);',
+      '  var js=' + JSON.stringify(LIBCURL_JS) + ';',
+      '  var wasms=' + JSON.stringify(LIBCURL_WASM) + ';',
+      '  function loadAt(i){',
+      '    if(i>=js.length){send({saleen:"wisp",type:"error",text:"libcurl blocked"});return;}',
+      '    var s=document.createElement("script");',
+      '    s.src=js[i];',
+      '    s.onload=function(){',
+      '      var w=0;',
+      '      function tryWasm(){',
+      '        if(w>=wasms.length){send({saleen:"wisp",type:"error",text:"wasm blocked"});return;}',
+      '        libcurl.load_wasm(wasms[w++]).then(function(){',
+      '          libcurl.set_websocket(' + JSON.stringify(wsUrl) + ');',
+      '          ready=true;send({saleen:"wisp",type:"ready"});',
+      '          var q=jobs.slice();jobs=[];q.forEach(run);',
+      '        }).catch(tryWasm);',
+      '      }',
+      '      tryWasm();',
+      '    };',
+      '    s.onerror=function(){loadAt(i+1)};',
+      '    document.body.appendChild(s);',
+      '  }',
+      '  loadAt(0);',
       '}',
       'boot();',
       '<\/script></body></html>'
@@ -2179,7 +2206,7 @@ body[data-mode="ai"] #toast{bottom:86px}
     return new Promise(function (resolve, reject) {
       var timer = window.setTimeout(function () {
         reject(new Error('wisp boot timeout'));
-      }, 16000);
+      }, 7000);
       wispBoot = { resolve: resolve, reject: reject, timer: timer };
     });
   }
@@ -2201,6 +2228,7 @@ body[data-mode="ai"] #toast{bottom:86px}
     if (wispIndex >= WISP_SERVERS.length) wispIndex = 0;
     wispStart = tryWispServer(wispIndex).then(function (ok) {
       wispReady = true;
+      primeRelay();
       return ok;
     }).catch(function (err) {
       wispStart = null;
@@ -2208,6 +2236,14 @@ body[data-mode="ai"] #toast{bottom:86px}
       throw err;
     });
     return wispStart;
+  }
+
+  /* The first request through a fresh relay carries a one-off warm-up cost of
+     a couple of seconds. Pay it at boot, not when a movie is tapped. */
+  function primeRelay() {
+    window.setTimeout(function () {
+      wispFetch('https://www.gstatic.com/generate_204', 'text').catch(function () { });
+    }, 0);
   }
 
   function wispFetch(url, kind, headers) {
@@ -2223,7 +2259,7 @@ body[data-mode="ai"] #toast{bottom:86px}
           delete wispPending[id];
           wispTrouble();
           reject(new Error('wisp timeout'));
-        }, 24000);
+        }, kind === 'text' ? 10000 : 20000);
         wispPending[id] = job;
         try {
           wispFrame.contentWindow.postMessage({
@@ -2977,7 +3013,15 @@ body[data-mode="ai"] #toast{bottom:86px}
     if (changed && next !== 'movies' && next !== 'tv' && media.item) closeMedia();
     mode = next;
     renderView();
-    if (next === 'home') startTyping();
+    /* The canvas wallpaper is the heaviest idle work in the app. It only runs
+       on Home, so a movie or a game gets the whole CPU/GPU. */
+    if (next === 'home') {
+      startScene();
+      startTyping();
+    } else {
+      stopScene();
+      window.clearTimeout(typeTimer);
+    }
     if (next === 'movies' || next === 'tv') startMovies(next);
     if (next === 'games') startGames();
     if (changed) document.dispatchEvent(new CustomEvent('saleen:mode', { detail: mode }));
@@ -3263,7 +3307,6 @@ body[data-mode="ai"] #toast{bottom:86px}
   var MEDIA_PLAY_TV = 'https://vidlink.pro/tv';
   var VIX_API_MOVIE = 'https://vixsrc.to/api/movie/';
   var VIX_API_TV = 'https://vixsrc.to/api/tv/';
-  var HLS_JS = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js';
   var MEDIA_FILTERS = {
     movie: {
       trending: '/trending/movie/day',
@@ -3498,6 +3541,13 @@ body[data-mode="ai"] #toast{bottom:86px}
       card.appendChild(art);
       card.appendChild(info);
       card.addEventListener('click', function () { openMedia(item); });
+      /* A 300ms rest starts the source lookup, so the tap is instant. */
+      var dwell = 0;
+      card.addEventListener('pointerenter', function () {
+        window.clearTimeout(dwell);
+        dwell = window.setTimeout(function () { prefetchPlayback(item); }, 300);
+      });
+      card.addEventListener('pointerleave', function () { window.clearTimeout(dwell); });
       frag.appendChild(card);
     });
     els.mediaGrid.appendChild(frag);
@@ -3755,10 +3805,27 @@ body[data-mode="ai"] #toast{bottom:86px}
   var playSeq = 0;
   var VIX_CACHE = {};
 
+  /* hls.js from three CDNs, then its ESM build as a last resort, so one
+     blocked CDN no longer costs playback. */
+  var HLS_CDNS = [
+    'https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js',
+    'https://unpkg.com/hls.js@1.5.20/dist/hls.min.js',
+    'https://cdn.statically.io/gh/video-dev/hls.js/v1.5.20/dist/hls.min.js'
+  ];
+
   function loadHls() {
     if (window.Hls) return Promise.resolve(window.Hls);
     if (!hlsBoot) {
-      hlsBoot = loadScriptOnce(HLS_JS, 'Hls').catch(function (err) {
+      hlsBoot = HLS_CDNS.reduce(function (chain, src) {
+        return chain.catch(function () { return loadScriptOnce(src, 'Hls'); });
+      }, Promise.reject(new Error('no hls cdn'))).catch(function () {
+        return import('https://esm.sh/hls.js@1.5.20').then(function (mod) {
+          var Hls = mod.default || mod;
+          if (!Hls) throw new Error('no hls module');
+          window.Hls = Hls;
+          return Hls;
+        });
+      }).catch(function (err) {
         hlsBoot = null;
         throw err;
       });
@@ -3893,11 +3960,18 @@ body[data-mode="ai"] #toast{bottom:86px}
 
   /* Only English, HLS sources are considered. Nova is normally the English
      one; the loop just means a renamed slot still works. */
+  var vidrockSources = {};
+
   function vidrockStream(kind, id, season, episode) {
+    var cacheKey = kind + ':' + id + (kind === 'tv' ? ':' + season + ':' + episode : '');
+    var hit = vidrockSources[cacheKey];
+    if (hit && Date.now() - hit.at < 10 * 60 * 1000) {
+      return Promise.resolve(hit.list.slice());
+    }
     var path = kind === 'tv'
       ? 'tv/' + id + '/' + season + '/' + episode
       : 'movie/' + id;
-    return fetchWithTimeout(VIDROCK_API + path, 9000, { headers: { accept: 'application/json' } })
+    return fetchWithTimeout(VIDROCK_API + path, 6000, { headers: { accept: 'application/json' } })
       .then(function (res) {
         if (!res.ok) throw new Error('vidrock ' + res.status);
         return res.json();
@@ -3921,6 +3995,7 @@ body[data-mode="ai"] #toast{bottom:86px}
           })).then(function (list) {
             var out = list.filter(Boolean);
             if (!out.length) throw new Error('no url');
+            vidrockSources[cacheKey] = { at: Date.now(), list: out.slice() };
             return out;
           });
         });
@@ -3993,6 +4068,18 @@ body[data-mode="ai"] #toast{bottom:86px}
         self.aborted = false;
         self.callbacks = callbacks;
 
+        var finish = function (data) {
+          stats.tfirst = stats.tfirst || performance.now();
+          stats.tload = performance.now();
+          stats.loaded = stats.total = data.byteLength || data.length || 0;
+          callbacks.onSuccess({ url: url, data: data }, stats, context, null);
+        };
+        var serveText = function (text) {
+          Promise.resolve().then(function () {
+            if (self.aborted) return;
+            finish(text);
+          });
+        };
         var fail = function (err) {
           if (self.aborted) return;
           self.aborted = true;
@@ -4003,17 +4090,30 @@ body[data-mode="ai"] #toast{bottom:86px}
           }, context, null, stats);
         };
 
-        self.timer = window.setTimeout(function () { fail(new Error('wisp timeout')); }, 32000);
+        /* The probe already downloaded this playlist; hand it over without a
+           second round trip through the relay, or wait on the same download
+           instead of starting a duplicate. */
+        var prefetched = manifestCache[url];
+        if (wantsText && prefetched && Date.now() - prefetched.at < 45000) {
+          delete manifestCache[url];
+          serveText(prefetched.text);
+          return;
+        }
+        if (wantsText && manifestInflight[url]) {
+          manifestInflight[url].then(function (text) {
+            if (self.aborted) return;
+            serveText(text);
+          }, function (err) {
+            fail(err);
+          });
+          return;
+        }
 
-        wispFetch(url, wantsText ? 'text' : 'array', {
-          'user-agent': navigator.userAgent,
-          referer: 'https://vidrock.net/',
-          origin: 'https://vidrock.net',
-          accept: '*/*'
-        }).then(function (res) {
+        self.timer = window.setTimeout(function () { fail(new Error('wisp timeout')); }, wantsText ? 9000 : 16000);
+
+        wispFetch(url, wantsText ? 'text' : 'array', streamHeaders()).then(function (res) {
           if (!res || self.aborted) return null;
           if (!res.ok) throw new Error('HTTP ' + res.status);
-          if (stats.tfirst === 0) stats.tfirst = performance.now();
           window.clearTimeout(self.timer);
           var data = res.body;
           if (wantsText) {
@@ -4025,9 +4125,7 @@ body[data-mode="ai"] #toast{bottom:86px}
           } else {
             data = tsPayload(data);
           }
-          stats.tload = performance.now();
-          stats.loaded = stats.total = data.byteLength || data.length || 0;
-          callbacks.onSuccess({ url: url, data: data }, stats, context, res);
+          finish(data);
         }).catch(fail);
       }
       abort() {
@@ -4109,6 +4207,102 @@ body[data-mode="ai"] #toast{bottom:86px}
      so every mirror gets two passes before the title is called unplayable. */
   var goodMirror = {};
 
+  /* Manifest text fetched by the probe is handed straight to hls.js, so the
+     winning mirror is never downloaded twice. */
+  var manifestCache = {};
+
+  function streamHeaders() {
+    return {
+      'user-agent': navigator.userAgent,
+      referer: 'https://vidrock.net/',
+      origin: 'https://vidrock.net',
+      accept: '*/*'
+    };
+  }
+
+  var manifestInflight = {};
+
+  /* One download per playlist, no matter who asks: the probe, the variant
+     prefetch and hls.js share the same promise. */
+  function manifestText(url) {
+    var hit = manifestCache[url];
+    if (hit && Date.now() - hit.at < 45000) return Promise.resolve(hit.text);
+    if (manifestInflight[url]) return manifestInflight[url];
+    var job = withTimeout(wispFetch(url, 'text', streamHeaders()), 8000).then(function (res) {
+      if (!res || !res.ok) throw new Error('HTTP ' + (res && res.status));
+      var text = String(res.body || '');
+      if (!/^#EXTM3U/.test(text)) throw new Error('not a playlist');
+      text = englishOnlyPlaylist(text);
+      manifestCache[url] = { text: text, at: Date.now() };
+      delete manifestInflight[url];
+      return text;
+    }, function (err) {
+      delete manifestInflight[url];
+      throw err;
+    });
+    manifestInflight[url] = job;
+    return job;
+  }
+
+  function probePlaylist(source) {
+    return manifestText(source.url).then(function (text) {
+      if (!/#EXT-X-STREAM-INF|#EXTINF/.test(text)) throw new Error('empty playlist');
+      return { source: source, text: text };
+    });
+  }
+
+  function playlistVariants(text, base) {
+    var lines = String(text || '').split(/\r?\n/);
+    var out = [];
+    for (var i = 0; i < lines.length; i++) {
+      if (!/^#EXT-X-STREAM-INF/i.test(lines[i])) continue;
+      var next = lines[i + 1];
+      if (!next || next.charAt(0) === '#') continue;
+      try { out.push(new URL(next, base).href); } catch (e) { }
+    }
+    return out;
+  }
+
+  function prefetchPlaylist(url) {
+    manifestText(url).catch(function () { });
+  }
+
+  /* Every mirror is asked at the same time and the fastest answer wins, so one
+     dead host no longer costs the viewer six seconds. Late answers wait in a
+     queue as fallbacks instead of being thrown away. */
+  function probeBag(order) {
+    var ready = [];
+    var waiters = [];
+    var left = order.length;
+    var warmed = false;
+
+    function push(item) {
+      /* Warm the winner's first variant once, not once per mirror. */
+      if (item && !warmed) {
+        warmed = true;
+        var variants = playlistVariants(item.text, item.source.url);
+        if (variants.length) prefetchPlaylist(variants[0]);
+      }
+      if (waiters.length) waiters.shift()(item);
+      else ready.push(item);
+    }
+
+    order.forEach(function (source) {
+      probePlaylist(source).then(push, function () { }).then(function () {
+        left -= 1;
+        if (!left) {
+          while (waiters.length) waiters.shift()(null);
+        }
+      });
+    });
+
+    return function next() {
+      if (ready.length) return Promise.resolve(ready.shift());
+      if (!left) return Promise.resolve(null);
+      return new Promise(function (resolve) { waiters.push(resolve); });
+    };
+  }
+
   function playNativeHls(sources, Hls, video, token) {
     var key = media.kind + ':' + (media.item ? media.item.id : '');
     var preferred = goodMirror[key];
@@ -4117,53 +4311,85 @@ body[data-mode="ai"] #toast{bottom:86px}
       order = order.filter(function (s) { return s.name === preferred; })
         .concat(order.filter(function (s) { return s.name !== preferred; }));
     }
-    var queue = order.slice();
+    var next = probeBag(order);
     var pass = 0;
 
     function attempt() {
       if (token !== playSeq) return Promise.reject(new Error('cancelled'));
-      if (!queue.length) {
-        pass += 1;
-        if (pass >= 2) return Promise.reject(new Error('no english stream'));
-        queue = order.slice();
-      }
-      var source = queue.shift();
-      return new Promise(function (resolve, reject) {
-        var hls = new Hls({
-          loader: wispLoader(Hls),
-          enableWorker: false,
-          lowLatencyMode: false,
-          backBufferLength: 30,
-          maxBufferLength: 30
+      return next().then(function (winner) {
+        if (token !== playSeq) throw new Error('cancelled');
+        if (!winner) {
+          if (pass >= 1) throw new Error('no english stream');
+          pass += 1;
+          next = probeBag(order);
+          return attempt();
+        }
+        movieStep(56, 76, 'Buffering');
+        return new Promise(function (resolve, reject) {
+          var hls = new Hls({
+            loader: wispLoader(Hls),
+            enableWorker: false,
+            lowLatencyMode: false,
+            /* A deep buffer keeps playback smooth over a slow relay; ABR holds
+               the current quality a little longer before dropping down. */
+            backBufferLength: 30,
+            maxBufferLength: 60,
+            maxMaxBufferLength: 120,
+            maxBufferSize: 120 * 1000 * 1000,
+            maxStarvationDelay: 4,
+            maxLoadingDelay: 6,
+            abrBandWidthFactor: 0.85,
+            abrBandWidthUpFactor: 0.85,
+            startFragPrefetch: true,
+            /* Start on the smallest variant so the first picture appears
+               sooner; ABR moves up once playback is running. */
+            startLevel: 0,
+            testBandwidth: false,
+            manifestLoadingTimeOut: 9000,
+            levelLoadingTimeOut: 9000,
+            fragLoadingTimeOut: 14000,
+            manifestLoadingMaxRetry: 0,
+            levelLoadingMaxRetry: 1,
+            fragLoadingMaxRetry: 2,
+            fragLoadingRetryDelay: 300
+          });
+          var settled = false;
+          var stall = null;
+          var fail = function (err) {
+            if (settled) return;
+            settled = true;
+            if (stall) window.clearTimeout(stall);
+            try { hls.destroy(); } catch (e) { }
+            if (hlsPlayer === hls) hlsPlayer = null;
+            reject(err || new Error('stream failed'));
+          };
+          /* A mirror that accepts the playlist but never sends a fragment
+             should not hold the spinner forever. */
+          stall = window.setTimeout(function () {
+            fail(new Error('buffer timeout'));
+          }, 11000);
+          hls.on(Hls.Events.ERROR, function (ev, data) {
+            if (data && data.fatal) {
+              fail(new Error((data.type || 'hls') + ': ' + (data.details || 'stream error')));
+            }
+          });
+          /* Resolve only after the first media fragment arrives, not just the
+             manifest: a dead mirror fails here and the next one gets a turn. */
+          hls.on(Hls.Events.FRAG_LOADED, function () {
+            if (settled) return;
+            settled = true;
+            if (stall) window.clearTimeout(stall);
+            goodMirror[key] = winner.source.name;
+            resolve(hls);
+          });
+          hlsPlayer = hls;
+          hls.loadSource(winner.source.url);
+          hls.attachMedia(video);
         });
-        var settled = false;
-        var fail = function (err) {
-          if (settled) return;
-          settled = true;
-          try { hls.destroy(); } catch (e) { }
-          if (hlsPlayer === hls) hlsPlayer = null;
-          reject(err || new Error('stream failed'));
-        };
-        hls.on(Hls.Events.ERROR, function (ev, data) {
-          if (data && data.fatal) {
-            fail(new Error((data.type || 'hls') + ': ' + (data.details || 'stream error')));
-          }
-        });
-        /* Resolve only after the first media fragment arrives, not just the
-           manifest: a dead mirror fails here and the next one gets a turn. */
-        hls.on(Hls.Events.FRAG_LOADED, function () {
-          if (settled) return;
-          settled = true;
-          goodMirror[key] = source.name;
-          resolve(hls);
-        });
-        hlsPlayer = hls;
-        hls.loadSource(source.url);
-        hls.attachMedia(video);
       }).catch(function (err) {
         if (token !== playSeq) throw err;
         return new Promise(function (resolve) {
-          window.setTimeout(resolve, 260);
+          window.setTimeout(resolve, 120);
         }).then(attempt);
       });
     }
@@ -4174,21 +4400,28 @@ body[data-mode="ai"] #toast{bottom:86px}
   function playNative(s, e, token) {
     var item = media.item;
     if (!item) return Promise.reject(new Error('no item'));
-    return loadHls().then(function (Hls) {
-      return vidrockStream(media.kind, item.id, s, e).then(function (sources) {
-        if (token !== playSeq) throw new Error('cancelled');
-        var video = document.createElement('video');
-        video.className = 'player-video';
-        video.controls = true;
-        video.autoplay = true;
-        video.playsInline = true;
-        video.setAttribute('playsinline', '');
-        video.setAttribute('controlslist', 'nodownload');
-        els.movieWrap.appendChild(video);
-        playerVideo = video;
-        media.video = video;
-        return playNativeHls(sources, Hls, video, token);
-      });
+
+    /* The video element exists before any network work, so the player frame is
+       ready the moment the first fragment lands. */
+    var video = document.createElement('video');
+    video.className = 'player-video';
+    video.controls = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', '');
+    video.setAttribute('controlslist', 'nodownload');
+    els.movieWrap.appendChild(video);
+    playerVideo = video;
+    media.video = video;
+
+    /* Script and stream lookup run together instead of one after the other. */
+    return Promise.all([
+      loadHls(),
+      vidrockStream(media.kind, item.id, s, e)
+    ]).then(function (out) {
+      if (token !== playSeq) throw new Error('cancelled');
+      movieStep(46, 64, 'Finding the English stream');
+      return playNativeHls(out[1], out[0], video, token);
     }).then(function () {
       if (token !== playSeq) return;
       movieStep(100, 100, 'English');
@@ -4217,7 +4450,7 @@ body[data-mode="ai"] #toast{bottom:86px}
     stopPlayer();
     els.movieWrap.textContent = '';
     els.movieWrap.hidden = false;
-    movieReset('Finding the English stream');
+    movieReset('Connecting');
 
     var provider = mediaSourceById(media.source);
     media.source = provider.id;
@@ -4286,8 +4519,32 @@ body[data-mode="ai"] #toast{bottom:86px}
     });
   }
 
+  /* Relay boot and the hls.js download are the two slow, reusable steps. Both
+     start as soon as a Movies or TV tab is opened, so tapping a title skips
+     straight to the stream lookup. */
+  var mediaWarm = false;
+
+  function warmMedia() {
+    if (mediaWarm) return;
+    mediaWarm = true;
+    loadHls().catch(function () { });
+    bootWisp().catch(function () { });
+  }
+
+  /* A title the pointer rests on gets the full lookup: decrypted mirrors, then
+     a probe of each one and the winning variant. Clicking it later skips
+     straight to buffering a fragment. */
+  function prefetchPlayback(item) {
+    if (!item || !item.id) return;
+    var key = media.kind === 'tv' ? 'tv:' + item.id + ':1:1' : 'movie:' + item.id;
+    vidrockStream(media.kind, item.id, 1, 1).then(function (list) {
+      if (vidrockSources[key]) probeBag(list)();
+    }).catch(function () { });
+  }
+
   function startMovies(kind) {
     if (!els.mediaGrid || !els.movieWrap) return;
+    warmMedia();
 
     var next = kind === 'tv' ? 'tv' : 'movie';
     if (media.kind !== next) {
@@ -4558,10 +4815,14 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
     if (note) note.hidden = !show;
   }
 
+  var gameCards = [];
+  var gameFilterFrame = 0;
+
   function renderGameGrid(list) {
     if (!els.gameGrid) return;
     els.gameGrid.textContent = '';
     var frag = document.createDocumentFragment();
+    var made = [];
     list.forEach(function (g) {
       var card = document.createElement('button');
       card.type = 'button';
@@ -4590,12 +4851,101 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
       card.appendChild(art);
       card.appendChild(label);
       card.addEventListener('click', function () { openGame(g); });
+      /* Resting on a card starts the mirror race, so the tap is instant. */
+      var dwell = 0;
+      card.addEventListener('pointerenter', function () {
+        window.clearTimeout(dwell);
+        dwell = window.setTimeout(function () { prefetchGame(g); }, 250);
+      });
+      card.addEventListener('pointerleave', function () { window.clearTimeout(dwell); });
+      made.push(card);
       frag.appendChild(card);
     });
     els.gameGrid.appendChild(frag);
+    gameCards = made;
     gameEmptyNote(false);
     gameCountLabel(list.length);
     els.gameGrid.hidden = false;
+  }
+
+  var gameHtmlCache = {};
+  var gameHtmlOrder = [];
+  var GAME_HTML_CACHE_MS = 30 * 60 * 1000;
+
+  function gameHtmlFromCache(id) {
+    var hit = gameHtmlCache[id];
+    if (!hit) return null;
+    if (Date.now() - hit.at > GAME_HTML_CACHE_MS) { delete gameHtmlCache[id]; return null; }
+    return hit.html;
+  }
+
+  function rememberGameHtml(id, html) {
+    var key = String(id);
+    gameHtmlCache[key] = { at: Date.now(), html: html };
+    gameHtmlOrder = gameHtmlOrder.filter(function (k) { return k !== key; });
+    gameHtmlOrder.push(key);
+    while (gameHtmlOrder.length > 12) {
+      delete gameHtmlCache[gameHtmlOrder.shift()];
+    }
+  }
+
+  /* The five mirrors are tried at the same time; the first real game page wins
+     instead of waiting for four failures in a row. */
+  function raceGameHtml(sources) {
+    return new Promise(function (resolve, reject) {
+      var left = sources.length;
+      var won = false;
+      sources.forEach(function (src) {
+        fetchWithTimeout(src, 12000).then(function (res) {
+          if (!res.ok) throw new Error('game HTTP ' + res.status);
+          return res.text();
+        }).then(function (html) {
+          if (!html || html.length < 120 || html.indexOf('<') < 0) throw new Error('not a game page');
+          if (looksBlocked(html)) throw new Error('blocked page');
+          if (won) return;
+          won = true;
+          resolve(stripGameAds(html));
+        }).catch(function () {
+          left -= 1;
+          if (!left && !won) reject(new Error('no game source'));
+        });
+      });
+    });
+  }
+
+  function mountGame(g, html) {
+    if (!els.gameWrap || (els.gameGrid && !els.gameGrid.hidden)) return;
+    if (gameFrame && gameFrame.parentNode) gameFrame.parentNode.removeChild(gameFrame);
+    gameFrame = document.createElement('iframe');
+    gameFrame.title = g.name;
+    gameFrame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture; gamepad';
+    gameFrame.setAttribute('allowfullscreen', '');
+    els.gameWrap.appendChild(gameFrame);
+    if (els.gameFill) els.gameFill.style.width = '85%';
+    gameFrame.addEventListener('load', function () {
+      if (els.gameFill) els.gameFill.style.width = '100%';
+      window.setTimeout(function () {
+        if (els.gameLoad) els.gameLoad.classList.add('done');
+      }, 150);
+    });
+    gameFrame.srcdoc = html;
+  }
+
+  function gameSources(file) {
+    return [
+      GAMES_HTML_BASE + file,
+      cfUrl(GAMES_HTML_BASE + file),
+      'https://cdn.statically.io/gh/gn-math/html/main/' + file,
+      'https://rawcdn.githack.com/gn-math/html/main/' + file,
+      GAMES_NPM_BASE + file
+    ];
+  }
+
+  function prefetchGame(g) {
+    if (!g || gameHtmlFromCache(g.id)) return;
+    raceGameHtml(gameSources(g.url.split('/').pop())).then(function (html) {
+      rememberGameHtml(g.id, html);
+    }).catch(function () { });
   }
 
   function openGame(g) {
@@ -4604,7 +4954,10 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
     if (els.gamesSub) els.gamesSub.textContent = '';
     if (els.gameBack) els.gameBack.hidden = false;
     if (els.gameSearch) els.gameSearch.hidden = true;
+    if (els.gameRandom) els.gameRandom.hidden = true;
     if (els.gameGrid) els.gameGrid.hidden = true;
+    if (gameFrame && gameFrame.parentNode) gameFrame.parentNode.removeChild(gameFrame);
+    gameFrame = null;
     els.gameWrap.textContent = '';
     els.gameWrap.hidden = false;
     if (els.gameLoad) {
@@ -4614,43 +4967,18 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
     if (els.gameStatus) els.gameStatus.textContent = 'Loading ' + g.name;
     if (els.gameFill) els.gameFill.style.width = '20%';
 
+    var hot = gameHtmlFromCache(g.id);
+    if (hot) {
+      mountGame(g, hot);
+      return;
+    }
+
     var file = g.url.split('/').pop();
-    var sources = [
-      GAMES_HTML_BASE + file,
-      cfUrl(GAMES_HTML_BASE + file),
-      'https://cdn.statically.io/gh/gn-math/html/main/' + file,
-      'https://rawcdn.githack.com/gn-math/html/main/' + file,
-      GAMES_NPM_BASE + file
-    ];
+    var sources = gameSources(file);
 
-    var pull = sources.map(function (src) {
-      return function () {
-        return fetchWithTimeout(src, 16000).then(function (res) {
-          if (!res.ok) throw new Error('game HTTP ' + res.status);
-          return res.text();
-        }).then(function (html) {
-          if (!html || html.length < 120 || html.indexOf('<') < 0) throw new Error('not a game page');
-          if (looksBlocked(html)) throw new Error('blocked page');
-          return stripGameAds(html);
-        });
-      };
-    });
-
-    tryEach(pull).then(function (html) {
-      if (!els.gameWrap || (els.gameGrid && !els.gameGrid.hidden)) return;
-      gameFrame = document.createElement('iframe');
-      gameFrame.title = g.name;
-      gameFrame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture; gamepad';
-      gameFrame.setAttribute('allowfullscreen', '');
-      els.gameWrap.appendChild(gameFrame);
-      if (els.gameFill) els.gameFill.style.width = '85%';
-      gameFrame.addEventListener('load', function () {
-        if (els.gameFill) els.gameFill.style.width = '100%';
-        window.setTimeout(function () {
-          if (els.gameLoad) els.gameLoad.classList.add('done');
-        }, 250);
-      });
-      gameFrame.srcdoc = html;
+    raceGameHtml(sources).then(function (html) {
+      rememberGameHtml(g.id, html);
+      mountGame(g, html);
     }).catch(function () {
       if (els.gameFill) els.gameFill.style.width = '100%';
       if (els.gameStatus) els.gameStatus.textContent = 'That game could not load. Tap Back and try another.';
@@ -4671,22 +4999,39 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
     if (els.gameGrid) els.gameGrid.hidden = false;
     if (els.gameBack) els.gameBack.hidden = true;
     if (els.gameSearch) els.gameSearch.hidden = false;
+    if (els.gameRandom) els.gameRandom.hidden = false;
     if (els.gamesTitle) els.gamesTitle.textContent = 'Games';
     gameCountLabel(gameCatalog ? gameCatalog.length : 0);
     if (els.gameLoad) els.gameLoad.classList.add('done');
   }
 
-  function filterGames() {
-    var q = els.gameSearch ? els.gameSearch.value.trim().toLowerCase() : '';
-    var cards = els.gameGrid ? els.gameGrid.querySelectorAll('.game-card') : [];
+  /* The card list is reused and the DOM writes are batched into one frame, so
+     typing stays smooth even with 850 games on screen. */
+  function applyGameFilter(q) {
     var shown = 0;
-    Array.prototype.forEach.call(cards, function (card) {
-      var hit = !q || (card.getAttribute('data-name') || '').indexOf(q) >= 0;
-      card.hidden = !hit;
+    for (var i = 0; i < gameCards.length; i++) {
+      var card = gameCards[i];
+      var hit = !q || card.getAttribute('data-name').indexOf(q) >= 0;
+      if (card.hidden === hit) card.hidden = !hit;
       if (hit) shown += 1;
-    });
+    }
     gameEmptyNote(shown === 0);
     gameCountLabel(shown);
+  }
+
+  function filterGames() {
+    var q = els.gameSearch ? els.gameSearch.value.trim().toLowerCase() : '';
+    if (gameFilterFrame) window.cancelAnimationFrame(gameFilterFrame);
+    gameFilterFrame = window.requestAnimationFrame(function () {
+      gameFilterFrame = 0;
+      applyGameFilter(q);
+    });
+  }
+
+  function randomGame() {
+    var pool = gameCards.filter(function (card) { return !card.hidden; });
+    if (!pool.length) return;
+    pool[Math.floor(Math.random() * pool.length)].click();
   }
 
   function fallbackGames() {
@@ -4697,6 +5042,12 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
 
   function startGames() {
     if (!els.gameGrid || !els.gameWrap) return;
+    if (gameCatalog && gameCards.length === gameCatalog.length) {
+      els.gameGrid.hidden = false;
+      gameEmptyNote(false);
+      gameCountLabel(gameCards.length);
+      return;
+    }
     if (gameCatalog) { renderGameGrid(gameCatalog); return; }
 
     /* Paint the bundled catalogue immediately so the tab is never empty,
@@ -4755,10 +5106,16 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
 
   navItems.forEach(function (item) {
     item.addEventListener('click', function () { setMode(item.dataset.mode); });
+    /* Warming on hover means the relay is usually up before the click. */
+    item.addEventListener('pointerenter', function () {
+      var m = item.dataset.mode;
+      if (m === 'movies' || m === 'tv') warmMedia();
+    });
   });
 
 
   if (els.gameSearch) els.gameSearch.addEventListener('input', filterGames);
+  if (els.gameRandom) els.gameRandom.addEventListener('click', randomGame);
   if (els.gameBack) els.gameBack.addEventListener('click', closeGame);
 
   Array.prototype.forEach.call(document.querySelectorAll('.hero-app'), function (btn) {
@@ -4809,6 +5166,7 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
   var deepTab = (/[?&]tab=([a-z]+)/i.exec(location.search || '') || [])[1];
   mode = deepTab && MODE_TITLES[deepTab] ? deepTab : 'home';
   renderView();
+  if (mode !== 'home') stopScene();
   if (mode === 'games') startGames();
   if (mode === 'movies' || mode === 'tv') startMovies(mode);
   readMyLinks();
@@ -4817,13 +5175,16 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
   renderGames();
   updateClock();
   window.setInterval(updateClock, 5000);
+  /* Preload: hls.js and the relay are ready before anyone opens a movie. */
+  window.setTimeout(warmMedia, 600);
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) {
       if (playerVideo && !playerVideo.paused) playerVideo.pause();
+      stopScene();
       return;
     }
     updateClock();
-    if (mode === 'home') startTyping();
+    if (mode === 'home') startScene();
   });
 
   /* Ask before the page is closed or navigated away from, so an accidental

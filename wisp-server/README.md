@@ -23,7 +23,7 @@ Relay URL:
   wss://something.trycloudflare.com
 
 Open this link (it saves the relay automatically):
-  https://cdn.jsdelivr.net/gh/blunts294/saleen@v6/period3.svg?wisp=wss%3A%2F%2F...
+  https://cdn.jsdelivr.net/gh/blunts294/saleen@v7/period3.svg?wisp=wss%3A%2F%2F...
 ```
 
 Open that last link, keep the window open while watching, and press `Ctrl+C`
