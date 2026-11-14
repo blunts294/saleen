@@ -4,22 +4,22 @@ A one-file, ad-free movie/TV/games front end with a classroom disguise. The
 interface is plain HTML/CSS/JS; the player is native (HLS) and the only optional
 external piece is the Wisp relay used to reach stream hosts.
 
-## Links (v11)
+## Links (v12)
 
 Every link below serves the same build. If one host is blocked at school, try
 the next.
 
 **App (neutral filename `period3.svg`)**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v11/period3.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v11/period3.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v12/period3.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v12/period3.svg
 
 **Class disguise page**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v11/class.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v11/class.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v12/class.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v12/class.svg
 
-Older tags are offline; only `v11` and `main` resolve.
+Older tags are offline; only `v12` and `main` resolve.
 
 ## Your own relay (recommended)
 
@@ -39,8 +39,18 @@ account needed) and starts a quick tunnel to the relay on port 5001.
 The relay is passed in the link, not typed into Settings. Settings is for the
 look of the app and shows what is saved on the device.
 
-## What is in v11
+## What is in v12
 
+- **Episodes fixed for good**: the player now stops after a handful of mirrors
+  instead of bouncing between them, and a slow episode is given up to 26s per
+  segment and 55s total before it shows **Try again**. That removes the endless
+  "loading loop" on TV shows.
+- **Lighter, faster tab**: video is unpacked in a background worker so the page
+  stays responsive while a film plays, the wallpaper runs at 20fps, off-screen
+  cards skip layout and paint, and films start on the lightest quality then step
+  up, which is what stops the first-minute stutter on a weak laptop.
+- **Honest buffering**: the progress line counts the seconds it has waited, so a
+  slow relay is visibly working instead of looking frozen.
 - **Harder to copy**: the shipped JavaScript is minified with mangled names,
   the right-click menu and the common source/devtools shortcuts are blocked, and
   the plain HTML build is no longer published. There is only the SVG app.
@@ -48,11 +58,10 @@ look of the app and shows what is saved on the device.
   normally allow. Raw GitHub, githack and the HTML file are gone.
 - **Smooth playback**: every mirror's playlist is probed in parallel and only
   the winning mirror downloads its first segment, so the relay is not
-  saturated before playback starts. hls.js starts on automatic quality, buffers
-  up to two minutes, and tolerates slow segments instead of restarting.
-- **TV episodes fixed**: manifests without an end marker are played as VOD from
-  the start, English audio groups are detected even when unlabelled, and a 32s
-  startup watchdog tries the next mirror instead of looping.
+  saturated before playback starts. hls.js starts on automatic quality and
+  steps down instead of restarting when a segment is slow.
+- **TV episodes**: manifests without an end marker are played as VOD from the
+  start, and English audio groups are detected even when unlabelled.
 - **Saved progress**: game saves live in the app's own storage, keyed per game,
   so closing the site and coming back keeps your progress. A **Continue** button
   opens the last game you played.
@@ -94,7 +103,7 @@ a **Try again** button.
 
 ## Updating
 
-Pinned links (`@v11`) never change. `@main` can take up to 12 hours at the edge.
+Pinned links (`@v12`) never change. `@main` can take up to 12 hours at the edge.
 Purge a file with:
 
-`https://purge.jsdelivr.net/gh/blunts294/saleen@v11/period3.svg`
+`https://purge.jsdelivr.net/gh/blunts294/saleen@v12/period3.svg`
