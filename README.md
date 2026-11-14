@@ -4,37 +4,37 @@ A one-file, ad-free movie/TV/games front end with a classroom disguise. The
 interface is plain HTML/CSS/JS; the player is native (HLS) and the only optional
 external piece is the Wisp relay used to reach stream hosts.
 
-## Links (v8)
+## Links (v9)
 
 Every link below serves the same build. If one host is blocked at school, try
 the next.
 
 **App (neutral filename `period3.svg`)**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/period3.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v8/period3.svg
-- raw.githack: https://raw.githack.com/blunts294/saleen/v8/period3.svg
-- GitHub raw: https://raw.githubusercontent.com/blunts294/saleen/v8/period3.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v9/period3.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v9/period3.svg
+- raw.githack: https://raw.githack.com/blunts294/saleen/v9/period3.svg
+- GitHub raw: https://raw.githubusercontent.com/blunts294/saleen/v9/period3.svg
 
 **App (original name `saleen.svg`)**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/saleen.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v8/saleen.svg
-- raw.githack: https://raw.githack.com/blunts294/saleen/v8/saleen.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v9/saleen.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v9/saleen.svg
+- raw.githack: https://raw.githack.com/blunts294/saleen/v9/saleen.svg
 
 **Class disguise page**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/class.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v8/class.svg
-- raw.githack: https://raw.githack.com/blunts294/saleen/v8/class.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v9/class.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v9/class.svg
+- raw.githack: https://raw.githack.com/blunts294/saleen/v9/class.svg
 
 **Plain HTML build**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/saleen.html
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v8/saleen.html
-- raw.githack: https://raw.githack.com/blunts294/saleen/v8/saleen.html
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v9/saleen.html
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v9/saleen.html
+- raw.githack: https://raw.githack.com/blunts294/saleen/v9/saleen.html
 
-Older tags are offline; only `v8` and `main` resolve.
+Older tags are offline; only `v9` and `main` resolve.
 
 ## Your own relay (recommended)
 
@@ -54,7 +54,7 @@ account needed) and starts a quick tunnel to the relay on port 5001.
 The relay is passed in the link, not typed into Settings. Settings is for the
 look of the app and shows what is saved on the device.
 
-## What is in v8
+## What is in v9
 
 - **Smooth playback**: every mirror's playlist is probed in parallel and only
   the winning mirror downloads its first segment, so the relay is not
@@ -68,7 +68,7 @@ look of the app and shows what is saved on the device.
   opens the last game you played.
 - **Settings cleaned up**: the Wisp relay field is gone. Settings now has a
   wallpaper toggle and accent colours, and a note about saved data.
-- **Links tab updated**: it lists every current v8 address, nothing older.
+- **Links tab updated**: it lists every current v9 address, nothing older.
 - **Faster games**: all five mirrors are raced instead of tried one by one;
   HTML for the last 12 games is kept in memory, so reopening a game is instant.
 - **More CDNs**: hls.js loads from jsDelivr, unpkg or Statically, then the ESM
@@ -108,7 +108,7 @@ a **Try again** button.
 
 ## Updating
 
-Pinned links (`@v8`) never change. `@main` can take up to 12 hours at the edge.
+Pinned links (`@v9`) never change. `@main` can take up to 12 hours at the edge.
 Purge a file with:
 
-`https://purge.jsdelivr.net/gh/blunts294/saleen@v8/period3.svg`
+`https://purge.jsdelivr.net/gh/blunts294/saleen@v9/period3.svg`

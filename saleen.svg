@@ -3139,13 +3139,13 @@ button{cursor:pointer}
   /* Every current v8 mirror, always present. Missing ones are added back and
      duplicates are dropped, so the shelf always shows the live addresses. */
   var SEED_LINKS = [
-    { id: 'saleen-jd', name: 'Saleen · jsDelivr', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/period3.svg', tag: 'app' },
-    { id: 'saleen-st', name: 'Saleen · Statically', url: 'https://cdn.statically.io/gh/blunts294/saleen/v8/period3.svg', tag: 'app' },
-    { id: 'saleen-gh', name: 'Saleen · githack', url: 'https://raw.githack.com/blunts294/saleen/v8/period3.svg', tag: 'app' },
-    { id: 'saleen-raw', name: 'Saleen · raw', url: 'https://raw.githubusercontent.com/blunts294/saleen/v8/period3.svg', tag: 'app' },
-    { id: 'saleen-orig', name: 'Saleen (original name)', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/saleen.svg', tag: 'app' },
-    { id: 'saleen-class', name: 'Class disguise', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/class.svg', tag: 'class' },
-    { id: 'saleen-html', name: 'HTML build', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/saleen.html', tag: 'html' }
+    { id: 'saleen-jd', name: 'Saleen · jsDelivr', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v9/period3.svg', tag: 'app' },
+    { id: 'saleen-st', name: 'Saleen · Statically', url: 'https://cdn.statically.io/gh/blunts294/saleen/v9/period3.svg', tag: 'app' },
+    { id: 'saleen-gh', name: 'Saleen · githack', url: 'https://raw.githack.com/blunts294/saleen/v9/period3.svg', tag: 'app' },
+    { id: 'saleen-raw', name: 'Saleen · raw', url: 'https://raw.githubusercontent.com/blunts294/saleen/v9/period3.svg', tag: 'app' },
+    { id: 'saleen-orig', name: 'Saleen (original name)', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v9/saleen.svg', tag: 'app' },
+    { id: 'saleen-class', name: 'Class disguise', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v9/class.svg', tag: 'class' },
+    { id: 'saleen-html', name: 'HTML build', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v9/saleen.html', tag: 'html' }
   ];
 
   function seedLinks() {
@@ -4963,7 +4963,6 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
   function rememberLastGame(g) {
     lastGame = { id: g.id, name: g.name, url: g.url };
     try { localStorage.setItem(LAST_GAME_KEY, JSON.stringify(lastGame)); } catch (e) { }
-    if (els.gameContinue) els.gameContinue.hidden = false;
   }
 
   function continueLastGame() {
