@@ -3139,13 +3139,13 @@ button{cursor:pointer}
   /* Every current v8 mirror, always present. Missing ones are added back and
      duplicates are dropped, so the shelf always shows the live addresses. */
   var SEED_LINKS = [
-    { id: 'saleen-jd', name: 'Saleen · jsDelivr', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v9/period3.svg', tag: 'app' },
-    { id: 'saleen-st', name: 'Saleen · Statically', url: 'https://cdn.statically.io/gh/blunts294/saleen/v9/period3.svg', tag: 'app' },
-    { id: 'saleen-gh', name: 'Saleen · githack', url: 'https://raw.githack.com/blunts294/saleen/v9/period3.svg', tag: 'app' },
-    { id: 'saleen-raw', name: 'Saleen · raw', url: 'https://raw.githubusercontent.com/blunts294/saleen/v9/period3.svg', tag: 'app' },
-    { id: 'saleen-orig', name: 'Saleen (original name)', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v9/saleen.svg', tag: 'app' },
-    { id: 'saleen-class', name: 'Class disguise', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v9/class.svg', tag: 'class' },
-    { id: 'saleen-html', name: 'HTML build', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v9/saleen.html', tag: 'html' }
+    { id: 'saleen-jd', name: 'Saleen · jsDelivr', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v10/period3.svg', tag: 'app' },
+    { id: 'saleen-st', name: 'Saleen · Statically', url: 'https://cdn.statically.io/gh/blunts294/saleen/v10/period3.svg', tag: 'app' },
+    { id: 'saleen-gh', name: 'Saleen · githack', url: 'https://raw.githack.com/blunts294/saleen/v10/period3.svg', tag: 'app' },
+    { id: 'saleen-raw', name: 'Saleen · raw', url: 'https://raw.githubusercontent.com/blunts294/saleen/v10/period3.svg', tag: 'app' },
+    { id: 'saleen-orig', name: 'Saleen (original name)', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v10/saleen.svg', tag: 'app' },
+    { id: 'saleen-class', name: 'Class disguise', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v10/class.svg', tag: 'class' },
+    { id: 'saleen-html', name: 'HTML build', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v10/saleen.html', tag: 'html' }
   ];
 
   function seedLinks() {
@@ -4819,7 +4819,6 @@ button{cursor:pointer}
     });
   }
 
-  initSettings();
   document.addEventListener('keydown', panicKey);
   mediaInit();
 
@@ -5352,6 +5351,8 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
   sanitize();
   sizeScene();
   apply();
+  /* Settings controls paint from the loaded values, so this runs after load(). */
+  initSettings();
   var deepTab = (/[?&]tab=([a-z]+)/i.exec(location.search || '') || [])[1];
   mode = deepTab && MODE_TITLES[deepTab] ? deepTab : 'home';
   renderView();
