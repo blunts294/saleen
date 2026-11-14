@@ -4,37 +4,22 @@ A one-file, ad-free movie/TV/games front end with a classroom disguise. The
 interface is plain HTML/CSS/JS; the player is native (HLS) and the only optional
 external piece is the Wisp relay used to reach stream hosts.
 
-## Links (v10)
+## Links (v11)
 
 Every link below serves the same build. If one host is blocked at school, try
 the next.
 
 **App (neutral filename `period3.svg`)**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v10/period3.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v10/period3.svg
-- raw.githack: https://raw.githack.com/blunts294/saleen/v10/period3.svg
-- GitHub raw: https://raw.githubusercontent.com/blunts294/saleen/v10/period3.svg
-
-**App (original name `saleen.svg`)**
-
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v10/saleen.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v10/saleen.svg
-- raw.githack: https://raw.githack.com/blunts294/saleen/v10/saleen.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v11/period3.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v11/period3.svg
 
 **Class disguise page**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v10/class.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v10/class.svg
-- raw.githack: https://raw.githack.com/blunts294/saleen/v10/class.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v11/class.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v11/class.svg
 
-**Plain HTML build**
-
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v10/saleen.html
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v10/saleen.html
-- raw.githack: https://raw.githack.com/blunts294/saleen/v10/saleen.html
-
-Older tags are offline; only `v10` and `main` resolve.
+Older tags are offline; only `v11` and `main` resolve.
 
 ## Your own relay (recommended)
 
@@ -54,8 +39,13 @@ account needed) and starts a quick tunnel to the relay on port 5001.
 The relay is passed in the link, not typed into Settings. Settings is for the
 look of the app and shows what is saved on the device.
 
-## What is in v10
+## What is in v11
 
+- **Harder to copy**: the shipped JavaScript is minified with mangled names,
+  the right-click menu and the common source/devtools shortcuts are blocked, and
+  the plain HTML build is no longer published. There is only the SVG app.
+- **School-safe links**: the Links tab lists only the two CDN hosts schools
+  normally allow. Raw GitHub, githack and the HTML file are gone.
 - **Smooth playback**: every mirror's playlist is probed in parallel and only
   the winning mirror downloads its first segment, so the relay is not
   saturated before playback starts. hls.js starts on automatic quality, buffers
@@ -68,11 +58,8 @@ look of the app and shows what is saved on the device.
   opens the last game you played.
 - **Settings cleaned up**: the Wisp relay field is gone. Settings now has a
   wallpaper toggle and accent colours, and a note about saved data.
-- **Links tab updated**: it lists every current v10 address, nothing older.
 - **Faster games**: all five mirrors are raced instead of tried one by one;
   HTML for the last 12 games is kept in memory, so reopening a game is instant.
-- **More CDNs**: hls.js loads from jsDelivr, unpkg or Statically, then the ESM
-  build as a last resort. The relay's libcurl.js and wasm do the same.
 - Catalogue chips: trending, popular, top rated and anime, plus Netflix, Prime,
   Disney+, Max, Hulu, Apple TV+, Paramount+ and Peacock filters.
 - **Pinned picks**: 47 films and 35 shows, including Blood and Bone, Never Back
@@ -103,12 +90,11 @@ a **Try again** button.
 
 - `saleen.svg` / `period3.svg` - the app as a standalone SVG document.
 - `class.svg` - the classroom disguise page.
-- `saleen.html` - the same app for normal hosting.
 - `wisp-server/` - the private relay, start scripts and deploy configs.
 
 ## Updating
 
-Pinned links (`@v10`) never change. `@main` can take up to 12 hours at the edge.
+Pinned links (`@v11`) never change. `@main` can take up to 12 hours at the edge.
 Purge a file with:
 
-`https://purge.jsdelivr.net/gh/blunts294/saleen@v10/period3.svg`
+`https://purge.jsdelivr.net/gh/blunts294/saleen@v11/period3.svg`
