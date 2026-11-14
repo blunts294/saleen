@@ -709,12 +709,21 @@ button{cursor:pointer}
 
 /* ---------- settings ---------- */
 .settings-body{padding:2px;max-width:560px}
-.settings-row{display:block;margin:0 0 10px}
-.settings-row span{display:block;margin:0 0 6px;font-size:12px;color:var(--muted)}
+.settings-row{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  margin:0 0 12px;padding:10px 0;border-bottom:1px solid var(--line);
+}
+.settings-row > span:first-child{font-size:12px;color:var(--muted)}
 .settings-input{
   width:100%;height:38px;padding:0 12px;border-radius:8px;
   border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:13px;
 }
+.accent-row{display:flex;gap:8px}
+.accent-dot{
+  width:24px;height:24px;border-radius:50%;border:2px solid transparent;
+  cursor:pointer;padding:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);
+}
+.accent-dot.on{border-color:var(--ink)}
 .settings-hint{margin:10px 0 0;font-size:12px;color:var(--dim);line-height:1.5}
 
 /* ---------- responsive ---------- */
@@ -947,6 +956,7 @@ button{cursor:pointer}
           </div>
           <div class="head-actions">
             <input id="gameSearch" class="game-search" type="search" placeholder="Search games" autocomplete="off" spellcheck="false" />
+            <button id="gameContinue" class="ghost-btn" type="button" hidden="hidden">Continue</button>
             <button id="gameRandom" class="ghost-btn" type="button">Random</button>
             <button id="gameBack" class="ghost-btn" type="button" hidden="hidden">Back</button>
           </div>
@@ -1023,12 +1033,20 @@ button{cursor:pointer}
           </div>
         </header>
         <div class="settings-body">
-          <label class="settings-row" for="wispInput">
-            <span>Wisp relay</span>
-            <input id="wispInput" class="settings-input" type="url" placeholder="wss://your-relay.example/" spellcheck="false" autocomplete="off" />
-          </label>
-          <button id="wispSave" class="ghost-btn" type="button">Save relay</button>
-          <p class="settings-hint">Start <b>wisp-server/start-wisp.cmd</b> and open the link it prints; the relay is saved automatically. Leave empty to use the public relay.</p>
+          <div class="settings-row">
+            <span>Wallpaper</span>
+            <button id="wallToggle" class="ghost-btn" type="button">Ocean</button>
+          </div>
+          <div class="settings-row">
+            <span>Accent</span>
+            <span class="accent-row" id="accentRow">
+              <button class="accent-dot" type="button" data-accent="#7c5cff" aria-label="Violet"></button>
+              <button class="accent-dot" type="button" data-accent="#38bdf8" aria-label="Sky"></button>
+              <button class="accent-dot" type="button" data-accent="#34d399" aria-label="Mint"></button>
+              <button class="accent-dot" type="button" data-accent="#f472b6" aria-label="Rose"></button>
+            </span>
+          </div>
+          <p class="settings-hint">Games, links and settings are saved on this device. Game progress stays in the browser, so closing the site and coming back keeps it.</p>
         </div>
       </section>
 
@@ -1165,8 +1183,6 @@ button{cursor:pointer}
     settingsView: $('#settingsView'),
     panicView: $('#panicView'),
     panicHot: $('#panicHot'),
-    wispInput: $('#wispInput'),
-    wispSave: $('#wispSave'),
     mediaTitle: $('#mediaTitle'),
     mediaSub: $('#mediaSub'),
     mediaGrid: $('#mediaGrid'),
@@ -1197,6 +1213,7 @@ button{cursor:pointer}
     gameGrid: $('#gameGrid'),
     gameSearch: $('#gameSearch'),
     gameRandom: $('#gameRandom'),
+    gameContinue: $('#gameContinue'),
     gameBack: $('#gameBack'),
     toast: $('#toast')
   };
@@ -1333,7 +1350,9 @@ button{cursor:pointer}
     rootNode().dataset.wall = settings.wallpaper;
     renderTabs();
     updateTitle();
-    startScene();
+    /* Only Home keeps the animated wallpaper running. */
+    if (typeof mode === 'undefined' || mode === 'home') startScene();
+    else stopScene();
   }
 
   function setSetting(key, value) {
@@ -3114,14 +3133,19 @@ button{cursor:pointer}
 
   /* ---------------- links ---------------- */
 
-  var LINKS_KEY = 'saleen.links.v3';
+  var LINKS_KEY = 'saleen.links.v4';
   var myLinks = [];
 
-  /* Every link, always present. Any that go missing are added back once, in
-     order, and duplicates are dropped. */
-  var KEEP_LINK = 'https://cdn.jsdelivr.net/gh/blunts294/saleen/saleen.svg';
+  /* Every current v8 mirror, always present. Missing ones are added back and
+     duplicates are dropped, so the shelf always shows the live addresses. */
   var SEED_LINKS = [
-    { id: 'saleen-app', name: 'Saleen', url: KEEP_LINK, tag: 'app' }
+    { id: 'saleen-jd', name: 'Saleen · jsDelivr', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/period3.svg', tag: 'app' },
+    { id: 'saleen-st', name: 'Saleen · Statically', url: 'https://cdn.statically.io/gh/blunts294/saleen/v8/period3.svg', tag: 'app' },
+    { id: 'saleen-gh', name: 'Saleen · githack', url: 'https://raw.githack.com/blunts294/saleen/v8/period3.svg', tag: 'app' },
+    { id: 'saleen-raw', name: 'Saleen · raw', url: 'https://raw.githubusercontent.com/blunts294/saleen/v8/period3.svg', tag: 'app' },
+    { id: 'saleen-orig', name: 'Saleen (original name)', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/saleen.svg', tag: 'app' },
+    { id: 'saleen-class', name: 'Class disguise', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/class.svg', tag: 'class' },
+    { id: 'saleen-html', name: 'HTML build', url: 'https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/saleen.html', tag: 'html' }
   ];
 
   function seedLinks() {
@@ -3130,8 +3154,7 @@ button{cursor:pointer}
     });
   }
 
-  /* One link only. Everything else that used to live on this shelf is dropped,
-     so the tab always shows exactly the single live address. */
+  /* Only the current build, so the tab never shows a dead address. */
   function withSeedLinks() {
     return seedLinks();
   }
@@ -3139,8 +3162,8 @@ button{cursor:pointer}
   function readMyLinks() {
     try {
       /* Older builds saved a shelf of starter links under these keys. They are
-         removed once so the Links tab starts genuinely empty. */
-      ['saleen.links.v1', 'saleen.links.v2'].forEach(function (k) {
+         removed once so the Links tab starts from the current set. */
+      ['saleen.links.v1', 'saleen.links.v2', 'saleen.links.v3'].forEach(function (k) {
         try { localStorage.removeItem(k); } catch (e) {}
       });
       var raw = localStorage.getItem(LINKS_KEY);
@@ -4139,7 +4162,7 @@ button{cursor:pointer}
           }
         }
 
-        self.timer = window.setTimeout(function () { fail(new Error('wisp timeout')); }, wantsText ? 9000 : 20000);
+        self.timer = window.setTimeout(function () { fail(new Error('wisp timeout')); }, wantsText ? 12000 : 26000);
 
         wispFetch(url, wantsText ? 'text' : 'array', streamHeaders()).then(function (res) {
           if (!res || self.aborted) return null;
@@ -4327,39 +4350,54 @@ button{cursor:pointer}
     return job;
   }
 
-  function probePlaylist(source, validate) {
+  /* Probe = manifest only. Downloading a segment for every mirror at once
+     saturated the relay and made the first seconds of playback stutter, so the
+     segment warm-up happens once, for the winner only. */
+  function probePlaylist(source) {
     return manifestText(source.url).then(function (text) {
       if (!/#EXT-X-STREAM-INF|#EXTINF/.test(text)) throw new Error('empty playlist');
-      if (validate === false) return { source: source, text: text };
-      var isMedia = !/#EXT-X-STREAM-INF/i.test(text);
-      if (isMedia) {
-        var first = firstMediaUrl(text, source.url);
-        if (!first) return { source: source, text: text };
-        return fetchSegment(first).then(function () {
-          return { source: source, text: text };
-        });
-      }
-      var variant = playlistVariants(text, source.url)[0];
-      if (!variant) return { source: source, text: text };
-      /* Master playlist: warm the first variant, then its first segment. A
-         failure here is only a warning, the player can still try the mirror. */
-      return manifestText(variant).then(function (vtext) {
-        var seg = firstMediaUrl(vtext, variant);
-        if (!seg) return { source: source, text: text };
-        return fetchSegment(seg).then(function () {
-          return { source: source, text: text };
-        });
-      }).catch(function () {
-        return { source: source, text: text };
-      });
+      return { source: source, text: text };
     });
+  }
+
+  /* Lowest-bandwidth variant: that is the level hls.js starts on, so warming
+     it is the one that actually saves a round trip. */
+  function lowestVariant(text, base) {
+    var lines = String(text || '').split(/\r?\n/);
+    var best = '';
+    var bestBw = Infinity;
+    for (var i = 0; i < lines.length; i++) {
+      if (!/^#EXT-X-STREAM-INF/i.test(lines[i])) continue;
+      var bw = Number((/BANDWIDTH=(\d+)/i.exec(lines[i]) || [])[1] || 0) || Infinity;
+      var next = lines[i + 1];
+      if (!next || next.charAt(0) === '#') continue;
+      if (bw < bestBw) {
+        bestBw = bw;
+        try { best = new URL(next, base).href; } catch (e) { }
+      }
+    }
+    return best;
+  }
+
+  /* One background download for the winning mirror: the variant playlist for
+     a master, the first segment for a ready-made media playlist. The loader
+     shares it, so nothing is fetched twice. */
+  function warmWinner(winner) {
+    if (!winner) return;
+    if (/#EXT-X-STREAM-INF/i.test(winner.text)) {
+      var variant = lowestVariant(winner.text, winner.source.url);
+      if (variant) manifestText(variant).catch(function () { });
+      return;
+    }
+    var first = firstMediaUrl(winner.text, winner.source.url);
+    if (first) fetchSegment(first).catch(function () { });
   }
 
   /* Every mirror is asked at the same time and the fastest answer wins, so one
      dead host no longer costs the viewer six seconds. Late answers wait in a
      queue as fallbacks instead of being thrown away. The counter is settled in
      a catch as well, so one odd failure cannot leave the player waiting. */
-  function probeBag(order, validate) {
+  function probeBag(order) {
     var ready = [];
     var waiters = [];
     var left = order.length;
@@ -4376,7 +4414,7 @@ button{cursor:pointer}
     }
 
     order.forEach(function (source) {
-      probePlaylist(source, validate).then(push).catch(function () { }).then(settle);
+      probePlaylist(source).then(push).catch(function () { }).then(settle);
     });
 
     return function next() {
@@ -4394,7 +4432,7 @@ button{cursor:pointer}
       order = order.filter(function (s) { return s.name === preferred; })
         .concat(order.filter(function (s) { return s.name !== preferred; }));
     }
-    var next = probeBag(order, true);
+    var next = probeBag(order);
     var pass = 0;
 
     function attempt() {
@@ -4404,41 +4442,41 @@ button{cursor:pointer}
         if (!winner) {
           if (pass >= 1) throw new Error('no english stream');
           pass += 1;
-          /* Second sweep without the segment check: a mirror whose first
-             segment hiccuped still gets one honest attempt. */
-          next = probeBag(order, false);
+          next = probeBag(order);
           return attempt();
         }
         movieStep(56, 76, 'Buffering');
+        warmWinner(winner);
         return new Promise(function (resolve, reject) {
           var hls = new Hls({
             loader: wispLoader(Hls),
             enableWorker: false,
             lowLatencyMode: false,
-            /* A deep buffer keeps playback smooth over a slow relay, but not so
-               deep that three 2 MB episode segments are queued at once. */
+            /* Deep buffer so a slow relay hiccup does not reach the screen. */
             backBufferLength: 30,
-            maxBufferLength: 45,
-            maxMaxBufferLength: 90,
-            maxBufferSize: 90 * 1000 * 1000,
-            maxStarvationDelay: 4,
-            maxLoadingDelay: 6,
-            abrBandWidthFactor: 0.85,
-            abrBandWidthUpFactor: 0.85,
+            maxBufferLength: 60,
+            maxMaxBufferLength: 120,
+            maxBufferSize: 120 * 1000 * 1000,
+            /* Do not abandon a segment that is simply taking a while: on a
+               tunnel-backed relay that caused the visible stutter. */
+            maxStarvationDelay: 8,
+            maxLoadingDelay: 10,
+            abrBandWidthFactor: 0.8,
+            abrBandWidthUpFactor: 0.7,
             startFragPrefetch: true,
-            /* Start on the smallest variant so the first picture appears
-               sooner; ABR moves up once playback is running. */
-            startLevel: 0,
+            /* Start at a normal quality for a normal connection, then let ABR
+               step down if the relay is slow. Starting on the lowest level made
+               good internet look bad for the first half minute. */
+            startLevel: -1,
+            abrEwmaDefaultEstimate: 6000000,
             testBandwidth: false,
-            /* Episodes come as ~2 MB segments over the relay, so a single slow
-               segment must not be mistaken for a dead mirror. */
-            manifestLoadingTimeOut: 10000,
-            levelLoadingTimeOut: 12000,
-            fragLoadingTimeOut: 18000,
+            manifestLoadingTimeOut: 12000,
+            levelLoadingTimeOut: 14000,
+            fragLoadingTimeOut: 24000,
             manifestLoadingMaxRetry: 1,
-            levelLoadingMaxRetry: 1,
-            fragLoadingMaxRetry: 2,
-            fragLoadingRetryDelay: 400
+            levelLoadingMaxRetry: 2,
+            fragLoadingMaxRetry: 3,
+            fragLoadingRetryDelay: 500
           });
           var settled = false;
           var stall = null;
@@ -4727,24 +4765,35 @@ button{cursor:pointer}
   }
 
   function initSettings() {
-    if (!els.wispInput) return;
-    try { els.wispInput.value = window.localStorage.getItem('saleen.wisp') || ''; } catch (e) {}
-    if (!els.wispSave) return;
-    els.wispSave.addEventListener('click', function () {
-      var value = els.wispInput.value.trim();
-      if (value && !/^wss?:\/\//i.test(value)) { toast('Use a wss:// address'); return; }
-      try {
-        if (value) window.localStorage.setItem('saleen.wisp', value);
-        else window.localStorage.removeItem('saleen.wisp');
-      } catch (e) {}
-      WISP_SERVERS = wispList();
-      wispIndex = 0;
-      cleanupWisp();
-      wispStart = null;
-      wispReady = false;
-      wispBoot = null;
-      toast(value ? 'Relay saved' : 'Relay cleared');
-    });
+    var wall = $('#wallToggle');
+    if (wall) {
+      var paintWall = function () {
+        wall.textContent = settings.wallpaper === 'plain' ? 'Plain' : 'Ocean';
+      };
+      paintWall();
+      wall.addEventListener('click', function () {
+        setSetting('wallpaper', settings.wallpaper === 'plain' ? 'ocean' : 'plain');
+        paintWall();
+        toast(settings.wallpaper === 'plain' ? 'Plain background' : 'Ocean background');
+      });
+    }
+
+    var row = $('#accentRow');
+    if (row) {
+      row.querySelectorAll('.accent-dot').forEach(function (dot) {
+        dot.style.background = dot.getAttribute('data-accent');
+        dot.addEventListener('click', function () {
+          setSetting('accent', dot.getAttribute('data-accent'));
+          row.querySelectorAll('.accent-dot').forEach(function (d) {
+            d.classList.toggle('on', d === dot);
+          });
+          toast('Accent saved');
+        });
+      });
+      row.querySelectorAll('.accent-dot').forEach(function (d) {
+        d.classList.toggle('on', d.getAttribute('data-accent') === settings.accent);
+      });
+    }
   }
 
   /* Teacher walks past? One key swaps the whole app for a class meeting. */
@@ -4906,6 +4955,21 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
   var gameCards = [];
   var gameFilterFrame = 0;
 
+  /* The last game played, so a returning visitor can jump straight back. */
+  var LAST_GAME_KEY = 'saleen.lastGame';
+  var lastGame = null;
+  try { lastGame = JSON.parse(localStorage.getItem(LAST_GAME_KEY) || 'null'); } catch (e) { lastGame = null; }
+
+  function rememberLastGame(g) {
+    lastGame = { id: g.id, name: g.name, url: g.url };
+    try { localStorage.setItem(LAST_GAME_KEY, JSON.stringify(lastGame)); } catch (e) { }
+    if (els.gameContinue) els.gameContinue.hidden = false;
+  }
+
+  function continueLastGame() {
+    if (lastGame && lastGame.url) openGame(lastGame);
+  }
+
   function renderGameGrid(list) {
     if (!els.gameGrid) return;
     els.gameGrid.textContent = '';
@@ -5001,6 +5065,30 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
     });
   }
 
+  /* Keeps a game's localStorage save data on the app's own origin, keyed per
+     game. Games are same-origin srcdoc frames, but this also survives a game
+     that clears storage on boot and keeps every save in one known place. */
+  function gameSaveBridge(id) {
+    var key = 'saleen.game.' + id;
+    return '<script>(function(){try{' +
+      'var KEY=' + JSON.stringify(key) + ';' +
+      'var raw=null;try{raw=window.parent.localStorage.getItem(KEY);}catch(e){}' +
+      'var data={};try{data=raw?JSON.parse(raw):{};}catch(e){data={};}' +
+      'function flush(){try{window.parent.localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}}' +
+      'var api={' +
+      'getItem:function(k){k=String(k);return Object.prototype.hasOwnProperty.call(data,k)?String(data[k]):null;},' +
+      'setItem:function(k,v){data[String(k)]=String(v);flush();},' +
+      'removeItem:function(k){delete data[String(k)];flush();},' +
+      'clear:function(){data={};flush();},' +
+      'key:function(i){var ks=Object.keys(data);return i<ks.length?ks[i]:null;}' +
+      '};' +
+      'try{Object.defineProperty(api,"length",{get:function(){return Object.keys(data).length;}});}catch(e){}' +
+      'try{Object.defineProperty(window,"localStorage",{configurable:true,get:function(){return api;}});}catch(e){}' +
+      'window.addEventListener("pagehide",flush);window.addEventListener("beforeunload",flush);' +
+      'setInterval(flush,4000);' +
+      '}catch(e){}})();<\/script>';
+  }
+
   function mountGame(g, html) {
     if (!els.gameWrap || (els.gameGrid && !els.gameGrid.hidden)) return;
     if (gameFrame && gameFrame.parentNode) gameFrame.parentNode.removeChild(gameFrame);
@@ -5016,7 +5104,17 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
         if (els.gameLoad) els.gameLoad.classList.add('done');
       }, 150);
     });
+    /* The bridge has to run before the game's own scripts. */
+    var bridge = gameSaveBridge(g.id);
+    var headAt = html.search(/<head[^>]*>/i);
+    if (headAt >= 0) {
+      var endOfHead = headAt + html.slice(headAt).indexOf('>') + 1;
+      html = html.slice(0, endOfHead) + bridge + html.slice(endOfHead);
+    } else {
+      html = bridge + html;
+    }
     gameFrame.srcdoc = html;
+    rememberLastGame(g);
   }
 
   function gameSources(file) {
@@ -5043,6 +5141,7 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
     if (els.gameBack) els.gameBack.hidden = false;
     if (els.gameSearch) els.gameSearch.hidden = true;
     if (els.gameRandom) els.gameRandom.hidden = true;
+    if (els.gameContinue) els.gameContinue.hidden = true;
     if (els.gameGrid) els.gameGrid.hidden = true;
     if (gameFrame && gameFrame.parentNode) gameFrame.parentNode.removeChild(gameFrame);
     gameFrame = null;
@@ -5088,6 +5187,7 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
     if (els.gameBack) els.gameBack.hidden = true;
     if (els.gameSearch) els.gameSearch.hidden = false;
     if (els.gameRandom) els.gameRandom.hidden = false;
+    if (els.gameContinue) els.gameContinue.hidden = !lastGame;
     if (els.gamesTitle) els.gamesTitle.textContent = 'Games';
     gameCountLabel(gameCatalog ? gameCatalog.length : 0);
     if (els.gameLoad) els.gameLoad.classList.add('done');
@@ -5204,7 +5304,9 @@ var GAMES_FALLBACK = [[0,"Bowmasters","0-fix2.html"],[1,"OvO","1-fix2.html"],[2,
 
   if (els.gameSearch) els.gameSearch.addEventListener('input', filterGames);
   if (els.gameRandom) els.gameRandom.addEventListener('click', randomGame);
+  if (els.gameContinue) els.gameContinue.addEventListener('click', continueLastGame);
   if (els.gameBack) els.gameBack.addEventListener('click', closeGame);
+  if (els.gameContinue && lastGame) els.gameContinue.hidden = false;
 
   Array.prototype.forEach.call(document.querySelectorAll('.hero-app'), function (btn) {
     btn.addEventListener('click', function () {

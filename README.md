@@ -4,37 +4,37 @@ A one-file, ad-free movie/TV/games front end with a classroom disguise. The
 interface is plain HTML/CSS/JS; the player is native (HLS) and the only optional
 external piece is the Wisp relay used to reach stream hosts.
 
-## Links (v7)
+## Links (v8)
 
 Every link below serves the same build. If one host is blocked at school, try
 the next.
 
 **App (neutral filename `period3.svg`)**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v7/period3.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v7/period3.svg
-- raw.githack: https://raw.githack.com/blunts294/saleen/v7/period3.svg
-- GitHub raw: https://raw.githubusercontent.com/blunts294/saleen/v7/period3.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/period3.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v8/period3.svg
+- raw.githack: https://raw.githack.com/blunts294/saleen/v8/period3.svg
+- GitHub raw: https://raw.githubusercontent.com/blunts294/saleen/v8/period3.svg
 
 **App (original name `saleen.svg`)**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v7/saleen.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v7/saleen.svg
-- raw.githack: https://raw.githack.com/blunts294/saleen/v7/saleen.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/saleen.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v8/saleen.svg
+- raw.githack: https://raw.githack.com/blunts294/saleen/v8/saleen.svg
 
 **Class disguise page**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v7/class.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v7/class.svg
-- raw.githack: https://raw.githack.com/blunts294/saleen/v7/class.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/class.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v8/class.svg
+- raw.githack: https://raw.githack.com/blunts294/saleen/v8/class.svg
 
 **Plain HTML build**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v7/saleen.html
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v7/saleen.html
-- raw.githack: https://raw.githack.com/blunts294/saleen/v7/saleen.html
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v8/saleen.html
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v8/saleen.html
+- raw.githack: https://raw.githack.com/blunts294/saleen/v8/saleen.html
 
-Older tags are offline; only `v7` and `main` resolve.
+Older tags are offline; only `v8` and `main` resolve.
 
 ## Your own relay (recommended)
 
@@ -51,31 +51,33 @@ remembers the last relay and falls back to the public one if it is offline.
 The helper downloads Cloudflare's free `cloudflared` once (about 55 MB, no
 account needed) and starts a quick tunnel to the relay on port 5001.
 
-## What is in v7
+The relay is passed in the link, not typed into Settings. Settings is for the
+look of the app and shows what is saved on the device.
 
-- **Faster, steadier players**: opening Movies or TV preloads hls.js and boots
-  the relay before you tap a title. Every English mirror is probed at the same
-  time and the fastest one that actually delivers video wins, so a mirror that
-  returns a playlist but no picture is dropped before you see it. That first
-  segment is reused instead of downloaded twice, resolved mirrors are cached
-  for ten minutes, and each episode gets a patient 32s window on a slow relay
-  before another mirror is tried.
-- **Faster games**: the five mirrors are raced instead of tried one by one;
+## What is in v8
+
+- **Smooth playback**: every mirror's playlist is probed in parallel and only
+  the winning mirror downloads its first segment, so the relay is not
+  saturated before playback starts. hls.js starts on automatic quality, buffers
+  up to two minutes, and tolerates slow segments instead of restarting.
+- **TV episodes fixed**: manifests without an end marker are played as VOD from
+  the start, English audio groups are detected even when unlabelled, and a 32s
+  startup watchdog tries the next mirror instead of looping.
+- **Saved progress**: game saves live in the app's own storage, keyed per game,
+  so closing the site and coming back keeps your progress. A **Continue** button
+  opens the last game you played.
+- **Settings cleaned up**: the Wisp relay field is gone. Settings now has a
+  wallpaper toggle and accent colours, and a note about saved data.
+- **Links tab updated**: it lists every current v8 address, nothing older.
+- **Faster games**: all five mirrors are raced instead of tried one by one;
   HTML for the last 12 games is kept in memory, so reopening a game is instant.
-  Search filters on the next animation frame with a prebuilt card list, and a
-  **Random** button starts something new in one tap.
 - **More CDNs**: hls.js loads from jsDelivr, unpkg or Statically, then the ESM
   build as a last resort. The relay's libcurl.js and wasm do the same.
-- **Movies + TV**: native English-only HLS playback. One `English` chip and no
-  language or server list anywhere in the UI. If a title has no English stream,
-  the player says so and offers **Try again** instead of opening a provider page
-  that lists other languages.
 - Catalogue chips: trending, popular, top rated and anime, plus Netflix, Prime,
   Disney+, Max, Hulu, Apple TV+, Paramount+ and Peacock filters.
 - **Pinned picks**: 47 films and 35 shows, including Blood and Bone, Never Back
   Down, White Chicks and The Flash (2014, 9 seasons).
 - **Games**: 850 playable HTML games, bundled so the grid paints instantly.
-- **Settings**: Wisp relay field, pre-filled by the `?wisp=` link.
 - **No music tab.** The dock has Home, AI, Links, Games, Movies, TV, Settings.
 
 ## Classroom disguise
@@ -106,7 +108,7 @@ a **Try again** button.
 
 ## Updating
 
-Pinned links (`@v7`) never change. `@main` can take up to 12 hours at the edge.
+Pinned links (`@v8`) never change. `@main` can take up to 12 hours at the edge.
 Purge a file with:
 
-`https://purge.jsdelivr.net/gh/blunts294/saleen@v7/period3.svg`
+`https://purge.jsdelivr.net/gh/blunts294/saleen@v8/period3.svg`
