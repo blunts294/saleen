@@ -4,22 +4,22 @@ A one-file, ad-free movie/TV/games front end with a classroom disguise. The
 interface is plain HTML/CSS/JS; the player is native (HLS) and the only optional
 external piece is the Wisp relay used to reach stream hosts.
 
-## Links (v13)
+## Links (v14)
 
 Every link below serves the same build. If one host is blocked at school, try
 the next.
 
 **App (neutral filename `period3.svg`)**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v13/period3.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v13/period3.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v14/period3.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v14/period3.svg
 
 **Class disguise page**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v13/class.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v13/class.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v14/class.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v14/class.svg
 
-Older tags are offline; only `v13` and `main` resolve.
+Older tags are offline; only `v14` and `main` resolve.
 
 ## Your own relay (recommended)
 
@@ -39,7 +39,10 @@ account needed) and starts a quick tunnel to the relay on port 5001.
 The relay is passed in the link, not typed into Settings. Settings is for the
 look of the app and shows what is saved on the device.
 
-## What is in v13
+## What is in v14
+
+- **Episodes no longer dead-end**: some stream hosts refuse the relay (TLS or blocklisted), which is exactly what made one show say This episode did not load while everything else played. The player now races the relay against the page itself on the first request to a host, remembers the transport that worked, and falls back for the rest, so a host that rejects the relay still plays.
+- **No more typing stutter while a page builds**: the page rewriter hands the main thread back between node batches instead of rewriting a whole page in one long block, so the caret and the typing animation keep moving while a heavy page loads.
 
 - **Episodes fixed for good**: the player now stops after a handful of mirrors
   instead of bouncing between them, and a slow episode is given up to 26s per
@@ -106,7 +109,7 @@ a **Try again** button.
 
 ## Updating
 
-Pinned links (`@v13`) never change. `@main` can take up to 12 hours at the edge.
+Pinned links (`@v14`) never change. `@main` can take up to 12 hours at the edge.
 Purge a file with:
 
-`https://purge.jsdelivr.net/gh/blunts294/saleen@v13/period3.svg`
+`https://purge.jsdelivr.net/gh/blunts294/saleen@v14/period3.svg`
