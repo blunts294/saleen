@@ -1,4 +1,4 @@
-# Saleen Wisp server
+﻿# Saleen Wisp server
 
 This is your own [Wisp](https://github.com/MercuryWorkshop/wisp-protocol) relay.
 Saleen uses it to reach stream hosts that the public relay cannot, so the only
@@ -23,7 +23,7 @@ Relay URL:
   wss://something.trycloudflare.com
 
 Open this link (it saves the relay automatically):
-  https://cdn.jsdelivr.net/gh/blunts294/saleen@v16/period3.svg?wisp=wss%3A%2F%2F...
+  https://cdn.jsdelivr.net/gh/blunts294/saleen@v17/period3.svg?wisp=wss%3A%2F%2F...
 ```
 
 Open that last link, keep the window open while watching, and press `Ctrl+C`
@@ -50,7 +50,7 @@ Pick one host. All of them give you a `wss://...` address.
 ### Render (easiest, free)
 
 1. Push this folder to a GitHub repo.
-2. Render → **New → Blueprint** → select the repo. It reads `render.yaml`.
+2. Render â†’ **New â†’ Blueprint** â†’ select the repo. It reads `render.yaml`.
 3. Copy the service URL and use `wss://<service>.onrender.com/`.
 
 Free Render services sleep after ~15 minutes idle, so the first page load after
@@ -66,7 +66,7 @@ fly deploy
 
 ### Railway
 
-1. **New Project → Deploy from GitHub**, pick the repo.
+1. **New Project â†’ Deploy from GitHub**, pick the repo.
 2. Railway detects Node, sets `PORT` itself. Start command: `node server.mjs`.
 
 ### Any VPS with Docker
@@ -81,7 +81,7 @@ Put Caddy or nginx in front for TLS, then use `wss://your-domain/`.
 ## Connect Saleen to it
 
 - open the `?wisp=` link printed by the script (saves it automatically), or
-- paste the `wss://` address into **Settings → Wisp relay → Save relay**, or
+- paste the `wss://` address into **Settings â†’ Wisp relay â†’ Save relay**, or
 - run once in the console:
   `localStorage.setItem('saleen.wisp', 'wss://your-host/')`.
 

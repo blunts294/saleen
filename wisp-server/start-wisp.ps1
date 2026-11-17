@@ -1,4 +1,4 @@
-# Saleen personal Wisp relay
+﻿# Saleen personal Wisp relay
 #
 # Starts the relay on this PC, opens a free Cloudflare quick tunnel so the
 # browser can reach it over wss://, then prints a ready-to-open app link.
@@ -10,7 +10,7 @@ $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
 
 # Pinned app build used in the printed link. Bump when a new tag ships.
-$tag = 'v16'
+$tag = 'v17'
 $appBase = "https://cdn.jsdelivr.net/gh/blunts294/saleen@$tag/period3.svg"
 $port = 5001
 $toolDir = Join-Path $env:LOCALAPPDATA 'SaleenWisp'

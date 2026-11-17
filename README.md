@@ -1,25 +1,25 @@
 # Saleen
 
 A one-file, ad-free movie/TV/games front end with a classroom disguise. The
-interface is plain HTML/CSS/JS; the player is native (HLS) and the only optional
-external piece is the Wisp relay used to reach stream hosts.
+interface is plain HTML/CSS/JS, the player is native (HLS), and the browser tab
+runs its own Scramjet engine through your Wisp relay.
 
-## Links (v16)
+## Links (v17)
 
 Every link below serves the same build. If one host is blocked at school, try
 the next.
 
 **App (neutral filename `period3.svg`)**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v16/period3.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v16/period3.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v17/period3.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v17/period3.svg
 
 **Class disguise page**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v16/class.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen/v16/class.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v17/class.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen/v17/class.svg
 
-Older tags are offline; only `v16` and `main` resolve.
+Older tags are offline; only `v17` and `main` resolve.
 
 ## Your own relay (recommended)
 
@@ -39,51 +39,54 @@ account needed) and starts a quick tunnel to the relay on port 5001.
 The relay is passed in the link, not typed into Settings. Settings is for the
 look of the app and shows what is saved on the device.
 
-## What is in v16
+## What is in v17
 
-- **Pages appear while they are still loading styles**: the browser used to hold a whole page back until every stylesheet came through the relay. Styles now get a short head start, the words paint as soon as they arrive, and the frame pulls the sheet itself. TikTok went from about 17 seconds to about 1 second, Wikipedia about 1.3 seconds.
-- **Sleeping text reader woken earlier**: on sites the public proxies cannot reach, the text reader now starts while the slowest proxy is still trying instead of after it gives up, so those pages open about twice as fast.
-- **Smoother first minute for episodes**: the three opening segments download while the player is being built, so a slow stream host no longer causes a gap at the ten second mark.
-- **Episodes no longer dead-end**: some stream hosts refuse the relay (TLS or blocklisted), which is exactly what made one show say This episode did not load while everything else played. The player now races the relay against the page itself on the first request to a host, remembers the transport that worked, and falls back for the rest, so a host that rejects the relay still plays.
-- **No more typing stutter while a page builds**: the page rewriter hands the main thread back between node batches instead of rewriting a whole page in one long block, so the caret and the typing animation keep moving while a heavy page loads.
-
-- **Episodes fixed for good**: the player now stops after a handful of mirrors
-  instead of bouncing between them, and a slow episode is given up to 26s per
-  segment and 55s total before it shows **Try again**. That removes the endless
-  "loading loop" on TV shows.
-- **Lighter, faster tab**: video is unpacked in a background worker so the page
-  stays responsive while a film plays, the wallpaper runs at 20fps, off-screen
-  cards skip layout and paint, and films start on the lightest quality then step
-  up, which is what stops the first-minute stutter on a weak laptop.
-- **Honest buffering**: the progress line counts the seconds it has waited, so a
-  slow relay is visibly working instead of looking frozen.
-- **Faster browsing**: a page now asks the relay and every proxy at once instead
-  of waiting on the relay first, pages that loaded before reopen instantly, and
-  the last dozen are kept in memory.
+- **Real browsing, not a reader**: every tab now runs Scramjet inside the app.
+  The service worker (`sw.js`) and the transport worker (`bmworker.js`) sit next
+  to the app on the same CDN host, fetch the page through your Wisp relay and
+  rewrite it the way a proxy browser does. TikTok, Instagram, Discord, Google
+  and Wikipedia render their real pages, scripts and video feeds.
+- **Nothing to block by name**: proxied addresses are base64url, so the path
+  never contains `tiktok.com` or `youtube.com`. A filter sees one host: the CDN
+  the app already came from.
+- **The old pipeline is still the safety net**: if a browser cannot run the
+  worker (private mode, worker blocked, an old Chrome), tabs fall back to the
+  existing fetched reader view instead of dying.
+- **Games that cannot fail**: 2048, Snake and Breakout ship inside the app and
+  sit at the front of the shelf with an `offline` badge. They need no network at
+  all, so the Games tab always has something playable.
+- **Games that used to half-load**: mirrors are asked in filter-safe order
+  (Statically first) and a game whose own code points at raw GitHub gets that
+  base rewritten to jsDelivr, so games like Geometry Dash load their assets
+  instead of a block page.
+- **Saleen logo**: a violet squircle with the white S and dot, drawn inline in
+  the SVG build (no extra file to fetch), plus a neutral school-blue document
+  favicon.
+- **Episodes stay fixed**: the 48s budget, three mirrors and per-mirror watchdog
+  from v16 are unchanged, as are the segment prefetch and the ABR tweaks.
 - **Harder to copy**: the shipped JavaScript is minified with mangled names,
   the right-click menu and the common source/devtools shortcuts are blocked, and
-  the plain HTML build is no longer published. There is only the SVG app.
+  the plain HTML build is not published. There is only the SVG app.
 - **School-safe links**: the Links tab lists only the two CDN hosts schools
   normally allow. Raw GitHub, githack and the HTML file are gone.
-- **Smooth playback**: every mirror's playlist is probed in parallel and only
-  the winning mirror downloads its first segment, so the relay is not
-  saturated before playback starts. hls.js starts on automatic quality and
-  steps down instead of restarting when a segment is slow.
-- **TV episodes**: manifests without an end marker are played as VOD from the
-  start, and English audio groups are detected even when unlabelled.
 - **Saved progress**: game saves live in the app's own storage, keyed per game,
-  so closing the site and coming back keeps your progress. A **Continue** button
-  opens the last game you played.
-- **Settings cleaned up**: the Wisp relay field is gone. Settings now has a
-  wallpaper toggle and accent colours, and a note about saved data.
-- **Faster games**: all five mirrors are raced instead of tried one by one;
-  HTML for the last 12 games is kept in memory, so reopening a game is instant.
-- Catalogue chips: trending, popular, top rated and anime, plus Netflix, Prime,
-  Disney+, Max, Hulu, Apple TV+, Paramount+ and Peacock filters.
+  and a **Continue** button opens the last game you played.
 - **Pinned picks**: 47 films and 35 shows, including Blood and Bone, Never Back
   Down, White Chicks and The Flash (2014, 9 seasons).
 - **Games**: 850 playable HTML games, bundled so the grid paints instantly.
 - **No music tab.** The dock has Home, AI, Links, Games, Movies, TV, Settings.
+
+## Known limits
+
+- YouTube and ChatGPT load their shells but not their apps through most
+  proxies. YouTube serves its "enable JavaScript" page and ChatGPT answers 403
+  to relay IPs. That is the site rejecting the request, not the app; TikTok,
+  Instagram and Discord do not.
+- The school can still block the CDN host itself, and a self-hosted relay can
+  be flagged. The codec keeps site names out of the address bar, but nothing can
+  promise a network owner will not notice traffic.
+- Closing a tab cannot be prevented. The app asks for confirmation
+  (`beforeunload`) as a best effort.
 
 ## Classroom disguise
 
@@ -108,11 +111,13 @@ a **Try again** button.
 
 - `saleen.svg` / `period3.svg` - the app as a standalone SVG document.
 - `class.svg` - the classroom disguise page.
+- `sw.js` - the page worker (Scramjet service worker).
+- `bmworker.js` - the bare-mux transport worker.
 - `wisp-server/` - the private relay, start scripts and deploy configs.
 
 ## Updating
 
-Pinned links (`@v16`) never change. `@main` can take up to 12 hours at the edge.
+Pinned links (`@v17`) never change. `@main` can take up to 12 hours at the edge.
 Purge a file with:
 
-`https://purge.jsdelivr.net/gh/blunts294/saleen@v16/period3.svg`
+`https://purge.jsdelivr.net/gh/blunts294/saleen@v17/period3.svg`
