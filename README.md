@@ -4,25 +4,25 @@ A one-file, ad-free movie/TV/games front end with a classroom disguise. The
 interface is plain HTML/CSS/JS, the player is native (HLS), and the browser tab
 runs its own Scramjet engine through your Wisp relay.
 
-## Links (v18)
+## Links (v19)
 
 Every link below serves the same build. If one host is blocked at school, try
 the next.
 
 **App (neutral filename `period3.svg`)**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v18/period3.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen@v18/period3.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v19/period3.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen@v19/period3.svg
 
 **Class disguise page**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v18/class.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen@v18/class.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v19/class.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen@v19/class.svg
 
 Statically's old `/gh/user/repo/branch/` address now answers with a redirect to
-`http://`, which an https page blocks, so use the `@v18` form above.
+`http://`, which an https page blocks, so use the `@v19` form above.
 
-Older tags are offline; only `v18` and `main` resolve.
+Older tags are offline; only `v19`, `v18` and `main` resolve.
 
 ## Your own relay (recommended)
 
@@ -41,13 +41,13 @@ account needed) and starts a quick tunnel to the relay on port 5001.
 
 The relay has to be `wss://`. The CDN links are https pages, and a browser
 refuses to open a plain `ws://` socket from one, so such a relay fails before it
-sends a byte. v18 promotes a pasted `ws://` address to `wss://` for you, but the
+sends a byte. v19 promotes a pasted `ws://` address to `wss://` for you, but the
 link the helper prints is already the right one.
 
 The relay is passed in the link, not typed into Settings. Settings is for the
 look of the app and shows what is saved on the device.
 
-## What is in v18
+## What is in v19
 
 - **Real browsing, not a reader**: every tab now runs Scramjet inside the app.
   The service worker (`sw.js`) and the transport worker (`bmworker.js`) sit next
@@ -70,13 +70,22 @@ look of the app and shows what is saved on the device.
 - **Games that used to half-load**: the wrapper is taken from gn-math's live
   copy, whose asset hosts still work, and the app maps the catalogue's plain
   name (`205.html`) back to the published one (`205-fix2.html`). A wrapper that
-  points its `<base>` at `index.html` has that fixed, and a base on raw GitHub
-  is rewritten to jsDelivr, so the game's own scripts load instead of a block
-  page.
-- **Saleen logo**: a flat violet squircle with a single white S, drawn inline in
-  the SVG build (no extra file to fetch), plus a neutral school-blue document
-  favicon. The toolbar's back, forward and reload buttons are inline icons too,
-  so they render on a machine with no symbol font.
+  points its `<base>` at `index.html` has that fixed, a base on raw GitHub is
+  rewritten to jsDelivr, and a wrapper with **no** base now gets one pointing at
+  the mirror it came from. Without that last part its scripts resolved against
+  the app's own address and every asset was a 404, which is why a game could
+  open to a blank frame.
+- **Anime plays in its original audio**: the mirror list used to be filtered to
+  English only, so an anime film offered only as Japanese had no source and
+  failed outright. The player now ranks English first, then Japanese, then the
+  rest, and says "Original audio" when there is no English track.
+- **Saleen logo**: a violet tile with a geometric white S drawn from a single
+  stroke, inline in the SVG build (no extra file to fetch), plus a neutral
+  school-blue document favicon. The toolbar's back, forward and reload buttons
+  are inline icons too, so they render on a machine with no symbol font.
+- **New in v19**: the mark above replaced the old wobbly S; the three hero lines
+  now type in order and then repeat; and a plain line under the search box says
+  that Saleen might change into a movie website.
 - **The right film, not a neighbour**: a mirror does not always hold the title
   its row claims. The player asks the catalogue for the real runtime and skips
   any mirror whose playlist length is clearly a different movie, so a 93-minute
@@ -98,9 +107,12 @@ look of the app and shows what is saved on the device.
   says so, instead of starting over.
 - **Saved progress**: game saves live in the app's own storage, keyed per game,
   and a **Continue** button opens the last game you played.
-- **Pinned picks**: 47 films and 35 shows, including Blood and Bone, Never Back
-  Down, White Chicks and The Flash (2014, 9 seasons).
-- **Games**: 850 playable HTML games, bundled so the grid paints instantly.
+- **Pinned picks**: 45 films and 35 shows, chosen rather than scraped: the
+  blockbusters, the classics, the comedy, and every anime film and series in the
+  list, including Spirited Away, Your Name., Demon Slayer and The Flash (2014,
+  9 seasons). The two filler titles from v18 are gone.
+- **Games**: 850 HTML games, bundled so the grid paints instantly, plus the
+  three offline games at the front.
 - **No music tab.** The dock has Home, AI, Links, Games, Movies, TV, Settings.
 
 ## Known limits
@@ -111,8 +123,10 @@ look of the app and shows what is saved on the device.
   Instagram and Discord do not.
 - A few games in the catalogue are wrappers for a vendor runtime (YouTube
   Playables, Yandex Games, Poki). They need that vendor's SDK, so they can show
-  their loading screen without ever starting. That is the game, not the mirror;
-  2048, Snake and Breakout ship inside the app and always run.
+  their loading screen without ever starting. Others are full ports that pull
+  100-300 MB before the first frame, which on a school Chromebook looks like a
+  game that never starts. That is the game's own build, not the mirror; 2048,
+  Snake and Breakout ship inside the app and always run.
 - The school can still block the CDN host itself, and a self-hosted relay can
   be flagged. The codec keeps site names out of the address bar, but nothing can
   promise a network owner will not notice traffic.
@@ -135,12 +149,12 @@ look of the app and shows what is saved on the device.
 
 ## Playback
 
-Saleen asks the catalogue provider for its English HLS mirrors, decrypts them in
-the page, probes every mirror at once through your relay, and plays the first
-one that delivers a real video fragment. Every non-English mirror is dropped
-before the player is built, so there is nothing to switch to and no language
-panel to leak. A title with no working English mirror gets a clear message and
-a **Try again** button.
+Saleen asks the catalogue provider for its HLS mirrors, decrypts them in the
+page, probes every mirror at once through your relay, and plays the first one
+that delivers a real video fragment. English is preferred, then the original
+Japanese track, then anything else; a title whose only source is the original
+audio says so over the picture instead of pretending it is a dub. A title with
+no working mirror at all gets a clear message and a **Try again** button.
 
 Because mirrors are shared between titles, one can hold a different film. The
 catalogue's own runtime is fetched alongside the probe and a mirror whose
@@ -157,7 +171,7 @@ the three tries, so the correct source still gets its turn.
 
 ## Updating
 
-Pinned links (`@v18`) never change. `@main` can take up to 12 hours at the edge.
+Pinned links (`@v19`) never change. `@main` can take up to 12 hours at the edge.
 Purge a file with:
 
-`https://purge.jsdelivr.net/gh/blunts294/saleen@v18/period3.svg`
+`https://purge.jsdelivr.net/gh/blunts294/saleen@v19/period3.svg`
