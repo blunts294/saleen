@@ -4,14 +4,14 @@ A one-file, ad-free movie/TV/games front end with a classroom disguise. The
 interface is plain HTML/CSS/JS, the player is native (HLS), and the browser tab
 runs its own Scramjet engine through your Wisp relay.
 
-## Links (v19)
+## Links (v20)
 
 Every link below serves the same build. If one host is blocked at school, try
 the next.
 
 **App (neutral filename `period3.svg`)**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v19/period3.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v20/period3.svg
 - Untagged (always the newest build): https://cdn.jsdelivr.net/gh/blunts294/saleen/period3.svg
 
 Statically cuts files off at about 64 KB, and this build is 201 KB, so its copy
@@ -19,10 +19,10 @@ of the app is incomplete. Use Statically only for the small class page:
 
 **Class disguise page**
 
-- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v19/class.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen@v19/class.svg
+- jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v20/class.svg
+- Statically: https://cdn.statically.io/gh/blunts294/saleen@v20/class.svg
 
-Use the `@v19` form on Statically: its old `/gh/user/repo/branch/` address now
+Use the `@v20` form on Statically: its old `/gh/user/repo/branch/` address now
 answers with a redirect to `http://`, which an https page blocks.
 
 Older tags are offline; only `v19`, `v18` and `main` resolve.
@@ -44,13 +44,13 @@ account needed) and starts a quick tunnel to the relay on port 5001.
 
 The relay has to be `wss://`. The CDN links are https pages, and a browser
 refuses to open a plain `ws://` socket from one, so such a relay fails before it
-sends a byte. v19 promotes a pasted `ws://` address to `wss://` for you, but the
+sends a byte. v20 promotes a pasted `ws://` address to `wss://` for you, but the
 link the helper prints is already the right one.
 
 The relay is passed in the link, not typed into Settings. Settings is for the
 look of the app and shows what is saved on the device.
 
-## What is in v19
+## What is in v20
 
 - **Real browsing, not a reader**: every tab now runs Scramjet inside the app.
   The service worker (`sw.js`) and the transport worker (`bmworker.js`) sit next
@@ -86,7 +86,7 @@ look of the app and shows what is saved on the device.
   stroke, inline in the SVG build (no extra file to fetch), plus a neutral
   school-blue document favicon. The toolbar's back, forward and reload buttons
   are inline icons too, so they render on a machine with no symbol font.
-- **New in v19**: the mark above replaced the old wobbly S; the three hero lines
+- **New in v20**: the mark above replaced the old wobbly S; the three hero lines
   now type in order and then repeat; and a plain line under the search box says
   that Saleen might change into a movie website.
 - **The right film, not a neighbour**: a mirror does not always hold the title
@@ -175,7 +175,7 @@ the three tries, so the correct source still gets its turn.
 
 ## Updating
 
-Pinned links (`@v19`) never change. `@main` can take up to 12 hours at the edge.
+Pinned links (`@v20`) never change. `@main` can take up to 12 hours at the edge.
 Purge a file with:
 
-`https://purge.jsdelivr.net/gh/blunts294/saleen@v19/period3.svg`
+`https://purge.jsdelivr.net/gh/blunts294/saleen@v20/period3.svg`
