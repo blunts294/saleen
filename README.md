@@ -12,15 +12,18 @@ the next.
 **App (neutral filename `period3.svg`)**
 
 - jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v19/period3.svg
-- Statically: https://cdn.statically.io/gh/blunts294/saleen@v19/period3.svg
+- Untagged (always the newest build): https://cdn.jsdelivr.net/gh/blunts294/saleen/period3.svg
+
+Statically cuts files off at about 64 KB, and this build is 201 KB, so its copy
+of the app is incomplete. Use Statically only for the small class page:
 
 **Class disguise page**
 
 - jsDelivr: https://cdn.jsdelivr.net/gh/blunts294/saleen@v19/class.svg
 - Statically: https://cdn.statically.io/gh/blunts294/saleen@v19/class.svg
 
-Statically's old `/gh/user/repo/branch/` address now answers with a redirect to
-`http://`, which an https page blocks, so use the `@v19` form above.
+Use the `@v19` form on Statically: its old `/gh/user/repo/branch/` address now
+answers with a redirect to `http://`, which an https page blocks.
 
 Older tags are offline; only `v19`, `v18` and `main` resolve.
 
@@ -99,8 +102,9 @@ look of the app and shows what is saved on the device.
 - **Harder to copy**: the shipped JavaScript is minified with mangled names,
   the right-click menu and the common source/devtools shortcuts are blocked, and
   the plain HTML build is not published. There is only the SVG app.
-- **School-safe links**: the Links tab lists only the two CDN hosts schools
-  normally allow. Raw GitHub, githack and the HTML file are gone.
+- **School-safe links**: the Links tab lists only the CDN hosts schools normally
+  allow: the app and the class page on jsDelivr, plus the class page on
+  Statically. Raw GitHub, githack and the HTML file are gone.
 - **Picks up where it stopped**: the player stores the position of the film or
   episode every few seconds. If the tab is closed by the browser or by a
   classroom policy, opening the same title again seeks back to that point and
