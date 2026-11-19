@@ -10,7 +10,7 @@ $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
 
 # Pinned app build used in the printed link. Bump when a new tag ships.
-$tag = 'v18'
+$tag = 'v19'
 $appBase = "https://cdn.jsdelivr.net/gh/blunts294/saleen@$tag/period3.svg"
 $port = 5001
 $toolDir = Join-Path $env:LOCALAPPDATA 'SaleenWisp'
@@ -119,3 +119,4 @@ finally {
   if ($tunnel -and -not $tunnel.HasExited) { Stop-Process -Id $tunnel.Id -Force -ErrorAction SilentlyContinue }
   if ($relay -and -not $relay.HasExited) { Stop-Process -Id $relay.Id -Force -ErrorAction SilentlyContinue }
 }
+

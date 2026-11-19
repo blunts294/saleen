@@ -23,7 +23,7 @@ Relay URL:
   wss://something.trycloudflare.com
 
 Open this link (it saves the relay automatically):
-  https://cdn.jsdelivr.net/gh/blunts294/saleen@v18/period3.svg?wisp=wss%3A%2F%2F...
+  https://cdn.jsdelivr.net/gh/blunts294/saleen@v19/period3.svg?wisp=wss%3A%2F%2F...
 ```
 
 Open that last link, keep the window open while watching, and press `Ctrl+C`
@@ -87,3 +87,4 @@ Put Caddy or nginx in front for TLS, then use `wss://your-domain/`.
 
 The Wisp handshake is a WebSocket upgrade on `/`, so no other path or CORS
 configuration is needed.
+
